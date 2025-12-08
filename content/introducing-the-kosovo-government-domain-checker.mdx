@@ -1,0 +1,128 @@
+---
+title: "Introducing the Kosovo Government Domain Checker"
+publishedAt: "2025-12-08"
+summary: "Introducing the Kosovo Government Domain Checker"
+---
+
+# 🇽🇰 Introducing the Kosovo Government Domain Checker
+*A small tool with a simple mission: helping people stay safe online.*
+
+Keeping track of which websites truly belong to the Government of Kosovo isn’t always easy. Many citizens, especially those who are older or not very familiar with technology, can struggle to tell the difference between a real government website and a fake one created to steal information.
+
+That gap is exactly why I built the **Kosovo Government Domain Checker**, a lightweight browser extension that verifies whether the site you’re visiting is officially part of the Republic of Kosovo’s online infrastructure.
+
+---
+
+## Why I Created This Extension
+
+Over the last few years, phishing websites and fake “government service” portals have become more common. Some are convincing enough that even experienced users hesitate before entering personal information. And when something looks official — the flag, the colors, the wording — many people don’t know how to double-check authenticity.
+
+This extension gives them that missing reassurance.
+
+Whether you’re a government employee, a student trying to access documents, or someone helping your grandparents navigate online services, having a clear indicator right at the top of every page makes a big difference.
+
+---
+
+## How It Works
+
+The extension is extremely simple by design.
+
+- It compares the domain of the website you’re currently visiting with a built-in list of official government domains.
+- If the domain matches, a **blue banner** appears at the top of the page confirming that the site is verified.
+- If it does not match anything on the list, a **red banner** warns that the website is not part of the Kosovo government network.
+
+It works quietly in the background on every page — no clicks, no menus, no technical knowledge required.
+
+The extension also detects your browser language (English, Albanian, or Serbian) and shows the banner automatically in the correct language.
+
+---
+
+## Who This Helps
+
+Although anyone can use it, the extension is especially helpful for:
+
+- **Government employees** who need to ensure they’re accessing authentic internal or public services.
+- **Citizens who aren’t tech-savvy**, including older people who are often targeted by online scams.
+- **Students and workers** trying to reach forms, documents, or portals without second-guessing.
+- **People assisting others** — family members, coworkers, or clients — who want an easy way to verify pages.
+
+The goal isn’t to replace cybersecurity tools. It’s simply to give everyday users a visible, trustworthy signal when visiting sites that look “official.”
+
+---
+
+## Privacy First
+
+The extension is completely offline:
+
+- No tracking
+- No analytics
+- No network requests
+- No personal data collection
+
+Everything runs locally inside the browser. The only thing it checks is the domain name of the page you are currently viewing.
+
+Your browsing information never leaves your device.
+
+---
+
+## Features at a Glance
+
+- Built-in list of official Kosovo government domains
+- Clear banner with flag and icon
+- Automatic language detection (EN, SQ, SR)
+- Popup page for manual checks
+- Works on all URLs
+- Fully offline and privacy-friendly
+- Zero configuration required
+
+---
+
+## Installing the Extension
+
+1. Download or clone the repository
+2. Open `chrome://extensions/`
+3. Enable **Developer Mode**
+4. Click **Load unpacked**
+5. Select the project folder
+
+You're ready to go.
+
+---
+
+## File Structure
+
+```text
+/
+├── manifest.json
+├── assets/
+│   ├── icons/
+│   ├── kosovo-flag.png
+│   └── emblem.png
+└── src/
+    ├── background/
+    ├── content/
+    │   ├── banner.js
+    │   └── banner.css
+    ├── data/
+    │   └── domains.json
+    └── popup/
+        ├── popup.html
+        └── popup.js
+```
+
+## License
+
+This project is released under **CC BY-NC-ND 4.0**.
+You are free to view and learn from the source code, but you may **not**:
+
+- use it commercially
+- redistribute it
+- publish forks
+- share modified or unmodified copies
+
+Full license details:
+https://creativecommons.org/licenses/by-nc-nd/4.0/
+
+---
+
+If you work with official documents, assist the public, or simply want an easier way to avoid scams pretending to be state services, this extension gives you a simple and reliable way to verify what’s real — **one domain at a time**.
