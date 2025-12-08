@@ -1,0 +1,77 @@
+export const metadata = {
+  metadataBase: new URL('https://amiraliu.vercel.app'),
+  title: {
+    default: 'Amir Aliu — Fullstack Developer',
+    template: '%s | Amir Aliu',
+  },
+  description:
+    'A full-stack developer from Kosovo with a passion for building things across web, software, and game development — and a growing curiosity for cybersecurity and networking.',
+  keywords: [
+    'Amir Aliu',
+    'Amir Aliu Portfolio',
+    'Amir Aliu Projects',
+    'Amir Aliu Developer',
+    'Aliu',
+    'Amir Aliu',
+    'Full Stack Developer',
+    'Frontend Developer',
+    'Backend Developer',
+    'Web Developer',
+    'Software Developer',
+    'Web Applications',
+    'React Developer',
+    'Next.js Developer',
+    'JavaScript Developer',
+    'TypeScript Developer',
+    'Next.js Projects',
+    'Open Source Contributions',
+    'Creative Coding',
+    'Portfolio',
+    'Software Engineer',
+    'UI Design',
+    'UX Design',
+    'Web Developer Portfolio',
+    'Kosovo Developer',
+    'Modern Web Development',
+    'Web Design',
+    'Web Development Projects',
+    'Web Apps',
+    'DevOps',
+  ],
+  authors: [{ name: 'Amir Aliu', url: 'https://amiraliu.vercel.app' }],
+  creator: 'Amir Aliu',
+  publisher: 'Amir Aliu',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Amir Aliu — Full Stack Developer',
+    description:
+      'Explore the projects by Amir Aliu — web apps, creative experiments & open source work. Find me on GitHub as AmirAliuA.',
+    url: 'https://amiraliu.vercel.app',
+    siteName: 'Amir Aliu — Full Stack Developer',
+    images: [
+      {
+        url: 'https://amiraliu.vercel.app/og.png', // replace with your OG image URL
+        width: 1200,
+        height: 630,
+        alt: 'Amir Aliu — Full Stack Developer',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Amir Aliu — Full Stack Developer & Designer',
+    description:
+      'Explore the projects by Amir Aliu — web apps, creative experiments & open source work. Find me on GitHub as AmirAliuA.',
+    site: '@amiraliudev',
+    creator: '@amiraliudev',
+    images: ['https://amiraliu.vercel.app/og.png'], // same OG image
+  },
+  alternates: {
+    canonical: 'https://amiraliu.vercel.app',
+    types: {
+      'application/rss+xml': 'https://amiraliu.vercel.app/rss',
+    },
+  },
+};
