@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { projects } from "@/data/projects";
 import { Calendar } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
 export async function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));
@@ -17,9 +16,13 @@ export default async function ProjectPage({
 
   if (!project) return notFound();
 
+  const hasBadges = Array.isArray(project.badge) && project.badge.length > 0;
+  const hasFeatures = Array.isArray(project.features) && project.features.length > 0;
+  const hasGallery = Array.isArray(project.postImages) && project.postImages.length > 0;
+  const hasLinks = Array.isArray(project.links) && project.links.length > 0;
+
   return (
     <section className="max-w-4xl mx-auto py-10 px-4 space-y-10">
-      {/* Main Image */}
       {project.image && (
         <img
           src={project.image}
@@ -28,11 +31,8 @@ export default async function ProjectPage({
         />
       )}
 
-      {/* Title + Date */}
       <div className="space-y-2">
-        <h1 className="text-4xl font-bold tracking-tight">
-          {project.title}
-        </h1>
+        <h1 className="text-4xl font-bold tracking-tight">{project.title}</h1>
 
         <div className="flex items-center gap-2 text-muted-foreground text-sm">
           <Calendar className="h-4 w-4" />
@@ -40,26 +40,23 @@ export default async function ProjectPage({
         </div>
       </div>
 
-
-      {/* Description */}
       <p className="text-lg text-neutral-300 leading-relaxed max-w-2xl">
         {project.description}
       </p>
 
-      {/* Badges */}
-      {project.badge?.length > 0 && (
+      {hasBadges && (
         <div className="flex flex-wrap gap-2">
-          {project.badge.map((b, i) => (
+          {project.badge!.map((b, i) => (
             <span
               key={i}
               className="
-          px-3 py-1
-          text-xs font-medium
-          rounded-md
-          bg-neutral-900
-          text-neutral-200
-          border border-neutral-800
-        "
+                px-3 py-1
+                text-xs font-medium
+                rounded-md
+                bg-neutral-900
+                text-neutral-200
+                border border-neutral-800
+              "
             >
               {b}
             </span>
@@ -67,29 +64,27 @@ export default async function ProjectPage({
         </div>
       )}
 
-
-
-      {/* Features */}
-      {project.features?.length > 0 && (
+      {hasFeatures && (
         <div className="space-y-3">
           <h2 className="text-xl font-semibold">Features</h2>
           <ul className="list-disc pl-6 space-y-1 text-neutral-300">
-            {project.features.map((f, i) => (
+            {project.features!.map((f, i) => (
               <li key={i}>{f}</li>
             ))}
           </ul>
         </div>
       )}
 
-      {/* Image / Video Gallery */}
-      {project.postImages?.length > 0 && (
+      {hasGallery && (
         <div className="space-y-6">
           <h2 className="text-xl font-semibold">Gallery</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {project.postImages.map((media, idx) => {
+            {project.postImages!.map((media, idx) => {
               const isVideo =
-                media.src.endsWith(".mp4") || media.src.endsWith(".webm") || media.src.endsWith(".mov");
+                media.src.endsWith(".mp4") ||
+                media.src.endsWith(".webm") ||
+                media.src.endsWith(".mov");
 
               return (
                 <figure key={idx} className="space-y-2">
@@ -103,7 +98,7 @@ export default async function ProjectPage({
                     <img
                       src={media.src}
                       alt={media.alt}
-                      className="rounded-lg shadow-lg w-full h-auto"
+                      className="rounded-lg shadow-lg w-full h-full"
                     />
                   )}
 
@@ -117,21 +112,23 @@ export default async function ProjectPage({
         </div>
       )}
 
-
-      {/* Links */}
-      {project.links?.length > 0 && (
+      {hasLinks && (
         <div className="flex gap-3">
-          {project.links.map((link, i) => {
-            const Icon = link.icon; // <-- grab the component
-
+          {project.links!.map((link, i) => {
+            const Icon = link.icon;
             return (
               <a
                 key={i}
                 href={link.href}
                 target="_blank"
-                className="flex items-center gap-2 px-4 py-2 rounded-md bg-white text-black font-medium hover:bg-neutral-200 transition"
+                className="
+                  flex items-center gap-2
+                  px-4 py-2 rounded-md
+                  bg-white text-black font-medium
+                  hover:bg-neutral-200 transition
+                "
               >
-                <Icon className="w-5 h-5" />  {/* render it */}
+                <Icon className="w-5 h-5" />
                 {link.type}
               </a>
             );

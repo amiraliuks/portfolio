@@ -18,7 +18,8 @@ export function BlogPosts() {
           >
             <Link
               href={`/blog/${post.slug}`}
-              className="flex items-center space-x-2 hover:underline text-blue-600 dark:text-blue-400"
+              className="flex items-center space-x-2 hover:underline text-neutral-900 dark:text-neutral-100"
+
             >
               <span className="font-mono text-neutral-500 w-6 text-right">{index + 1}.</span>
               <span className="truncate">{post.metadata.title}</span>

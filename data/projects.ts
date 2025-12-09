@@ -1,3 +1,5 @@
+import { type ComponentType, type SVGProps } from "react";
+
 import { FaGithub } from "react-icons/fa";
 import { PiMicrosoftWordLogoFill } from "react-icons/pi";
 import { FaRegFilePowerpoint, FaAndroid, FaFirefox } from "react-icons/fa";
@@ -23,7 +25,7 @@ export interface Project {
   links?: {
     type: string;
     href: string;
-    icon: React.ReactNode;
+    icon: ComponentType<SVGProps<SVGSVGElement>>;
   }[];
 }
 
@@ -32,7 +34,6 @@ const projects: Project[] = [
     id: 1,
     title: "Snapchat Usernames",
     slug: "snapchat-usernames",
-    href: "https://github.com/AmirAliuA/snapchat-username",
     createdAt: "12-04-2021",
     description:
       "A Python tool to check if Snapchat usernames are available or not.",
@@ -74,7 +75,6 @@ const projects: Project[] = [
     id: 2,
     title: "Login Form",
     slug: "login-form",
-    href: "https://github.com/AmirAliuA/snapchat-usernames",
     createdAt: "13-04-2021",
     description:
       "Final assignment given by the university professor during C# training class before enrolling to college.",
