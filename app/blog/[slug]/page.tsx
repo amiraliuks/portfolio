@@ -118,7 +118,7 @@ export default async function Blog({ params }: BlogPageProps) {
   };
 
   return (
-    <section>
+    <article className="mx-auto max-w-3xl px-4 pt-16 pb-24">
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -134,19 +134,31 @@ export default async function Blog({ params }: BlogPageProps) {
         }}
       />
 
-      <h1 className="title font-semibold text-2xl tracking-tighter">
-        {post.metadata.title}
-      </h1>
+      <header className="mb-16">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
+          {post.metadata.title}
+        </h1>
 
-      <div className="flex justify-between items-center mt-2 mb-8 text-sm">
-        <p className="text-neutral-600 dark:text-neutral-400">
-          {formatDate(post.metadata.publishedAt)}
-        </p>
-      </div>
+        <div className="flex items-center gap-4 text-sm text-neutral-500">
+          <span>{formatDate(post.metadata.publishedAt)}</span>
+          <span>•</span>
+          <span>5 min read</span>
+        </div>
+      </header>
 
-      <article className="prose">
+      {post.metadata.image && (
+        <div className="mb-16 overflow-hidden rounded-2xl">
+          <img
+            src={post.metadata.image}
+            alt={post.metadata.title}
+            className="w-full object-cover"
+          />
+        </div>
+      )}
+
+      <div className="prose prose-neutral dark:prose-invert max-w-none prose-lg">
         <CustomMDX source={post.content} />
-      </article>
-    </section>
+      </div>
+    </article>
   );
 }

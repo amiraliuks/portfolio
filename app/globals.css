@@ -312,3 +312,14 @@
     appearance: none;
   }
 }
+
+.prose .anchor {
+  opacity: 0;
+  margin-left: -1em;
+  padding-right: 0.5em;
+}
+
+.prose h2:hover .anchor,
+.prose h3:hover .anchor {
+  opacity: 0.4;
+}
