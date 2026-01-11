@@ -1,6 +1,6 @@
 import React from 'react';
-import { BlogPosts } from '@/components/BlogPosts';
 import { Metadata } from 'next';
+import { BlogPosts } from '@/components/BlogPosts';
 
 export const metadata: Metadata = {
   title: 'Blog — Amir Aliu',

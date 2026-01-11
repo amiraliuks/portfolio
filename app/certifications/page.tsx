@@ -1,7 +1,7 @@
 import React from 'react';
-import { certifications } from '@/data/certifications';
-import CertificationsSection from '@/components/CertificationSection';
 import { Metadata } from 'next';
+import CertificationsSection from '@/components/CertificationSection';
+import { certifications } from '@/data/certifications';
 
 export const metadata: Metadata = {
   title: 'Certifications — Amir aliu',

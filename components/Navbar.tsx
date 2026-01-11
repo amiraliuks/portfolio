@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
+import { SwitchTheme } from './ThemeSwitch';
 import { ChevronDown } from 'lucide-react';
 import { ImHome } from "react-icons/im";
-import { SwitchTheme } from './ThemeSwitch';
 
 const mainNavItems = [
   { name: 'About', href: '/about' },

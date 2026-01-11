@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Github } from "lucide-react";
 import { FaLinkedin, FaTwitter } from "react-icons/fa";
-
+import { SiTryhackme } from "react-icons/si";
 import { ResumeSheet } from "./ResumeSheet";
 
 import Experience from "./Experience";
@@ -48,6 +48,7 @@ export default function MainContent() {
                 strings: [
                   "Full Stack Developer",
                   "Cybersecurity Enthusiast",
+                  "Privacy Advocate",
                   "IT & Networking Learner",
                   "Game Development Hobbyist",
                 ],
@@ -78,6 +79,12 @@ export default function MainContent() {
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" asChild>
                 <a href="https://github.com/AmirAliuA" target="_blank" rel="noopener noreferrer">
                   <Github className="h-5 w-5" />
+                </a>
+              </Button>
+
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" asChild>
+                <a href="https://tryhackme.com/p/amiraliu" target="_blank" rel="noopener noreferrer">
+                  <SiTryhackme className="h-5 w-5" />
                 </a>
               </Button>
 

@@ -1,7 +1,7 @@
 import React from 'react';
+import { Metadata } from 'next';
 import { projects } from '@/data/projects';
 import ProjectSection from '@/components/ProjectSection';
-import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Projects — Amir Aliu',
@@ -73,7 +73,7 @@ export default function Page() {
             Projects
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-lg">
-            A showcase of my work in web development, cybersecurity, and various other tech areas. You’ll find a mix of open-source projects, released products, and select closed-source work I’m able to highlight — all representing the skills I’ve built and the areas I enjoy exploring.
+            A showcase of my work in web development, cybersecurity, and various other tech areas. You&apos;ll find a mix of open-source projects, released products, and select closed-source work I&apos;m able to highlight — all representing the skills I&apos;ve built and the areas I enjoy exploring.
           </p>
         </div>
 
