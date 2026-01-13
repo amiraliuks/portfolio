@@ -7,7 +7,7 @@ export interface Certification {
   certificateOne?: string;
   certificateTwo?: string;
   badgeImage?: string;
-  createdAt: string;
+  createdAt: string; // DD-MM-YYYY
   description: string;
   skills: string[];
   credlyBadge?: string;
