@@ -95,11 +95,11 @@ export default async function ProjectPage({
                       className="rounded-lg shadow-lg w-full h-auto"
                     />
                   ) : (
-                    <img
-                      src={media.src}
-                      alt={media.alt}
-                      className="rounded-lg shadow-lg w-full h-full"
-                    />
+                      <img
+                        src={media.src}
+                        alt={media.alt}
+                        className="rounded-lg shadow-lg w-full h-auto object-cover"
+                      />
                   )}
 
                   <figcaption className="text-sm text-neutral-400">
