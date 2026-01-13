@@ -4,6 +4,7 @@ import { FaGithub } from "react-icons/fa";
 import { PiMicrosoftWordLogoFill } from "react-icons/pi";
 import { FaRegFilePowerpoint, FaAndroid, FaFirefox } from "react-icons/fa";
 import { SiVercel } from "react-icons/si";
+import { time } from "console";
 
 export interface Project {
   id: number;
@@ -855,11 +856,6 @@ const projects: Project[] = [
 
     links: [
       {
-        type: "Firefox Add-on",
-        href: "",
-        icon: FaFirefox,
-      },
-      {
         type: "Source Code",
         href: "https://github.com/AmirAliuA/kosovo-gov-site-verification/releases",
         icon: FaGithub,
@@ -912,14 +908,125 @@ const projects: Project[] = [
 
     links: [
       {
-        type: "Firefox Add-on",
-        href: "",
-        icon: FaFirefox,
-      },
-      {
         type: "Source Code",
         href: "https://github.com/AmirAliuA/kosovo-gov-site-verification/releases",
         icon: FaGithub,
+      },
+    ],
+  },
+
+  {
+    id: 21,
+    title: "Leotrim Selmanaj Financial Planning",
+    slug: "leotrim-selmanaj-financial-planning",
+    createdAt: "10-01-2026",
+    description:
+      "This is a premium financial planning and retirement services platform built with Next.js 16, React 19, and TypeScript. I was contracted to handle the backend development, migrate the database from SQLite to Prisma with PostgreSQL, and build the administrative dashboard frontend with a fully responsive, production-ready UI.",
+    features: [
+      "Lead Intake System – public contact forms feed directly into a secure backend, creating structured leads for financial advisors",
+      "Lead Status Pipeline – leads move through New, Contacted, Meeting Scheduled, and Client stages to track the sales funnel",
+      "Admin Dashboard – custom-built interface for viewing, filtering, and managing incoming financial service inquiries",
+      "Lead Detail View – advisors can review client info, interests (insurance, pension, retirement, etc.), and messages in one place",
+      "Internal Notes System – staff can attach private notes to each lead for follow-ups and case tracking",
+      "Prisma + PostgreSQL Backend – migrated from SQLite to a scalable, production-grade database built for financial data",
+      "Next.js 16 App Router – server & client components for fast, secure, and SEO-friendly financial service pages",
+      "Fully Responsive Admin UI – works cleanly across desktop, tablet, and mobile for advisors on the go",
+    ],
+
+    badge: ["Nextjs 16", "React 19", "Prisma", "PostgreSQL", "TypeScript", "Tailwind CSS"],
+
+    image: "/projects/leotrim-selmanaj/logo-full-light.png",
+
+    postImages: [
+      {
+        src: "/projects/leotrim-selmanaj/admin-login-page.png",
+        alt: "Admin login screen for the Leotrim Selmanaj dashboard",
+        caption: "Secure admin login page used to access the CRM dashboard",
+      },
+      {
+        src: "/projects/leotrim-selmanaj/leads-page.png",
+        alt: "Leads overview page with filters and lead list",
+        caption: "Main leads dashboard showing all incoming leads with status filters and search",
+      },
+      {
+        src: "/projects/leotrim-selmanaj/leads-details.png",
+        alt: "Lead details page showing customer information and status",
+        caption: "Detailed view of a single lead with contact info, interest, and current status",
+      },
+      {
+        src: "/projects/leotrim-selmanaj/editing-leads.png",
+        alt: "Lead status and notes editor in the admin dashboard",
+        caption: "Interface for updating a lead’s status and adding internal notes",
+      },
+      {
+        src: "/projects/leotrim-selmanaj/profile-page.png",
+        alt: "Admin profile and account settings page",
+        caption: "Profile page where the admin can manage account details and change password",
+      },
+    ],
+
+    links: [
+      {
+        type: "Live Site",
+        href: "https://visionfinance.ch/",
+        icon: SiVercel,
+      },
+    ],
+  },
+
+  {
+    id: 22,
+    title: "Medusa Artist Portfolio",
+    slug: "medusa-artist-portfolio",
+    createdAt: "13-01-2026",
+    description:
+      "Medusa Music is a modern personal musician website built with Nextjs 16 and shadcn/ui, designed to showcase an artist’s music, identity, and presence across streaming platforms. The site connects directly to the Spotify API to display real-time data such as tracks, albums, and playlists.",
+    features: [
+      "Spotify-Powered Music - displays the artist’s tracks, albums, and playlists using live Spotify data",
+      "Artist-Focused Layout - built specifically for a single musician or band to present their work professionally",
+      "Modern UI (shadcn/ui) -clean components with smooth transitions and full light/dark theme support",
+      "Next.js 16 App Router -uses server & client components for fast navigation, SEO, and scalability",
+      "Dynamic Artist Pages - automatically renders albums, tracks, and previews with optimized metadata",
+      "Fully Responsive - looks great on desktop, tablet, and mobile",
+    ],
+
+    badge: ["Nextjs 16", "shadcn/ui", "Tailwind CSS", "TypeScript", "Spotify API"],
+
+    image: "/projects/medusa-artist-portfolio/demo.gif",
+
+    postImages: [
+      {
+        src: "/projects/medusa-artist-portfolio/main-page-full.png",
+        alt: "Full Medusa artist homepage with hero, music highlights, and footer",
+        caption: "Complete homepage layout showcasing the brand, music, and navigation structure.",
+      },
+      {
+        src: "/projects/medusa-artist-portfolio/music-page-full.png",
+        alt: "Medusa artist discography page with albums, singles, and most played tracks",
+        caption: "The full music library view with albums, singles, and most-played tracks.",
+      },
+      {
+        src: "/projects/medusa-artist-portfolio/hero-section.png",
+        alt: "Medusa artist website hero section with neon purple lighting and social media icons",
+        caption: "The immersive hero section introducing Medusa with a neon-lit visual identity.",
+      },
+      {
+        src: "/projects/medusa-artist-portfolio/homepage-music-section.png",
+        alt: "Medusa music homepage showing featured track and Spotify integration",
+        caption: "Homepage music section featuring highlighted releases and direct Spotify playback.",
+      },
+      {
+        src: "/projects/medusa-artist-portfolio/footer.png",
+        alt: "Medusa website footer with social links, merch navigation, and copyright",
+        caption: "Footer section containing social media links, merch access, and legal information.",
+      },
+    ],
+
+    links: [
+      {
+        type: "Live Site",
+        href: "https://medusa-artist-website.vercel.app/",
+        icon: SiVercel,
       },
     ],
   },
