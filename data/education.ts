@@ -9,6 +9,7 @@ const education = [
     description:
       "Studied core computer science subjects including programming, algorithms, data structures, and software engineering. Gained hands-on experience with modern development practices before pausing the program. Additionally, led a team of six in developing a full-stack e-commerce application using Next.js and PayPal integration during a university bootcamp, earning a perfect score of 100/100.",
   },
+
   {
     id: 2,
     school: "Zenel Hajdini",

@@ -1,3 +1,5 @@
+import Link from "next/link";
+import Image from "next/image";
 import {
   Card,
   CardHeader,
@@ -6,8 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
-import Image from "next/image";
 import { Github } from "lucide-react";
 import { projects } from "@/data/projects";
 

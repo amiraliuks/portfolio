@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
-import { projects } from "@/data/projects";
 import { Calendar } from "lucide-react";
+
+import { projects } from "@/data/projects";
 
 export async function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));

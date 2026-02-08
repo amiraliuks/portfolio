@@ -5,7 +5,7 @@ export const metadata = {
     template: '%s | Amir Aliu',
   },
   description:
-    'A full-stack developer from Kosovo with a passion for building things across web, software, and game development — and a growing curiosity for cybersecurity and networking.',
+    'A full-stack developer from Kosovo with a passion for building things across web, software, and game development with a growing curiosity for cybersecurity and networking.',
   keywords: [
     'Amir Aliu',
     'Amir Aliu Portfolio',
@@ -50,7 +50,7 @@ export const metadata = {
     siteName: 'Amir Aliu — Full Stack Developer',
     images: [
       {
-        url: 'https://amiraliu.vercel.app/og.png', // replace with your OG image URL
+        url: 'https://amiraliu.vercel.app/og.png',
         width: 1200,
         height: 630,
         alt: 'Amir Aliu — Full Stack Developer',
@@ -66,7 +66,7 @@ export const metadata = {
       'Explore the projects by Amir Aliu — web apps, creative experiments & open source work. Find me on GitHub as AmirAliuA.',
     site: '@amiraliudev',
     creator: '@amiraliudev',
-    images: ['https://amiraliu.vercel.app/og.png'], // same OG image
+    images: ['https://amiraliu.vercel.app/og.png'],
   },
   alternates: {
     canonical: 'https://amiraliu.vercel.app',

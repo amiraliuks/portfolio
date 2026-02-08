@@ -43,6 +43,7 @@ const certifications: Certification[] = [
       'Shell Basics'
     ],
   },
+
   {
     id: 2,
     title: 'Introduction to Cybersecurity',
@@ -74,6 +75,7 @@ const certifications: Certification[] = [
       'Security Best Practices'
     ],
   },
+
   {
     id: 3,
     title: 'Python Essentials 1',
@@ -105,6 +107,7 @@ const certifications: Certification[] = [
       'CLI Programs'
     ],
   },
+
   {
     id: 4,
     title: 'IT Customer Support Basics',
@@ -136,6 +139,7 @@ const certifications: Certification[] = [
       'Support Workflow'
     ],
   },
+
   {
     id: 5,
     title: 'Operating Systems Support',
@@ -167,6 +171,7 @@ const certifications: Certification[] = [
       'OS Optimization'
     ],
   },
+
   {
     id: 6,
     title: 'Security and Connectivity Support',
@@ -198,6 +203,7 @@ const certifications: Certification[] = [
       'Troubleshooting'
     ],
   },
+
   {
     id: 7,
     title: 'Hardware and Upgrade Support',

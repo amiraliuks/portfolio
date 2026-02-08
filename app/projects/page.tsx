@@ -1,7 +1,8 @@
 import React from 'react';
 import { Metadata } from 'next';
-import { projects } from '@/data/projects';
 import ProjectSection from '@/components/ProjectSection';
+
+import { projects } from '@/data/projects';
 
 export const metadata: Metadata = {
   title: 'Projects — Amir Aliu',

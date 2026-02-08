@@ -1,10 +1,10 @@
 import { type ComponentType, type SVGProps } from "react";
 
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaLinux } from "react-icons/fa";
 import { PiMicrosoftWordLogoFill } from "react-icons/pi";
 import { FaRegFilePowerpoint, FaAndroid, FaFirefox } from "react-icons/fa";
 import { SiVercel } from "react-icons/si";
-import { time } from "console";
+import { FaWindows } from "react-icons/fa";
 
 export interface Project {
   id: number;
@@ -1027,6 +1027,56 @@ const projects: Project[] = [
         type: "Live Site",
         href: "https://medusa-artist-website.vercel.app/",
         icon: SiVercel,
+      },
+    ],
+  },
+
+  {
+    id: 23,
+    title: "Rubik's Cube Unity Game",
+    slug: "unity-rubiks-cube",
+    createdAt: "02/08/2026",
+    description:
+      "A Rubik’s Cube game built in Unity using C#, featuring a fully interactive 3D cube with realistic rotations, scramble logic, and solve-state validation. Designed as both a puzzle game and a foundation for experimenting with cube algorithms and solvers.",
+
+    features: [
+      "Procedurally generated 3D Rubik’s Cube built entirely via code (no premade 3D models)",
+      "Fully interactive cube with smooth, realistic face rotations",
+      "Built in Unity using C#, with accurate cubie-based logic and full state tracking",
+      "Scramble system with validation to prevent impossible cube configurations",
+      "Solve-state detection that reliably identifies completed faces",
+      "Integrated audio manager handling background music and responsive sound effects",
+      "Smooth, customizable orbit camera with intuitive controls for rotating and inspecting the cube",
+      "Designed as a foundation for future solving algorithms and auto-solver integration",
+    ],
+
+    badge: ["Unity", "C#", "3D Game Development", "Algorithm Design", "Open Source"],
+
+    image: "/projects/unity-rubiks-cube/prototype.png",
+
+    postImages: [
+      {
+        src: "/projects/unity-rubiks-cube/prototype.png",
+        alt: "Unity Rubik's Cube prototype with interactive controls",
+        caption: "The initial prototype showing the interactive 3D Rubik's Cube in Unity.",
+      },
+    ],
+
+    links: [
+      {
+        type: "Source Code",
+        href: "https://github.com/AmirAliuA/unity-rubiks-cube/",
+        icon: FaGithub,
+      },
+      {
+        type: "Windows Release",
+        href: "https://github.com/AmirAliuA/unity-rubiks-cube/releases",
+        icon: FaWindows,
+      },
+      {
+        type: "Linux Release",
+        href: "https://github.com/AmirAliuA/unity-rubiks-cube/releases",
+        icon: FaLinux,
       },
     ],
   },

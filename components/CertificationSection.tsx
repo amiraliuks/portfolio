@@ -2,12 +2,13 @@
 
 import React, { useState } from 'react';
 import { ChevronDown, ExternalLink, Github, Calendar } from 'lucide-react';
-import { certifications } from '@/data/certifications';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BiCertification } from "react-icons/bi";
 import { FaBookOpen } from "react-icons/fa";
 import { SiCredly } from 'react-icons/si';
 import { BadgeSheet } from './BadgeSheet';
+
+import { certifications } from '@/data/certifications';
 
 function CertificationsSection() {
   const [expandedId, setExpandedId] = useState<number | null>(null);

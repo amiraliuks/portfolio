@@ -1,6 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import CertificationsSection from '@/components/CertificationSection';
+
 import { certifications } from '@/data/certifications';
 
 export const metadata: Metadata = {

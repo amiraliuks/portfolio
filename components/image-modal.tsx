@@ -202,7 +202,7 @@ export function ImageModal({ images, currentIndex, isOpen, onClose, projectTitle
                         setIsZoomed(false)
                       }}
                       className={cn(
-                        "relative flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-all",
+                        "relative shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-all",
                         index === imageIndex
                           ? "border-primary ring-2 ring-primary/20"
                           : "border-border hover:border-primary/50",
