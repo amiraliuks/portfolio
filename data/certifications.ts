@@ -235,6 +235,53 @@ const certifications: Certification[] = [
       'Component Compatibility'
     ],
   },
+
+  {
+    id: 8,
+    title: 'Advent of Cyber 2025',
+    course: 'https://tryhackme.com/adventofcyber25',
+    certificateOne: '/certifications/pdfs/THM-1X8DNJ5GVX.pdf',
+    credlyBadge: 'https://tryhackme.com/amiraliu/badges/advent-of-cyber-2025?utm_campaign=social_share&utm_medium=social&utm_content=badge&utm_source=copy&sharerId=614a3207b7ceea0048e4a172',
+    badgeImage: '/certifications/badges/advent-of-cyber-2025.png',
+    createdAt: '15-02-2026', // DD-MM-YYYY
+    description:
+      'Hands-on cybersecurity Capture The Flag (CTF) experience through TryHackMe Advent of Cyber 2025. Covered offensive and defensive security topics including web exploitation, malware analysis, SOC investigations, cloud security, and threat detection using real-world attack scenarios and practical labs.',
+    skills: [
+      'Exploitation with cURL',
+      'Web Attack Forensics',
+      'Phishing Detection',
+      'Malware Analysis',
+      'AWS Security',
+      'Linux CLI',
+      'SOC Alert Triage',
+      'Password Cracking',
+      'Splunk Basics',
+      'Network Discovery',
+      'Container Escape',
+      'IDOR Exploitation',
+      'Prompt Injection',
+      'Web Log Analysis',
+      'Registry Forensics',
+      'Social Engineering',
+      'AI in Security',
+      'CyberChef',
+      'ICS/Modbus',
+      'YARA Rules',
+      'Race Conditions',
+      'C2 Detection',
+      'Obfuscation'
+    ],
+    badge: [
+      'Web Exploitation',
+      'Digital Forensics',
+      'Threat Detection',
+      'Cloud Security',
+      'SOC Analysis',
+      'Malware Analysis',
+      'Log Analysis',
+      'CTF Challenges'
+    ],
+  },
 ];
 
 export { certifications };
