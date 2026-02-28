@@ -123,32 +123,6 @@ const projects: Project[] = [
 
   {
     id: 3,
-    title: "Covid Dashboard",
-    slug: "covid-dashboard",
-    createdAt: "20-04-2021",
-    description:
-      "A COVID Dashboard implemented in Java & Spring Boot.",
-    features: [
-      "Java & Spring Boot–based COVID statistics dashboard",
-      "Fetches and displays real-time case data",
-      "REST API integration for data updates",
-    ],
-
-    badge: ["Java", "Spring Boot"],
-
-    image: "/projects/covid-dashboard/java-logo.png",
-
-    postImages: [
-      {
-        src: "/projects/covid-dashboard/covid-dashboard.png",
-        alt: "Clean covid interface",
-        caption: "Clean covid interface",
-      },
-    ],
-  },
-
-  {
-    id: 4,
     title: "E-Commerce Web Application",
     slug: "e-commerce-web-application",
     createdAt: "22-12-2021",
@@ -209,7 +183,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 5,
+    id: 4,
     title: "Arduino Uno Traffic Lights",
     slug: "arduino-uno-traffic-lights",
     createdAt: "01-01-2022",
@@ -247,7 +221,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 6,
+    id: 5,
     title: "Billing System",
     slug: "billing-system",
     createdAt: "11-03-2022",
@@ -302,7 +276,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 7,
+    id: 6,
     title: "AI Language Detection",
     slug: "ai-language-detection",
     createdAt: "28-05-2024",
@@ -352,7 +326,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 8,
+    id: 7,
     title: "Banking App",
     slug: "banking-app",
     createdAt: "28-05-2024",
@@ -387,7 +361,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 9,
+    id: 8,
     title: "Snake Game",
     slug: "snake-game",
     createdAt: "23-08-2024",
@@ -429,7 +403,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 10,
+    id: 9,
     title: "Doom Clone",
     slug: "doom-clone",
     createdAt: "01-01-2025",
@@ -455,7 +429,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 11,
+    id: 10,
     title: "Medtime Mobile Application",
     slug: "medtime-mobile-application",
     createdAt: "29-05-2025",
@@ -481,7 +455,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 12,
+    id: 11,
     title: "Steam Kosovo Flag",
     slug: "steam-kosovo-flag",
     createdAt: "12-06-2024",
@@ -525,7 +499,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 13,
+    id: 12,
     title: "InvoMate - Invoice Platform",
     slug: "invomate-invoice-platform",
     createdAt: "30-05-2025",
@@ -623,7 +597,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 14,
+    id: 13,
     title: "Artist Portfolio",
     slug: "artist-portfolio",
     createdAt: "01-06-2025",
@@ -668,7 +642,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 15,
+    id: 14,
     title: "NASA APOD Explorer",
     slug: "nasa-apod-explorer",
     createdAt: "02-06-2025",
@@ -718,7 +692,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 16,
+    id: 15,
     title: "GTA SA Fixer",
     slug: "gta-sa-fixer",
     createdAt: "19-10-2025",
@@ -758,7 +732,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 17,
+    id: 16,
     title: "TBA",
     slug: "tba",
     createdAt: "12-11-2025",
@@ -772,7 +746,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 18,
+    id: 17,
     title: "Silent Hill Archive",
     slug: "silent-hill-archive",
     createdAt: "17-11-2025",
@@ -812,7 +786,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 19,
+    id: 18,
     title: "Kosovo Government Domain Checker",
     slug: "kosovo-gov-site-verification",
     createdAt: "02-12-2025",
@@ -864,7 +838,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 20,
+    id: 19,
     title: "Albania Government Domain Checker",
     slug: "albania-gov-site-verification",
     createdAt: "08-12-2025",
@@ -916,7 +890,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 21,
+    id: 20,
     title: "Leotrim Selmanaj Financial Planning",
     slug: "leotrim-selmanaj-financial-planning",
     createdAt: "10-01-2026",
@@ -975,7 +949,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 22,
+    id: 21,
     title: "Medusa Artist Portfolio",
     slug: "medusa-artist-portfolio",
     createdAt: "13-01-2026",
@@ -1032,7 +1006,7 @@ const projects: Project[] = [
   },
 
   {
-    id: 23,
+    id: 22,
     title: "Rubik's Cube Unity Game",
     slug: "unity-rubiks-cube",
     createdAt: "02/08/2026",

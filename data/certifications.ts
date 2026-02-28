@@ -282,6 +282,156 @@ const certifications: Certification[] = [
       'CTF Challenges'
     ],
   },
+
+  {
+    id: 9,
+    title: 'Pre Security (New)',
+    course: 'https://tryhackme.com/path/outline/presecurity',
+    certificateOne: '/certifications/pdfs/THM-ZCJSNKYH7I.pdf',
+    credlyBadge: 'https://tryhackme.com/certificate/THM-ZCJSNKYH7I',
+    badgeImage: '/certifications/badges/presecuritynew.svg',
+    createdAt: '22-02-2026', // DD-MM-YYYY
+    description:
+      'Foundational cybersecurity learning path by TryHackMe covering how computers, networking, operating systems, and the web work from the ground up. Built core knowledge in offensive and defensive security concepts, including the CIA triad, cryptography fundamentals, and attacker vs defender methodologies through guided hands-on labs.',
+    skills: [
+      'Cybersecurity Fundamentals',
+      'Offensive vs Defensive Security',
+      'Networking Basics',
+      'OSI Model',
+      'LAN & Packet Fundamentals',
+      'DNS & HTTP',
+      'How the Web Works',
+      'Computer Hardware Basics',
+      'Client-Server Architecture',
+      'Virtualisation Fundamentals',
+      'Cloud Computing Basics',
+      'Windows Fundamentals',
+      'Linux CLI Basics',
+      'Windows CLI Basics',
+      'Operating System Security',
+      'Data Encoding & Representation',
+      'SQL Basics',
+      'Python Basics',
+      'JavaScript Basics',
+      'CIA Triad',
+      'Cryptography Concepts',
+      'Attacks vs Defenses Overview'
+    ],
+    badge: [
+      'Cybersecurity Foundations',
+      'Networking Fundamentals',
+      'Operating Systems Basics',
+      'Web Fundamentals',
+      'Security Principles',
+      'Cryptography Basics',
+      'Beginner Security Path'
+    ],
+  },
+
+  {
+    id: 10,
+    title: 'Love at First Breach – CTF 2026 (Participation)',
+    course: 'https://tryhackme.com/module/lafbctf2026',
+    certificateOne: '/certifications/pdfs/THM-2M2WXJZGB9.pdf',
+    credlyBadge: 'https://tryhackme.com/certificate/THM-2M2WXJZGB9',
+    badgeImage: '/certifications/badges/love-at-first-breach-ctf.png',
+    createdAt: '25-02-2026', // DD-MM-YYYY
+    description:
+      'Participated in the Love at First Breach 2026 Capture The Flag (CTF) event on TryHackMe, completing challenges across web exploitation, cryptography, and application security. Demonstrated practical vulnerability discovery and exploitation skills in a competitive, real-world scenario format.',
+    skills: [
+      'Web Application Enumeration',
+      'IDOR Exploitation',
+      'Local File Inclusion (LFI)',
+      'Prompt Injection',
+      'Business Logic Vulnerabilities',
+      'Hash Manipulation (MD5)',
+      'HTTP Parameter Tampering',
+      'Basic Cryptography Analysis',
+      'Attack Surface Analysis',
+      'CTF Methodology'
+    ],
+    badge: [
+      'CTF Competition',
+      'CTF Participation',
+      'Cybersecurity Competition',
+      'Web Exploitation',
+      'Application Security',
+      'Hands-on Security Labs'
+    ],
+  },
+
+  {
+    id: 11,
+    title: 'Love at First Breach – Advanced Track (Completion)',
+    course: 'https://tryhackme.com/room/lafbctf2026-advanced',
+    certificateOne: '/certifications/pdfs/THM-ENZIZNKVP1.pdf',
+    credlyBadge: 'https://tryhackme.com/certificate/THM-ADV-LAFB-2026',
+    badgeImage: '/certifications/badges/love-at-first-breach-ctf.png',
+    createdAt: '24-02-2026', // DD-MM-YYYY
+    description:
+      'Completed the Advanced Track of the Love at First Breach 2026 CTF, solving complex, multi-stage challenges across forensics, red teaming, cloud security, boot2root exploitation, and mobile application analysis. Demonstrated advanced privilege escalation, attack chain reconstruction, and system compromise techniques under constrained conditions.',
+    skills: [
+      // Forensics
+      'Email & Payload Forensics',
+      'Malware Analysis',
+      'Multi-Stage Attack Chain Investigation',
+
+      // System / Red Team
+      'Boot2Root Exploitation',
+      'Privilege Escalation (Windows)',
+      'RDP Access & Lateral Movement',
+      'Restricted Egress Bypass',
+
+      // Web
+      'Chained Web Exploits',
+      'Advanced Input Manipulation',
+
+      // Cloud
+      'Cloud Misconfiguration Exploitation',
+      'Cloud Privilege Abuse',
+
+      // Mobile
+      'APK Reverse Engineering',
+      'API Security Testing'
+    ],
+    badge: [
+      'CTF Competition',
+      'CTF Participation',
+      'Cybersecurity Competition',
+      'Advanced CTF Completion',
+      'Red Teaming',
+      'Forensics',
+      'Cloud Security',
+      'Boot2Root',
+      'Mobile Security'
+    ],
+  },
+
+  {
+    id: 12,
+    title: 'THJCC CTF 2026',
+    course: 'https://ctf2026.thjcc.org/',
+    certificateOne: '/certifications/pdfs/4_260227_070041.pdf',
+    credlyBadge: 'https://tryhackme.com/certificate/THM-ADV-LAFB-2026',
+    badgeImage: '/certifications/badges/thjcc-2026.png',
+    createdAt: '27-02-2026', // DD-MM-YYYY
+    description:
+      'Participated in THJCC CTF 2026, a Jeopardy-style cybersecurity competition covering diverse challenge categories such as web exploitation, reverse engineering, cryptography, binary exploitation, and misc challenges. Gained experience with real CTF problem solving and practical attack surface analysis.',
+    skills: [
+      'Web Exploitation',
+      'Cryptography Challenges',
+      'Binary Analysis (Pwn)',
+      'Reverse Engineering',
+      'CTF Methodology',
+      'Flag Hunting',
+      'Scoreboard Strategy'
+    ],
+    badge: [
+      'CTF Competition',
+      'CTF Participation',
+      'Cybersecurity Competition'
+    ],
+  },
 ];
 
 export { certifications };

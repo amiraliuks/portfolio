@@ -29,17 +29,17 @@ import { DiVisualstudio } from "react-icons/di";
 export const operatingSystems = [
   {
     name: 'Windows',
-    description: 'Primary OS for development & productivity',
+    description: 'Primary environment for pretty much everything',
     icon: <FaWindows className="text-blue-400 text-4xl" />,
   },
   {
     name: 'Linux',
-    description: 'Versatile open-source system for development, automation, and server environments',
+    description: 'Used for server environments, scripting, automation, and penetration testing labs',
     icon: <FaLinux className="text-neutral-400 text-4xl" />,
   },
   {
     name: 'Kali Linux',
-    description: 'Advanced Penetration Testing Linux distribution',
+    description: 'Used for CTF challenges, vulnerability testing, and exploitation labs',
     icon: <SiKalilinux className=" text-4xl" />,
   },
 ]
@@ -47,23 +47,18 @@ export const operatingSystems = [
 export const webdev = [
   {
     name: 'C#',
-    description: 'General-purpose, high-level programming Language',
+    description: 'Develop backend systems, game logic in Unity, and ASP.NET-based applications',
     icon: <TbBrandCSharp className="text-blue-400 text-4xl" />,
   },
   {
     name: 'Python',
-    description: 'General-purpose, high-level programming Language',
+    description: 'Build automation scripts, security tools, and backend logic for applications',
     icon: <FaPython className="text-blue-400 text-4xl" />,
   },
   {
-    name: 'Bash Scripting',
-    description: "Windows' ancient scripting format",
+    name: 'Bash',
+    description: "Automate Linux tasks, reconnaissance workflows, and system operations",
     icon: <SiGnubash className="text-neutral-50 text-4xl" />,
-  },
-  {
-    name: 'Shell Scripting',
-    description: 'Linux/Unix shell scripting',
-    icon: <SiGnubash className="text-blue-50 text-4xl" />,
   },
   {
     name: 'JavaScript',
@@ -77,12 +72,12 @@ export const webdev = [
   },
   {
     name: 'ReactJS',
-    description: 'A JavaScript Library',
+    description: 'Build modern, interactive frontends with reusable components and API integration',
     icon: <FaReact className="text-sky-400 text-4xl" />,
   },
   {
     name: 'NextJS',
-    description: 'React Framework',
+    description: 'Develop full-stack applications with SSR, API routes, and dynamic content',
     icon: <SiNextdotjs className="text-foreground text-4xl" />,
   },
   {
@@ -128,12 +123,12 @@ export const tools = [
   },
   {
     name: 'Git & GitHub',
-    description: 'Version Control',
+    description: 'Version control, collaboration, and CI/CD workflow management',
     icon: <FaGithub className="text-gray-800 dark:text-gray-400 text-4xl" />,
   },
   {
     name: 'Postman',
-    description: 'API Testing',
+    description: 'Test and debug REST APIs during backend development',
     icon: <SiPostman className="text-orange-500 text-4xl" />,
   }
 ];
@@ -159,7 +154,7 @@ export const database = [
 export const devops = [
   {
     name: 'Docker',
-    description: 'Containerization',
+    description: 'Containerize applications and replicate development environments',
     icon: <SiDocker className="text-blue-400 text-4xl" />,
   }
 ];

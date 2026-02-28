@@ -1,6 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import { BlogPosts } from '@/components/BlogPosts';
+import { getBlogPosts } from "@/lib/getBlogs";
 
 export const metadata: Metadata = {
   title: 'Blog — Amir Aliu',
@@ -37,6 +38,13 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
+  const posts = getBlogPosts().sort(
+    (a, b) =>
+      new Date(b.metadata.publishedAt).getTime() -
+      new Date(a.metadata.publishedAt).getTime()
+  );
+
+
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -57,18 +65,14 @@ export default function Page() {
   };
 
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <div className="container mx-auto p-4">
-        <h1 className="text-4xl font-bold mb-6">Blog</h1>
-        <p className="text-muted-foreground mb-8">
-          Insights, tutorials, and everything in between.
-        </p>
-        <BlogPosts />
-      </div>
-    </>
+    <div className="container mx-auto p-4 max-w-4xl">
+      <h1 className="text-4xl font-bold mb-6">Blog</h1>
+      <p className="text-muted-foreground mb-10">
+        Insights, tutorials, CTF writeups, and hands-on security research.
+      </p>
+
+      <BlogPosts posts={posts} />
+    </div>
   );
+
 }

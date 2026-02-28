@@ -40,3 +40,16 @@ export function formatDate(date: string, includeRelative = false) {
 
   return `${fullDate} (${formattedDate})`;
 }
+
+export function calculateReadingTime(content: string) {
+  if (!content) return 1;
+
+  const cleaned = content
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/`.*?`/g, "")
+    .replace(/[#_*>\-\[\]\(\)]/g, "");
+
+  const words = cleaned.trim().split(/\s+/).filter(Boolean).length;
+
+  return Math.max(1, Math.ceil(words / 200));
+}

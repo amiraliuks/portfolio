@@ -4,32 +4,106 @@ import Image, { ImageProps } from 'next/image';
 
 import { MDXRemote, MDXRemoteProps } from 'next-mdx-remote/rsc';
 import { highlight } from 'sugar-high';
+import remarkGfm from 'remark-gfm'
 
-interface TableProps {
-  data: {
-    headers: string[];
-    rows: string[][];
-  };
+function StyledTable(props: React.TableHTMLAttributes<HTMLTableElement>) {
+  return (
+    <div className="my-10 overflow-x-auto">
+      <table
+        {...props}
+        className="
+  w-full
+  border
+  rounded-xl
+  overflow-hidden
+  text-sm
+  border-neutral-300
+  dark:border-neutral-800
+"
+      />
+    </div>
+  );
 }
 
-function Table({ data }: TableProps) {
-  const headers = data.headers.map((header, index) => <th key={index}>{header}</th>);
-
-  const rows = data.rows.map((row, index) => (
-    <tr key={index}>
-      {row.map((cell, cellIndex) => (
-        <td key={cellIndex}>{cell}</td>
-      ))}
-    </tr>
-  ));
-
+function StyledThead(props: React.HTMLAttributes<HTMLTableSectionElement>) {
   return (
-    <table>
-      <thead>
-        <tr>{headers}</tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </table>
+    <thead
+      {...props}
+      className="
+  border-b
+  bg-neutral-200 border-neutral-300
+  dark:bg-neutral-900 dark:border-neutral-800
+"
+    />
+  );
+}
+
+function StyledTbody(props: React.HTMLAttributes<HTMLTableSectionElement>) {
+  return <tbody {...props} />;
+}
+
+function StyledTr(props: React.HTMLAttributes<HTMLTableRowElement>) {
+  return (
+    <tr
+      {...props}
+      className="
+  border-b
+  transition-colors
+  border-neutral-200
+  hover:bg-neutral-100
+  dark:border-neutral-800
+  dark:hover:bg-neutral-900/60
+"
+    />
+  );
+}
+
+function StyledTh(props: React.ThHTMLAttributes<HTMLTableCellElement>) {
+  return (
+    <th
+      {...props}
+      className="
+  text-left
+  px-5 py-3
+  font-semibold
+  uppercase tracking-wide text-xs
+  text-neutral-700
+  dark:text-neutral-200
+"
+    />
+  );
+}
+
+function StyledTd(props: React.TdHTMLAttributes<HTMLTableCellElement>) {
+  return (
+    <td
+      {...props}
+      className="
+  px-5 py-3
+  text-neutral-700
+  dark:text-neutral-400
+"
+    />
+  );
+}
+
+function StyledPre(props: React.HTMLAttributes<HTMLPreElement>) {
+  return (
+    <pre
+      {...props}
+      className="
+        my-6
+        rounded-2xl
+        border
+        px-6 py-4
+        overflow-x-auto
+        text-[13px]
+        leading-relaxed
+        not-prose
+        bg-neutral-100 border-neutral-200
+        dark:bg-neutral-950 dark:border-neutral-800
+      "
+    />
   );
 }
 
@@ -70,9 +144,38 @@ interface CodeProps extends React.HTMLAttributes<HTMLElement> {
   children: string;
 }
 
-function Code({ children, ...props }: CodeProps) {
-  const codeHTML = highlight(children);
-  return <code dangerouslySetInnerHTML={{ __html: codeHTML }} {...props} />;
+function Code({ children, className, ...props }: any) {
+  const isBlock = className?.includes("language-");
+
+  if (isBlock) {
+    const codeHTML = highlight(children);
+
+    return (
+      <code
+        dangerouslySetInnerHTML={{ __html: codeHTML }}
+        className="font-mono text-[13px]"
+        {...props}
+      />
+    );
+  }
+
+  // Inline code
+  return (
+    <code
+      className="
+        font-mono
+        text-[13px]
+        px-1.5
+        py-0.5
+        rounded-md
+        bg-neutral-200 text-neutral-800
+        dark:bg-neutral-900 dark:text-neutral-200
+      "
+      {...props}
+    >
+      {children}
+    </code>
+  );
 }
 
 function slugify(str: string) {
@@ -120,9 +223,26 @@ const components = {
   Image: RoundedImage,
   a: CustomLink,
   code: Code,
-  Table,
+  pre: StyledPre,
+
+  table: StyledTable,
+  thead: StyledThead,
+  tbody: StyledTbody,
+  tr: StyledTr,
+  th: StyledTh,
+  td: StyledTd,
 };
 
 export function CustomMDX(props: MDXRemoteProps) {
-  return <MDXRemote {...props} components={{ ...components, ...(props.components || {}) }} />;
+  return (
+    <MDXRemote
+      {...props}
+      components={{ ...components, ...(props.components || {}) }}
+      options={{
+        mdxOptions: {
+          remarkPlugins: [remarkGfm],
+        },
+      }}
+    />
+  );
 }

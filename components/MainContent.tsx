@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Github } from "lucide-react";
 import { FaLinkedin, FaTwitter } from "react-icons/fa";
-import { SiTryhackme } from "react-icons/si";
+import { SiHackthebox, SiTryhackme } from "react-icons/si";
 import { ResumeSheet } from "./ResumeSheet";
 
 import Experience from "./Experience";
@@ -62,7 +62,7 @@ export default function MainContent() {
           </div>
 
           <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-            I&apos;m a full-stack developer who enjoys building practical, reliable web applications. I work across both the frontend and backend, which lets me put together smooth user experiences backed by solid, well-structured systems.
+            I&apos;m a full-stack developer who enjoys building practical, reliable web applications. I work across both the frontend and backend. Alongside development, I actively explore cybersecurity through CTF competitions, vulnerability research, and secure application design.
           </p>
 
           {/* Resume & socials */}
@@ -85,6 +85,12 @@ export default function MainContent() {
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" asChild>
                 <a href="https://tryhackme.com/p/amiraliu" target="_blank" rel="noopener noreferrer">
                   <SiTryhackme className="h-5 w-5" />
+                </a>
+              </Button>
+
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" asChild>
+                <a href="https://profile.hackthebox.com/profile/019c6c5f-08c7-7145-a968-c11ebb264445" target="_blank" rel="noopener noreferrer">
+                  <SiHackthebox className="h-5 w-5" />
                 </a>
               </Button>
 
