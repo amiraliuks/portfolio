@@ -25,7 +25,7 @@ export default function MainContent() {
         name: "Who is Amir Aliu?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Cybersecurity practitioner focused on vulnerability research and CTF competitions. Co-discovered CVEs including authentication flaws and server-side execution issues, with strong performance in international CTF events.",
+          text: "Cybersecurity practitioner focused on vulnerability research and CTF competitions.",
         },
       },
     ],
@@ -62,7 +62,7 @@ export default function MainContent() {
           </div>
 
           <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-            Cybersecurity practitioner focused on vulnerability research and CTF competitions. Co-discovered CVEs including authentication flaws and server-side execution issues, with strong performance in international CTF events.
+            Cybersecurity practitioner focused on vulnerability research and CTF competitions.
           </p>
 
           {/* Resume & socials */}

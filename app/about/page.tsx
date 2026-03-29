@@ -67,7 +67,7 @@ export default function page() {
         <main className="grow px-4 max-w-3xl mx-auto py-8">
           <h1 className="text-4xl font-bold mb-4">About Me</h1>
           <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-            Cybersecurity practitioner focused on vulnerability research and CTF competitions. Co-discovered CVEs including authentication flaws and server-side execution issues, with strong performance in international CTF events.
+            Cybersecurity practitioner focused on vulnerability research and CTF competitions.
           </p>
         </main>
 

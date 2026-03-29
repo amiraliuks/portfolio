@@ -5,7 +5,7 @@ export const metadata = {
     template: '%s | Amir Aliu',
   },
   description:
-    'Cybersecurity practitioner focused on vulnerability research and CTF competitions. Co-discovered CVEs including authentication flaws and server-side execution issues, with strong performance in international CTF events.',
+    'Cybersecurity practitioner focused on vulnerability research and CTF competitions.',
   keywords: [
     'Amir Aliu',
     'Amir Aliu Portfolio',
