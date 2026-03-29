@@ -96,7 +96,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <body>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ProgressBar />
-            <div className="mx-auto max-w-2xl px-5 sm:px-6 lg:px-8 flex flex-col pt-12 min-h-screen">
+            <div className="app-shell mx-auto max-w-2xl px-5 sm:px-6 lg:px-8 flex flex-col pt-12 min-h-screen">
               <Navbar />
               <main className="grow">{children}</main>
               <Footer />

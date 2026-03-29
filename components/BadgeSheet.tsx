@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import {
   Sheet,
   SheetContent,
@@ -28,9 +30,11 @@ export function BadgeSheet({ title, image }: BadgeSheetProps) {
           <TooltipTrigger asChild>
             <SheetTrigger asChild>
               <button className="cursor-pointer">
-                <img
+                <Image
                   src={image}
                   alt={`${title} badge`}
+                  width={56}
+                  height={56}
                   className="h-14 w-auto rounded-md object-contain transition-transform duration-300 ease-out hover:scale-110"
                 />
               </button>
@@ -43,7 +47,6 @@ export function BadgeSheet({ title, image }: BadgeSheetProps) {
         </Tooltip>
       </TooltipProvider>
 
-      {/* Modal */}
       <SheetContent
         className="
           left-1/2 top-1/2
@@ -63,13 +66,16 @@ export function BadgeSheet({ title, image }: BadgeSheetProps) {
         side="bottom"
       >
         <SheetHeader className="px-4 py-3 border-b">
-          <SheetTitle>{title} — Badge</SheetTitle>
+          <SheetTitle>{title} - Badge</SheetTitle>
         </SheetHeader>
 
         <div className="w-full p-4 flex justify-center">
-          <img
+          <Image
             src={image}
             alt={title}
+            width={768}
+            height={768}
+            sizes="(min-width: 768px) 420px, 90vw"
             className="max-w-full rounded-lg shadow-md"
           />
         </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -23,28 +23,19 @@ interface ImageModalProps {
 }
 
 export function ImageModal({ images, currentIndex, isOpen, onClose, projectTitle }: ImageModalProps) {
-  const [imageIndex, setImageIndex] = useState(currentIndex)
+  const [offset, setOffset] = useState(0)
   const [isZoomed, setIsZoomed] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  // Fix hydration issues by only rendering on client
-  useEffect(() => {
-    setMounted(true)
-    setImageIndex(currentIndex)
-  }, [currentIndex])
-
-  // Don't render anything until client-side
-  if (!mounted) return null
+  const imageIndex = (currentIndex + (isOpen ? offset : 0) + images.length) % images.length
 
   const currentImage = images[imageIndex]
 
   const nextImage = () => {
-    setImageIndex((prev) => (prev + 1) % images.length)
+    setOffset((prev) => prev + 1)
     setIsZoomed(false)
   }
 
   const prevImage = () => {
-    setImageIndex((prev) => (prev - 1 + images.length) % images.length)
+    setOffset((prev) => prev - 1)
     setIsZoomed(false)
   }
 
@@ -95,8 +86,16 @@ export function ImageModal({ images, currentIndex, isOpen, onClose, projectTitle
     window.open(currentImage.src, "_blank")
   }
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      setOffset(0)
+      setIsZoomed(false)
+      onClose()
+    }
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-7xl w-full h-[90vh] p-0 overflow-hidden">
         <div className="relative h-full flex flex-col">
           {/* Header */}
@@ -198,7 +197,7 @@ export function ImageModal({ images, currentIndex, isOpen, onClose, projectTitle
                     <button
                       key={index}
                       onClick={() => {
-                        setImageIndex(index)
+                        setOffset(index - currentIndex)
                         setIsZoomed(false)
                       }}
                       className={cn(

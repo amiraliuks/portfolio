@@ -25,7 +25,7 @@ export default function MainContent() {
         name: "Who is Amir Aliu?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Amir Aliu is a full-stack developer from Kosovo who builds applications across web, game, and software development — with strong interests in cybersecurity and networking.",
+          text: "Cybersecurity practitioner focused on vulnerability research and CTF competitions. Co-discovered CVEs including authentication flaws and server-side execution issues, with strong performance in international CTF events.",
         },
       },
     ],
@@ -62,7 +62,7 @@ export default function MainContent() {
           </div>
 
           <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-            I&apos;m a full-stack developer who enjoys building practical, reliable web applications. I work across both the frontend and backend. Alongside development, I actively explore cybersecurity through CTF competitions, vulnerability research, and secure application design.
+            Cybersecurity practitioner focused on vulnerability research and CTF competitions. Co-discovered CVEs including authentication flaws and server-side execution issues, with strong performance in international CTF events.
           </p>
 
           {/* Resume & socials */}

@@ -5,11 +5,11 @@ import ProjectSection from '@/components/ProjectSection';
 import { projects } from '@/data/projects';
 
 export const metadata: Metadata = {
-  title: 'Projects — Amir Aliu',
+  title: 'Projects - Amir Aliu',
   description:
     'Explore my portfolio of web applications, creative experiments, and open-source contributions built with modern technologies.',
   openGraph: {
-    title: 'Projects — Amir Aliu',
+    title: 'Projects - Amir Aliu',
     description:
       'Explore my portfolio of web applications, creative experiments, and open-source contributions.',
     url: 'https://amiraliu.vercel.app/projects',
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Projects — Amir Aliu',
+    title: 'Projects - Amir Aliu',
     description: 'Explore my portfolio of web applications and open-source contributions.',
     images: [
       'https://amiraliu.vercel.app/og?title=Projects%20%E2%80%94%20Amir%20Aliu&description=Explore%20my%20portfolio%20of%20web%20applications%20and%20open-source%20contributions',
@@ -74,7 +74,7 @@ export default function Page() {
             Projects
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-lg">
-            A showcase of my work in web development, cybersecurity, and various other tech areas. You&apos;ll find a mix of open-source projects, released products, and select closed-source work I&apos;m able to highlight — all representing the skills I&apos;ve built and the areas I enjoy exploring.
+            A showcase of my work in web development, cybersecurity, and various other tech areas. You&apos;ll find a mix of open-source projects, released products, and select closed-source work I&apos;m able to highlight - all representing the skills I&apos;ve built and the areas I enjoy exploring.
           </p>
         </div>
 

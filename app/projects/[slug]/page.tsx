@@ -1,7 +1,10 @@
+import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Calendar } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Calendar } from "lucide-react";
 
 import { projects } from "@/data/projects";
+import { formatProjectDate } from "@/lib/utils";
 
 export async function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));
@@ -18,123 +21,161 @@ export default async function ProjectPage({
   if (!project) return notFound();
 
   const hasBadges = Array.isArray(project.badge) && project.badge.length > 0;
-  const hasFeatures = Array.isArray(project.features) && project.features.length > 0;
-  const hasGallery = Array.isArray(project.postImages) && project.postImages.length > 0;
-  const hasLinks = Array.isArray(project.links) && project.links.length > 0;
+  const featureItems = project.features ?? [];
+  const galleryItems = project.postImages ?? [];
+  const hasFeatures = featureItems.length > 0;
+  const hasGallery = galleryItems.length > 0;
+  const validLinks = (project.links || []).filter((link) => link.href?.trim().length);
+  const hasLinks = validLinks.length > 0;
 
   return (
-    <section className="max-w-4xl mx-auto py-10 px-4 space-y-10">
-      {project.image && (
-        <img
-          src={project.image}
-          alt={project.title}
-          className="rounded-xl shadow-lg w-full"
-        />
-      )}
+    <section className="mx-auto max-w-5xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
+      <Link
+        href="/projects"
+        className="inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-1.5 text-xs text-neutral-400 transition hover:bg-neutral-900 hover:text-neutral-200"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Back to Projects
+      </Link>
 
-      <div className="space-y-2">
-        <h1 className="text-4xl font-bold tracking-tight">{project.title}</h1>
+      <article className="overflow-hidden rounded-3xl border border-neutral-800/80 bg-gradient-to-b from-neutral-900/80 to-neutral-950/95 shadow-[0_30px_90px_-45px_rgba(56,189,248,0.35)]">
+        {project.image ? (
+          <div className="relative">
+            <Image
+              src={project.image}
+              alt={project.title}
+              width={1800}
+              height={1000}
+              className="h-64 w-full object-cover object-center md:h-80"
+              sizes="(min-width: 1024px) 1080px, 100vw"
+              priority
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+          </div>
+        ) : (
+          <div className="h-56 w-full bg-gradient-to-br from-neutral-900 to-neutral-800" />
+        )}
 
-        <div className="flex items-center gap-2 text-muted-foreground text-sm">
-          <Calendar className="h-4 w-4" />
-          <span>{project.createdAt}</span>
+        <div className="space-y-5 p-6 sm:p-8">
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="inline-flex items-center gap-1 rounded-full border border-neutral-700 bg-neutral-900/70 px-2.5 py-1 text-neutral-300">
+              <Calendar className="h-3.5 w-3.5" />
+              {formatProjectDate(project.createdAt)}
+            </span>
+            {hasBadges &&
+              project.badge.slice(0, 4).map((tag, index) => (
+                <span
+                  key={`${tag}-${index}`}
+                  className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2.5 py-1 text-cyan-200"
+                >
+                  {tag}
+                </span>
+              ))}
+          </div>
+
+          <h1 className="text-3xl font-bold tracking-tight text-neutral-100 sm:text-4xl">
+            {project.title}
+          </h1>
+
+          <p className="max-w-3xl text-sm leading-relaxed text-neutral-300 sm:text-base">
+            {project.description}
+          </p>
+
+          {hasLinks && (
+            <div className="flex flex-wrap gap-2 pt-1">
+              {validLinks.map((link, index) => {
+                const Icon = link.icon;
+                return (
+                  <a
+                    key={index}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-neutral-700 bg-neutral-900/70 px-3 py-1.5 text-xs font-medium text-neutral-200 transition hover:border-neutral-500 hover:bg-neutral-800"
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {link.type}
+                    <ArrowUpRight className="h-3 w-3" />
+                  </a>
+                );
+              })}
+            </div>
+          )}
         </div>
+      </article>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        {hasFeatures && (
+          <div className="lg:col-span-2 rounded-2xl border border-white/10 bg-neutral-950/60 p-5 sm:p-6">
+            <h2 className="mb-4 text-lg font-semibold text-neutral-100">Key Features</h2>
+            <ul className="space-y-2 text-sm text-neutral-300">
+              {featureItems.map((feature, index) => (
+                <li key={index} className="flex gap-2">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-300" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {hasBadges && (
+          <aside className="rounded-2xl border border-white/10 bg-neutral-950/60 p-5 sm:p-6">
+            <h2 className="mb-4 text-lg font-semibold text-neutral-100">Tech Stack</h2>
+            <div className="flex flex-wrap gap-2">
+              {project.badge.map((tag, index) => (
+                <span
+                  key={`${tag}-${index}`}
+                  className="rounded-full border border-white/10 bg-neutral-900/80 px-2.5 py-1 text-xs text-neutral-300"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </aside>
+        )}
       </div>
 
-      <p className="text-lg text-neutral-300 leading-relaxed max-w-2xl">
-        {project.description}
-      </p>
-
-      {hasBadges && (
-        <div className="flex flex-wrap gap-2">
-          {project.badge!.map((b, i) => (
-            <span
-              key={i}
-              className="
-                px-3 py-1
-                text-xs font-medium
-                rounded-md
-                bg-neutral-900
-                text-neutral-200
-                border border-neutral-800
-              "
-            >
-              {b}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {hasFeatures && (
-        <div className="space-y-3">
-          <h2 className="text-xl font-semibold">Features</h2>
-          <ul className="list-disc pl-6 space-y-1 text-neutral-300">
-            {project.features!.map((f, i) => (
-              <li key={i}>{f}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
       {hasGallery && (
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Gallery</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {project.postImages!.map((media, idx) => {
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold text-neutral-100">Gallery</h2>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            {galleryItems.map((media, index) => {
               const isVideo =
                 media.src.endsWith(".mp4") ||
                 media.src.endsWith(".webm") ||
                 media.src.endsWith(".mov");
 
               return (
-                <figure key={idx} className="space-y-2">
+                <figure
+                  key={index}
+                  className="overflow-hidden rounded-2xl border border-white/10 bg-neutral-950/70"
+                >
                   {isVideo ? (
                     <video
                       src={media.src}
                       controls
-                      className="rounded-lg shadow-lg w-full h-auto"
+                      preload="metadata"
+                      className="h-auto w-full object-cover"
                     />
                   ) : (
-                      <img
-                        src={media.src}
-                        alt={media.alt}
-                        className="rounded-lg shadow-lg w-full h-auto object-cover"
-                      />
+                    <Image
+                      src={media.src}
+                      alt={media.alt}
+                      width={1200}
+                      height={800}
+                      className="h-auto w-full object-cover"
+                      sizes="(min-width: 768px) 50vw, 100vw"
+                    />
                   )}
-
-                  <figcaption className="text-sm text-neutral-400">
+                  <figcaption className="border-t border-white/10 px-4 py-3 text-sm text-neutral-400">
                     {media.caption}
                   </figcaption>
                 </figure>
               );
             })}
           </div>
-        </div>
-      )}
-
-      {hasLinks && (
-        <div className="flex gap-3">
-          {project.links!.map((link, i) => {
-            const Icon = link.icon;
-            return (
-              <a
-                key={i}
-                href={link.href}
-                target="_blank"
-                className="
-                  flex items-center gap-2
-                  px-4 py-2 rounded-md
-                  bg-white text-black font-medium
-                  hover:bg-neutral-200 transition
-                "
-              >
-                <Icon className="w-5 h-5" />
-                {link.type}
-              </a>
-            );
-          })}
-        </div>
+        </section>
       )}
     </section>
   );

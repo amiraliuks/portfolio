@@ -4,11 +4,11 @@ import { BlogPosts } from '@/components/BlogPosts';
 import { getBlogPosts } from "@/lib/getBlogs";
 
 export const metadata: Metadata = {
-  title: 'Blog — Amir Aliu',
+  title: 'Blog - Amir Aliu',
   description:
     'Read articles about web development, programming, and technology. Learn about React, Next.js, TypeScript, and modern software development practices.',
   openGraph: {
-    title: 'Blog — Amir Aliu',
+    title: 'Blog - Amir Aliu',
     description:
       'Read articles about web development, programming, and technology by Amir Aliu.',
     url: 'https://amiraliu.vercel.app/blog',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Blog — Amir Aliu',
+    title: 'Blog - Amir Aliu',
     description: 'Read articles about web development, programming, and technology.',
     images: [
       'https://amiraliu.vercel.app/og?title=Blog%20%E2%80%94%20Amir%20Aliu&description=Read%20articles%20about%20web%20development%2C%20programming%2C%20and%20technology',
@@ -40,29 +40,8 @@ export const metadata: Metadata = {
 export default function Page() {
   const posts = getBlogPosts().sort(
     (a, b) =>
-      new Date(b.metadata.publishedAt).getTime() -
-      new Date(a.metadata.publishedAt).getTime()
+      new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime()
   );
-
-
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: 'https://amiraliu.vercel.app',
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Blog',
-        item: 'https://amiraliu.vercel.app/blog',
-      },
-    ],
-  };
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">

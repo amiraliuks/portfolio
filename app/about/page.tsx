@@ -67,11 +67,7 @@ export default function page() {
         <main className="grow px-4 max-w-3xl mx-auto py-8">
           <h1 className="text-4xl font-bold mb-4">About Me</h1>
           <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-            I&apos;m a full-stack developer who enjoys building practical, reliable web applications. I work across both the frontend and backend. Alongside development, I actively explore cybersecurity through CTF competitions, vulnerability research, and secure application design.
-          </p>
-          <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-            I like experimenting with new tools and improving the way I work, and I&apos;m always looking for ways
-            to contribute and be useful in any team I&apos;m part of.
+            Cybersecurity practitioner focused on vulnerability research and CTF competitions. Co-discovered CVEs including authentication flaws and server-side execution issues, with strong performance in international CTF events.
           </p>
         </main>
 

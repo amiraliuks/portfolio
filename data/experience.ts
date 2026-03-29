@@ -1,11 +1,11 @@
 const experience = [
   {
     id: 0,
-    role: "Founder & Lead Developer",
-    company: "cstracker.gg",
+    role: "Founder & Full-Stack Developer",
+    company: "writeupify.app",
     start: "2026",
     end: "Present",
-    description: "Developed and maintained CSTracker.gg, a web-based Counter-Strike 2 profile analysis platform. Designed and implemented features to aggregate and analyze player data from FACEIT, Premier matchmaking, and third-party services, presenting detailed performance metrics such as aim, kills, win rates, and match history. Built a responsive, user-friendly interface, optimized data fetching and parsing, and ensured accurate, shareable player profiles for competitive analysis.",
+    description: "Founded and developed Writeupify, a full-stack web application for creating, reviewing, and exporting cybersecurity writeups. Initially built as a local-first editor, later expanded into a collaborative platform with backend persistence, authentication, team management, invitations, notifications, and admin tooling. Architected a scalable system and designed an intuitive UX tailored for security researchers and teams managing structured vulnerability reports.",
   },
 
   {

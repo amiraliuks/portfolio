@@ -21,7 +21,7 @@ export default function Navbar() {
   const isHomePage = pathname === '/';
 
   return (
-    <header className="flex items-center justify-between mb-12 px-4 relative">
+    <header className="relative mb-12 flex items-center justify-between px-4">
       <Link
         className="relative z-10 transition-all duration-300 hover:rotate-12"
         href="/"
@@ -39,7 +39,8 @@ export default function Navbar() {
 
       <div className="hidden md:flex items-center space-x-6">
         {mainNavItems.map(({ name, href }) => {
-          const isActive = pathname === href;
+          const isActive =
+            pathname === href || (href === '/blog' && pathname.startsWith('/blog/'));
           return (
             <Link
               key={href}

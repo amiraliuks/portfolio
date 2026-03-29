@@ -5,7 +5,7 @@ export const metadata = {
     template: '%s | Amir Aliu',
   },
   description:
-    'A full-stack developer from Kosovo with a passion for building things across web, software, and game development with a growing curiosity for cybersecurity and networking.',
+    'Cybersecurity practitioner focused on vulnerability research and CTF competitions. Co-discovered CVEs including authentication flaws and server-side execution issues, with strong performance in international CTF events.',
   keywords: [
     'Amir Aliu',
     'Amir Aliu Portfolio',

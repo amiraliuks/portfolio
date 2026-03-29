@@ -92,13 +92,14 @@ function StyledPre(props: React.HTMLAttributes<HTMLPreElement>) {
     <pre
       {...props}
       className="
-        my-6
-        rounded-2xl
+        my-8
+        rounded-xl
         border
-        px-6 py-4
+        px-4 py-3
+        sm:px-5 sm:py-4
         overflow-x-auto
         text-[13px]
-        leading-relaxed
+        leading-5
         not-prose
         bg-neutral-100 border-neutral-200
         dark:bg-neutral-950 dark:border-neutral-800
@@ -141,19 +142,29 @@ function RoundedImage(props: ImageProps) {
 }
 
 interface CodeProps extends React.HTMLAttributes<HTMLElement> {
-  children: string;
+  children?: ReactNode;
+  className?: string;
 }
 
-function Code({ children, className, ...props }: any) {
-  const isBlock = className?.includes("language-");
+function Code({ children, className, ...props }: CodeProps) {
+  const rawCode = React.Children.toArray(children)
+    .map((child) =>
+      typeof child === "string" || typeof child === "number"
+        ? String(child)
+        : ""
+    )
+    .join("");
+
+  const normalizedCode = rawCode.replace(/\r\n?/g, "\n");
+  const isBlock = className?.includes("language-") || normalizedCode.includes("\n");
 
   if (isBlock) {
-    const codeHTML = highlight(children);
+    const codeHTML = highlight(normalizedCode.replace(/\n$/, ""));
 
     return (
       <code
         dangerouslySetInnerHTML={{ __html: codeHTML }}
-        className="font-mono text-[13px]"
+        className="block font-mono text-[13px] leading-5 text-neutral-900 dark:text-neutral-100"
         {...props}
       />
     );

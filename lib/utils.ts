@@ -53,3 +53,24 @@ export function calculateReadingTime(content: string) {
 
   return Math.max(1, Math.ceil(words / 200));
 }
+
+export function parseProjectDate(dateStr: string) {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    return new Date(`${dateStr}T00:00:00`);
+  }
+
+  const parts = dateStr.includes("/") ? dateStr.split("/") : dateStr.split("-");
+  const [day, month, year] = parts.map(Number);
+  return new Date(year, month - 1, day);
+}
+
+export function formatProjectDate(dateStr: string) {
+  const parsedDate = parseProjectDate(dateStr);
+  if (Number.isNaN(parsedDate.getTime())) return dateStr;
+
+  return parsedDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  });
+}

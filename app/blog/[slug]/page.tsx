@@ -4,6 +4,7 @@ import { calculateReadingTime, formatDate } from "@/lib/utils";
 import { getBlogPosts } from "@/lib/getBlogs";
 import { baseUrl } from "@/app/sitemap";
 import { BlogPost, BlogPageProps } from "@/types/types";
+import Image from "next/image";
 
 import { Twitter, Linkedin, Facebook } from "lucide-react";
 
@@ -136,7 +137,7 @@ export default async function Blog({ params }: BlogPageProps) {
   )}`;
 
   return (
-    <article className="mx-auto max-w-3xl px-4 pt-16 pb-24">
+    <article className="mx-auto w-full max-w-6xl px-4 pt-16 pb-24 sm:px-6 lg:px-10">
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -227,10 +228,13 @@ export default async function Blog({ params }: BlogPageProps) {
 
       {post.metadata.image && (
         <div className="mb-16 overflow-hidden rounded-2xl">
-          <img
+          <Image
             src={post.metadata.image}
             alt={post.metadata.title}
-            className="w-full object-cover"
+            width={1600}
+            height={900}
+            sizes="(min-width: 1024px) 1024px, 100vw"
+            className="h-auto w-full object-cover"
           />
         </div>
       )}

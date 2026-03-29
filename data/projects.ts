@@ -35,7 +35,7 @@ const projects: Project[] = [
     id: 1,
     title: "Snapchat Usernames",
     slug: "snapchat-usernames",
-    createdAt: "12-04-2021",
+    createdAt: "2021-04-12",
     description:
       "A Python tool to check if Snapchat usernames are available or not.",
     features: [
@@ -76,7 +76,7 @@ const projects: Project[] = [
     id: 2,
     title: "Login Form",
     slug: "login-form",
-    createdAt: "13-04-2021",
+    createdAt: "2021-04-13",
     description:
       "Final assignment given by the university professor during C# training class before enrolling to college.",
     features: [
@@ -125,7 +125,7 @@ const projects: Project[] = [
     id: 3,
     title: "E-Commerce Web Application",
     slug: "e-commerce-web-application",
-    createdAt: "22-12-2021",
+    createdAt: "2021-12-22",
     description:
       "Led a team of 6 to build a full-stack e-commerce app with Next.js and PayPal integration during a university bootcamp, earning a perfect score of 100/100.",
     features: [
@@ -186,12 +186,12 @@ const projects: Project[] = [
     id: 4,
     title: "Arduino Uno Traffic Lights",
     slug: "arduino-uno-traffic-lights",
-    createdAt: "01-01-2022",
+    createdAt: "2022-01-01",
     description:
       "A very basic traffic light project in Arduino Uno for a University Assignment.",
     features: [
       "LEDs controlled with basic C++ logic",
-      "Timed light cycle (red → yellow → green)",
+      "Timed light cycle (red -> yellow -> green)",
     ],
 
     badge: ["C++", "Arduino Uno"],
@@ -224,7 +224,7 @@ const projects: Project[] = [
     id: 5,
     title: "Billing System",
     slug: "billing-system",
-    createdAt: "11-03-2022",
+    createdAt: "2022-03-11",
     description:
       "A simple Billing System written for a University Assignment.",
     features: [
@@ -279,7 +279,7 @@ const projects: Project[] = [
     id: 6,
     title: "AI Language Detection",
     slug: "ai-language-detection",
-    createdAt: "28-05-2024",
+    createdAt: "2024-05-28",
     description:
       "This code is a language detection model that uses the Naive Bayes algorithm to classify a given text into one of the 22 languages present in the dataset.",
     features: [
@@ -329,7 +329,7 @@ const projects: Project[] = [
     id: 7,
     title: "Banking App",
     slug: "banking-app",
-    createdAt: "28-05-2024",
+    createdAt: "2024-05-28",
     description:
       "This C# program is a simple banking application that follows the Interpreter Pattern.",
     features: [
@@ -364,15 +364,15 @@ const projects: Project[] = [
     id: 8,
     title: "Snake Game",
     slug: "snake-game",
-    createdAt: "23-08-2024",
+    createdAt: "2024-08-23",
     description:
       "A classic snake game built in Java.",
     features: [
       "Classic Snake game built in Java with Swing",
       "Arrow-key controls with smooth, continuous movement",
       "Growing snake, random food spawning, and score tracking",
-      "Collision detection with walls and the snake’s body",
-      "600×600 tile-based game board with simple graphics",
+      "Collision detection with walls and the snake's body",
+      "600x600 tile-based game board with simple graphics",
       "Timer-driven game loop for consistent updates"
     ],
 
@@ -406,7 +406,7 @@ const projects: Project[] = [
     id: 9,
     title: "Doom Clone",
     slug: "doom-clone",
-    createdAt: "01-01-2025",
+    createdAt: "2025-01-01",
     description:
       "A faithful remake of the classic DOOM built in Unity, recreating core mechanics, level design, and visuals with modern development tools.",
     features: [
@@ -432,9 +432,9 @@ const projects: Project[] = [
     id: 10,
     title: "Medtime Mobile Application",
     slug: "medtime-mobile-application",
-    createdAt: "29-05-2025",
+    createdAt: "2025-05-29",
     description:
-      "Medtime reminds you when to take your meds, how much, and when to refill—keeping your medication routine easy and on time.",
+      "Medtime reminds you when to take your meds, how much, and when to refill - keeping your medication routine easy and on time.",
     features: [
       "Reminder to take your meds on time",
       "Reminder to refill your meds before you run out",
@@ -458,7 +458,7 @@ const projects: Project[] = [
     id: 11,
     title: "Steam Kosovo Flag",
     slug: "steam-kosovo-flag",
-    createdAt: "12-06-2024",
+    createdAt: "2024-06-12",
     description:
       "A browser extension that fixes the missing Kosovo flag on Steam community profile.",
     features: [
@@ -502,7 +502,7 @@ const projects: Project[] = [
     id: 12,
     title: "InvoMate - Invoice Platform",
     slug: "invomate-invoice-platform",
-    createdAt: "30-05-2025",
+    createdAt: "2025-05-30",
     description:
       "Built a professional invoice platform that generates and sends PDF invoices via email, with secure payment tracking to simplify billing for freelancers and small businesses.",
     features: [
@@ -600,7 +600,7 @@ const projects: Project[] = [
     id: 13,
     title: "Artist Portfolio",
     slug: "artist-portfolio",
-    createdAt: "01-06-2025",
+    createdAt: "2025-06-01",
     description:
       "Built an artist portfolio site featuring artwork and an embedded Spotify profile to showcase both visual and musical projects in a unified, responsive design.",
     features: [
@@ -645,11 +645,11 @@ const projects: Project[] = [
     id: 14,
     title: "NASA APOD Explorer",
     slug: "nasa-apod-explorer",
-    createdAt: "02-06-2025",
+    createdAt: "2025-06-02",
     description:
-      "A sleek and responsive web app for discovering [NASA's Astronomy Picture of the Day archive](https://apod.nasa.gov/apod) — from today back to 1995.",
+      "A sleek and responsive web app for discovering [NASA's Astronomy Picture of the Day archive](https://apod.nasa.gov/apod) - from today back to 1995.",
     features: [
-      "Responsive web app for browsing NASA’s APOD archive",
+      "Responsive web app for browsing NASA's APOD archive",
       "View daily images from 1995 to today",
       "Light and dark theme support",
       "Clean UI with accessible, modern layout",
@@ -695,7 +695,7 @@ const projects: Project[] = [
     id: 15,
     title: "GTA SA Fixer",
     slug: "gta-sa-fixer",
-    createdAt: "19-10-2025",
+    createdAt: "2025-10-19",
     description:
       "This tool is designed to restore and preserve the vanilla experience of Grand Theft Auto: San Andreas, while applying only the essential fixes and enhancements needed for stability, compatibility, and visual accuracy.",
     features: [
@@ -735,7 +735,7 @@ const projects: Project[] = [
     id: 16,
     title: "TBA",
     slug: "tba",
-    createdAt: "12-11-2025",
+    createdAt: "2025-11-12",
     description:
       "TBA.",
     features: [
@@ -749,7 +749,7 @@ const projects: Project[] = [
     id: 17,
     title: "Silent Hill Archive",
     slug: "silent-hill-archive",
-    createdAt: "17-11-2025",
+    createdAt: "2025-11-17",
     description:
       "Open-source Silent Hill encyclopedia built with Next.js.",
     features: [
@@ -789,7 +789,7 @@ const projects: Project[] = [
     id: 18,
     title: "Kosovo Government Domain Checker",
     slug: "kosovo-gov-site-verification",
-    createdAt: "02-12-2025",
+    createdAt: "2025-12-02",
     description:
       "A lightweight browser extension that verifies whether the website you are visiting belongs to an official government domain of the Republic of Kosovo.",
     features: [
@@ -841,7 +841,7 @@ const projects: Project[] = [
     id: 19,
     title: "Albania Government Domain Checker",
     slug: "albania-gov-site-verification",
-    createdAt: "08-12-2025",
+    createdAt: "2025-12-08",
     description:
       "A lightweight browser extension that verifies whether the website you are visiting belongs to an official government domain of the Republic of Albania.",
     features: [
@@ -893,18 +893,18 @@ const projects: Project[] = [
     id: 20,
     title: "Leotrim Selmanaj Financial Planning",
     slug: "leotrim-selmanaj-financial-planning",
-    createdAt: "10-01-2026",
+    createdAt: "2026-01-10",
     description:
       "This is a premium financial planning and retirement services platform built with Next.js 16, React 19, and TypeScript. I was contracted to handle the backend development, migrate the database from SQLite to Prisma with PostgreSQL, and build the administrative dashboard frontend with a fully responsive, production-ready UI.",
     features: [
-      "Lead Intake System – public contact forms feed directly into a secure backend, creating structured leads for financial advisors",
-      "Lead Status Pipeline – leads move through New, Contacted, Meeting Scheduled, and Client stages to track the sales funnel",
-      "Admin Dashboard – custom-built interface for viewing, filtering, and managing incoming financial service inquiries",
-      "Lead Detail View – advisors can review client info, interests (insurance, pension, retirement, etc.), and messages in one place",
-      "Internal Notes System – staff can attach private notes to each lead for follow-ups and case tracking",
-      "Prisma + PostgreSQL Backend – migrated from SQLite to a scalable, production-grade database built for financial data",
-      "Next.js 16 App Router – server & client components for fast, secure, and SEO-friendly financial service pages",
-      "Fully Responsive Admin UI – works cleanly across desktop, tablet, and mobile for advisors on the go",
+      "Lead Intake System - public contact forms feed directly into a secure backend, creating structured leads for financial advisors",
+      "Lead Status Pipeline - leads move through New, Contacted, Meeting Scheduled, and Client stages to track the sales funnel",
+      "Admin Dashboard - custom-built interface for viewing, filtering, and managing incoming financial service inquiries",
+      "Lead Detail View - advisors can review client info, interests (insurance, pension, retirement, etc.), and messages in one place",
+      "Internal Notes System - staff can attach private notes to each lead for follow-ups and case tracking",
+      "Prisma + PostgreSQL Backend - migrated from SQLite to a scalable, production-grade database built for financial data",
+      "Next.js 16 App Router - server & client components for fast, secure, and SEO-friendly financial service pages",
+      "Fully Responsive Admin UI - works cleanly across desktop, tablet, and mobile for advisors on the go",
     ],
 
     badge: ["Nextjs 16", "React 19", "Prisma", "PostgreSQL", "TypeScript", "Tailwind CSS"],
@@ -930,7 +930,7 @@ const projects: Project[] = [
       {
         src: "/projects/leotrim-selmanaj/editing-leads.png",
         alt: "Lead status and notes editor in the admin dashboard",
-        caption: "Interface for updating a lead’s status and adding internal notes",
+        caption: "Interface for updating a lead's status and adding internal notes",
       },
       {
         src: "/projects/leotrim-selmanaj/profile-page.png",
@@ -952,11 +952,11 @@ const projects: Project[] = [
     id: 21,
     title: "Medusa Artist Portfolio",
     slug: "medusa-artist-portfolio",
-    createdAt: "13-01-2026",
+    createdAt: "2026-01-13",
     description:
-      "Medusa Music is a modern personal musician website built with Nextjs 16 and shadcn/ui, designed to showcase an artist’s music, identity, and presence across streaming platforms. The site connects directly to the Spotify API to display real-time data such as tracks, albums, and playlists.",
+      "Medusa Music is a modern personal musician website built with Nextjs 16 and shadcn/ui, designed to showcase an artist's music, identity, and presence across streaming platforms. The site connects directly to the Spotify API to display real-time data such as tracks, albums, and playlists.",
     features: [
-      "Spotify-Powered Music - displays the artist’s tracks, albums, and playlists using live Spotify data",
+      "Spotify-Powered Music - displays the artist's tracks, albums, and playlists using live Spotify data",
       "Artist-Focused Layout - built specifically for a single musician or band to present their work professionally",
       "Modern UI (shadcn/ui) -clean components with smooth transitions and full light/dark theme support",
       "Next.js 16 App Router -uses server & client components for fast navigation, SEO, and scalability",
@@ -1009,12 +1009,12 @@ const projects: Project[] = [
     id: 22,
     title: "Rubik's Cube Unity Game",
     slug: "unity-rubiks-cube",
-    createdAt: "02/08/2026",
+    createdAt: "2026-08-02",
     description:
-      "A Rubik’s Cube game built in Unity using C#, featuring a fully interactive 3D cube with realistic rotations, scramble logic, and solve-state validation. Designed as both a puzzle game and a foundation for experimenting with cube algorithms and solvers.",
+      "A Rubik's Cube game built in Unity using C#, featuring a fully interactive 3D cube with realistic rotations, scramble logic, and solve-state validation. Designed as both a puzzle game and a foundation for experimenting with cube algorithms and solvers.",
 
     features: [
-      "Procedurally generated 3D Rubik’s Cube built entirely via code (no premade 3D models)",
+      "Procedurally generated 3D Rubik's Cube built entirely via code (no premade 3D models)",
       "Fully interactive cube with smooth, realistic face rotations",
       "Built in Unity using C#, with accurate cubie-based logic and full state tracking",
       "Scramble system with validation to prevent impossible cube configurations",
