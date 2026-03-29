@@ -18,7 +18,7 @@ export default function ProjectsSection() {
   );
 
   return (
-    <section className="grid grid-cols-1 gap-5 md:grid-cols-2">
+    <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {sorted.map((project) => (
         <Card
           key={project.id}
@@ -61,7 +61,7 @@ export default function ProjectsSection() {
                 muted
                 playsInline
                 preload="metadata"
-                className="pointer-events-none mx-auto h-40 w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
+                className="pointer-events-none mx-auto h-34 w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] sm:h-36"
               />
             ) : project.image ? (
               <Image
@@ -71,10 +71,10 @@ export default function ProjectsSection() {
                 height={300}
                 sizes="(min-width: 768px) 50vw, 100vw"
                 quality={82}
-                className="h-40 w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.03]"
+                className="h-34 w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.03] sm:h-36"
               />
             ) : (
-              <div className="flex h-40 w-full items-center justify-center bg-muted text-xs text-muted-foreground">
+              <div className="flex h-34 w-full items-center justify-center bg-muted text-xs text-muted-foreground sm:h-36">
                 {project.title}
               </div>
             )}
@@ -85,21 +85,21 @@ export default function ProjectsSection() {
             </div>
           </Link>
 
-          <CardHeader className="space-y-2 px-4 pt-3 pb-1 sm:px-5">
+          <CardHeader className="space-y-2 px-4 pt-3 pb-0 sm:px-5">
             <time className="inline-flex w-fit rounded-full border border-neutral-200 bg-white/80 px-2 py-0.5 font-sans text-[10px] text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900/70 dark:text-neutral-300">
               {formatProjectDate(project.createdAt)}
             </time>
 
-            <CardTitle className="text-base leading-tight">
+            <CardTitle className="line-clamp-2 text-base leading-tight">
               {project.title}
             </CardTitle>
 
-            <p className="font-sans text-[13px] leading-relaxed text-muted-foreground">
+            <p className="line-clamp-5 font-sans text-[13px] leading-relaxed text-muted-foreground">
               {project.description}
             </p>
           </CardHeader>
 
-          <CardContent className="mt-auto flex flex-col px-4 pb-2 sm:px-5">
+          <CardContent className="mt-auto flex flex-col px-4 pb-1 sm:px-5">
             {project.badge?.length > 0 && (
               <div className="mt-1 flex flex-wrap gap-1">
                 {project.badge.map((tag, i) => (
@@ -126,7 +126,7 @@ export default function ProjectsSection() {
             )}
           </CardContent>
 
-          <CardFooter className="px-4 pb-3 sm:px-5">
+          <CardFooter className="px-4 pb-3 pt-1 sm:px-5">
             <div className="flex flex-row flex-wrap items-start gap-1.5">
               <Link href={`/projects/${project.slug}`}>
                 <Badge

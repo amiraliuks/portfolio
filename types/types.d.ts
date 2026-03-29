@@ -1,3 +1,5 @@
+export type BlogLanguage = "en" | "al";
+
 // Blog interfaces
 export type BlogMetadata = {
   title: string;
@@ -7,6 +9,10 @@ export type BlogMetadata = {
   tags?: string[];
   readingTime?: number;
   image?: string;
+  language?: BlogLanguage;
+  translationKey?: string;
+  availableLanguages?: BlogLanguage[];
+  translationSlugs?: Partial<Record<BlogLanguage, string>>;
 };
 
 export type BlogPost = {

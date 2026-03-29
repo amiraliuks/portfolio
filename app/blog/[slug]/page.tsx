@@ -1,12 +1,26 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { Twitter, Linkedin, Facebook } from "lucide-react";
+
 import { CustomMDX } from "@/components/mdx";
-import { calculateReadingTime, formatDate } from "@/lib/utils";
+import { BlogReadingProgress } from "@/components/blog/BlogReadingProgress";
+import { BlogTableOfContents } from "@/components/blog/BlogTableOfContents";
+import {
+  extractPostDescription,
+  extractTableOfContents,
+  stripFirstMatchingImageFromContent,
+} from "@/lib/blog-content";
 import { getBlogPosts } from "@/lib/getBlogs";
+import { calculateReadingTime, formatDate } from "@/lib/utils";
 import { baseUrl } from "@/app/sitemap";
 import { BlogPost, BlogPageProps } from "@/types/types";
-import Image from "next/image";
 
-import { Twitter, Linkedin, Facebook } from "lucide-react";
+function toAbsoluteImageUrl(image?: string) {
+  if (!image) return undefined;
+  if (image.startsWith("http://") || image.startsWith("https://")) return image;
+  return image.startsWith("/") ? `${baseUrl}${image}` : `${baseUrl}/${image}`;
+}
 
 export async function generateStaticParams() {
   const posts = getBlogPosts();
@@ -19,7 +33,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: BlogPageProps) {
   const { slug } = await params;
   const posts = getBlogPosts();
-  const post = posts.find((post) => post.slug === slug);
+  const post = posts.find((entry) => entry.slug === slug);
 
   if (!post) return;
 
@@ -31,13 +45,21 @@ export async function generateMetadata({ params }: BlogPageProps) {
     image,
   } = post.metadata;
 
-  const safeDescription = description ?? summary ?? "";
-
-  const ogImage = image
-    ? image
-    : `https://amiraliu.vercel.app/og?title=${encodeURIComponent(
+  const safeDescription = description ?? summary ?? extractPostDescription(post.content);
+  const absoluteImage = toAbsoluteImageUrl(image);
+  const ogImage =
+    absoluteImage ??
+    `https://amiraliu.vercel.app/og?title=${encodeURIComponent(
       title
     )}&description=${encodeURIComponent(safeDescription)}`;
+
+  const languageAlternates: Record<string, string> = {};
+  if (post.metadata.translationSlugs?.en) {
+    languageAlternates["en-US"] = `${baseUrl}/blog/${post.metadata.translationSlugs.en}`;
+  }
+  if (post.metadata.translationSlugs?.al) {
+    languageAlternates["sq-AL"] = `${baseUrl}/blog/${post.metadata.translationSlugs.al}`;
+  }
 
   return {
     title,
@@ -58,21 +80,33 @@ export async function generateMetadata({ params }: BlogPageProps) {
     },
     alternates: {
       canonical: `${baseUrl}/blog/${post.slug}`,
+      ...(Object.keys(languageAlternates).length > 0
+        ? { languages: languageAlternates }
+        : {}),
     },
   };
 }
 
 export default async function Blog({ params }: BlogPageProps) {
   const { slug } = await params;
-  const post = getBlogPosts().find((post) => post.slug === slug) as
-    | BlogPost
-    | undefined;
+  const post = getBlogPosts().find((entry) => entry.slug === slug) as BlogPost | undefined;
 
   if (!post) notFound();
-  const readingTime = calculateReadingTime(post.content);
 
+  const readingTime = calculateReadingTime(post.content);
+  const currentLanguage = post.metadata.language ?? "en";
+  const englishSlug =
+    post.metadata.translationSlugs?.en ?? (currentLanguage === "en" ? post.slug : undefined);
+  const albanianSlug =
+    post.metadata.translationSlugs?.al ?? (currentLanguage === "al" ? post.slug : undefined);
+  const hasLanguageSwitch = Boolean(englishSlug && albanianSlug);
+  const contentForRender = stripFirstMatchingImageFromContent(
+    post.content,
+    post.metadata.image
+  );
+  const tableOfContents = extractTableOfContents(contentForRender);
   const safeDescription =
-    post.metadata.description ?? post.metadata.summary ?? "";
+    post.metadata.description ?? post.metadata.summary ?? extractPostDescription(post.content);
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -99,9 +133,10 @@ export default async function Blog({ params }: BlogPageProps) {
     ],
   };
 
-  const ogImage = post.metadata.image
-    ? `${baseUrl}${post.metadata.image}`
-    : `https://amiraliu.vercel.app/og?title=${encodeURIComponent(
+  const absoluteImage = toAbsoluteImageUrl(post.metadata.image);
+  const ogImage =
+    absoluteImage ??
+    `https://amiraliu.vercel.app/og?title=${encodeURIComponent(
       post.metadata.title
     )}&description=${encodeURIComponent(safeDescription)}`;
 
@@ -137,7 +172,12 @@ export default async function Blog({ params }: BlogPageProps) {
   )}`;
 
   return (
-    <article className="mx-auto w-full max-w-6xl px-4 pt-16 pb-24 sm:px-6 lg:px-10">
+    <article
+      data-blog-post="true"
+      className="mx-auto w-full max-w-6xl px-4 pb-24 pt-16 sm:px-6 lg:px-10"
+    >
+      <BlogReadingProgress />
+
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -153,34 +193,59 @@ export default async function Blog({ params }: BlogPageProps) {
         }}
       />
 
-      <header className="mb-16">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight leading-[1.15] mb-6">
+      <header className="mb-12">
+        <h1 className="mb-6 text-3xl font-bold leading-[1.15] tracking-tight md:text-4xl">
           {post.metadata.title}
         </h1>
 
-        <div className="flex items-center gap-4 text-sm text-neutral-500">
+        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
           <span>Amir Aliu</span>
-          <span>•</span>
+          <span>|</span>
           <span>{formatDate(post.metadata.publishedAt)}</span>
-          <span>•</span>
-          <span>{readingTime} {readingTime === 1 ? "min" : "mins"} read</span>
+          <span>|</span>
+          <span>
+            {readingTime} {readingTime === 1 ? "min" : "mins"} read
+          </span>
         </div>
+
+        {hasLanguageSwitch && (
+          <div className="mt-5 flex items-center gap-2">
+            <span className="text-xs uppercase tracking-wide text-muted-foreground">Language</span>
+            <Link
+              href={`/blog/${englishSlug}`}
+              className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+                currentLanguage === "en"
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              }`}
+            >
+              EN
+            </Link>
+            <Link
+              href={`/blog/${albanianSlug}`}
+              className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+                currentLanguage === "al"
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              }`}
+            >
+              AL
+            </Link>
+          </div>
+        )}
       </header>
 
-      <div className="flex items-center gap-3">
+      <div className="mb-8 flex flex-wrap items-center gap-3">
         <a
           href={twitterUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="
             flex items-center gap-2
-            text-xs px-3 py-1.5
-            rounded-full
-            border border-neutral-300
-            hover:bg-neutral-100
-            dark:border-neutral-700
-            dark:hover:bg-neutral-800
+            rounded-full border border-border
+            px-3 py-1.5 text-xs
             transition-all duration-200
+            hover:bg-accent
           "
         >
           <Twitter size={14} />
@@ -192,15 +257,12 @@ export default async function Blog({ params }: BlogPageProps) {
           target="_blank"
           rel="noopener noreferrer"
           className="
-      flex items-center gap-2
-      text-xs px-3 py-1.5
-      rounded-full
-      border border-neutral-300
-      hover:bg-neutral-100
-      dark:border-neutral-700
-      dark:hover:bg-neutral-800
-      transition-all duration-200
-    "
+            flex items-center gap-2
+            rounded-full border border-border
+            px-3 py-1.5 text-xs
+            transition-all duration-200
+            hover:bg-accent
+          "
         >
           <Linkedin size={14} />
           Share
@@ -211,15 +273,12 @@ export default async function Blog({ params }: BlogPageProps) {
           target="_blank"
           rel="noopener noreferrer"
           className="
-      flex items-center gap-2
-      text-xs px-3 py-1.5
-      rounded-full
-      border border-neutral-300
-      hover:bg-neutral-100
-      dark:border-neutral-700
-      dark:hover:bg-neutral-800
-      transition-all duration-200
-    "
+            flex items-center gap-2
+            rounded-full border border-border
+            px-3 py-1.5 text-xs
+            transition-all duration-200
+            hover:bg-accent
+          "
         >
           <Facebook size={14} />
           Share
@@ -227,7 +286,7 @@ export default async function Blog({ params }: BlogPageProps) {
       </div>
 
       {post.metadata.image && (
-        <div className="mb-16 overflow-hidden rounded-2xl">
+        <div className="mb-14 overflow-hidden rounded-2xl">
           <Image
             src={post.metadata.image}
             alt={post.metadata.title}
@@ -239,8 +298,14 @@ export default async function Blog({ params }: BlogPageProps) {
         </div>
       )}
 
-      <div className="prose prose-neutral dark:prose-invert max-w-none prose-lg">
-        <CustomMDX source={post.content} />
+      <div className="grid items-start gap-10 xl:grid-cols-[minmax(0,1fr)_15rem]">
+        <div
+          data-blog-content="true"
+          className="prose prose-lg max-w-none min-w-0 prose-neutral dark:prose-invert"
+        >
+          <CustomMDX source={contentForRender} />
+        </div>
+        <BlogTableOfContents headings={tableOfContents} />
       </div>
     </article>
   );

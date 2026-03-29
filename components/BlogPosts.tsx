@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { normalizeBlogTags } from "@/lib/blog-tags";
 import { formatDate } from "@/lib/utils";
 import type { BlogPost } from "@/types/types";
 
@@ -12,9 +13,24 @@ interface BlogPostsProps {
   posts: BlogPost[];
 }
 
-const MAX_FILTER_TAGS = 8;
+const MAX_FILTER_TAGS = 6;
 const MAX_POST_TAGS = 3;
 const PAGE_SIZE = 5;
+
+type PresentablePost = BlogPost & {
+  displayTags: string[];
+  languageLabel: string;
+};
+
+function getLanguageLabel(post: BlogPost): string {
+  const available = post.metadata.availableLanguages ?? [];
+  const hasEnglish = available.includes("en");
+  const hasAlbanian = available.includes("al");
+
+  if (hasEnglish && hasAlbanian) return "Available in English and Albanian";
+  if (hasAlbanian) return "Available in Albanian";
+  return "Available in English";
+}
 
 export function BlogPosts({ posts }: BlogPostsProps) {
   const [activeTag, setActiveTag] = useState<string | null>(null);
@@ -31,11 +47,19 @@ export function BlogPosts({ posts }: BlogPostsProps) {
     );
   }, [posts]);
 
-  const tags = useMemo(() => {
+  const presentablePosts = useMemo<PresentablePost[]>(() => {
+    return sortedPosts.map((post) => ({
+      ...post,
+      displayTags: normalizeBlogTags(post.metadata.tags, MAX_POST_TAGS),
+      languageLabel: getLanguageLabel(post),
+    }));
+  }, [sortedPosts]);
+
+  const tagEntries = useMemo(() => {
     const counts = new Map<string, number>();
 
-    sortedPosts.forEach((post) => {
-      (post.metadata.tags || []).forEach((tag) => {
+    presentablePosts.forEach((post) => {
+      post.displayTags.forEach((tag) => {
         counts.set(tag, (counts.get(tag) || 0) + 1);
       });
     });
@@ -44,9 +68,11 @@ export function BlogPosts({ posts }: BlogPostsProps) {
       .sort((a, b) => {
         if (b[1] !== a[1]) return b[1] - a[1];
         return a[0].localeCompare(b[0]);
-      })
-      .map(([tag]) => tag);
-  }, [sortedPosts]);
+      });
+  }, [presentablePosts]);
+
+  const tags = tagEntries.map(([tag]) => tag);
+  const tagCountMap = new Map(tagEntries);
 
   const primaryTags = tags.slice(0, MAX_FILTER_TAGS);
   const extraTags = tags.slice(MAX_FILTER_TAGS);
@@ -59,8 +85,8 @@ export function BlogPosts({ posts }: BlogPostsProps) {
   const normalizedQuery = searchQuery.trim().toLowerCase();
 
   const filteredBlogs = useMemo(() => {
-    return sortedPosts.filter((post) => {
-      const matchesTag = activeTag ? post.metadata.tags?.includes(activeTag) : true;
+    return presentablePosts.filter((post) => {
+      const matchesTag = activeTag ? post.displayTags.includes(activeTag) : true;
       if (!matchesTag) return false;
 
       if (!normalizedQuery) return true;
@@ -70,13 +96,14 @@ export function BlogPosts({ posts }: BlogPostsProps) {
         post.metadata.description ?? "",
         post.metadata.summary ?? "",
         ...(post.metadata.tags || []),
+        ...post.displayTags,
       ]
         .join(" ")
         .toLowerCase();
 
       return searchBlob.includes(normalizedQuery);
     });
-  }, [activeTag, normalizedQuery, sortedPosts]);
+  }, [activeTag, normalizedQuery, presentablePosts]);
 
   const hasMore = visibleCount < filteredBlogs.length;
 
@@ -98,13 +125,13 @@ export function BlogPosts({ posts }: BlogPostsProps) {
   }, [filteredBlogs.length, hasMore]);
 
   const visiblePosts = filteredBlogs.slice(0, visibleCount);
-  const featuredPosts = sortedPosts.slice(0, 2);
+  const featuredPosts = presentablePosts.slice(0, 2);
   const showFeatured = !activeTag && !normalizedQuery && featuredPosts.length > 0;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-9">
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
           type="search"
           value={searchQuery}
@@ -113,22 +140,22 @@ export function BlogPosts({ posts }: BlogPostsProps) {
             setVisibleCount(PAGE_SIZE);
           }}
           placeholder="Search by title, summary, or tag..."
-          className="h-11 w-full rounded-xl border border-white/10 bg-neutral-950/70 pl-10 pr-3 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-neutral-500 focus:outline-none"
+          className="h-11 w-full rounded-xl border border-border bg-background pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30"
         />
       </div>
 
       {tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 border-b border-white/5 pb-6">
+        <div className="flex flex-wrap gap-2 border-b border-border/60 pb-6">
           <button
             onClick={() => {
               setActiveTag(null);
               setShowAllTags(false);
               setVisibleCount(PAGE_SIZE);
             }}
-            className={`px-4 py-1.5 text-sm rounded-full border transition
+              className={`px-4 py-1.5 text-sm rounded-full border transition
               ${activeTag === null
-                ? "bg-neutral-900 text-white dark:bg-white dark:text-black border-neutral-900 dark:border-white"
-                : "border-white/10 text-neutral-400 hover:bg-neutral-800"
+                ? "border-foreground bg-foreground text-background"
+                : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               }`}
           >
             All
@@ -143,18 +170,21 @@ export function BlogPosts({ posts }: BlogPostsProps) {
               }}
               className={`px-4 py-1.5 text-sm rounded-full border transition
                 ${activeTag === tag
-                  ? "bg-neutral-900 text-white dark:bg-white dark:text-black border-neutral-900 dark:border-white"
-                  : "border-white/10 text-neutral-400 hover:bg-neutral-800"
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 }`}
             >
-              {tag}
+              {tag}{" "}
+              <span className="text-[11px] opacity-70">
+                {tagCountMap.get(tag)}
+              </span>
             </button>
           ))}
 
           {extraTags.length > 0 && (
             <button
               onClick={() => setShowAllTags((prev) => !prev)}
-              className="px-4 py-1.5 text-sm rounded-full border border-white/10 text-neutral-400 hover:bg-neutral-800 transition"
+              className="rounded-full border border-border px-4 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
             >
               {showAllTags ? "Show less" : `More tags (${extraTags.length})`}
             </button>
@@ -163,12 +193,12 @@ export function BlogPosts({ posts }: BlogPostsProps) {
       )}
 
       {showFeatured && (
-        <section className="space-y-3">
+        <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-400">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Featured
             </h2>
-            <span className="text-xs text-neutral-500">Top 2 recent posts</span>
+            <span className="text-xs text-muted-foreground">Top 2 recent posts</span>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -177,35 +207,38 @@ export function BlogPosts({ posts }: BlogPostsProps) {
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className="group overflow-hidden rounded-2xl border border-white/10 bg-neutral-950/60 transition hover:border-neutral-600 hover:bg-neutral-900/70"
+                  className="group overflow-hidden rounded-2xl border border-border bg-card/70 transition duration-300 hover:-translate-y-0.5 hover:border-border hover:bg-accent/25"
                 >
-                  {post.metadata.image ? (
-                    <Image
-                      src={post.metadata.image}
-                      alt={post.metadata.title}
-                      width={1200}
-                      height={630}
-                      className="h-40 w-full object-cover transition duration-300 group-hover:scale-[1.02]"
-                      sizes="(min-width: 768px) 50vw, 100vw"
-                    />
-                  ) : (
-                    <div className="h-40 w-full bg-gradient-to-br from-neutral-900 to-neutral-800" />
-                  )}
+                  <div className="relative overflow-hidden border-b border-border/60">
+                    {post.metadata.image ? (
+                      <Image
+                        src={post.metadata.image}
+                        alt={post.metadata.title}
+                        width={1200}
+                        height={630}
+                        className="h-44 w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+                        sizes="(min-width: 768px) 50vw, 100vw"
+                      />
+                    ) : (
+                      <div className="h-44 w-full bg-gradient-to-br from-muted to-accent" />
+                    )}
+                  </div>
 
-                  <div className="space-y-2 p-4">
-                    <h3 className="text-base font-semibold text-neutral-100 group-hover:text-blue-400 transition">
+                  <div className="space-y-3 p-5">
+                    <h3 className="line-clamp-2 text-xl font-semibold leading-tight text-foreground transition group-hover:text-primary">
                       {post.metadata.title}
                     </h3>
-                    <p className="line-clamp-2 text-sm text-neutral-400">
+                    <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
                       {post.metadata.description ?? post.metadata.summary}
                     </p>
                     <div className="flex items-center gap-2 text-xs">
-                      <span className="text-neutral-500">{formatDate(post.metadata.publishedAt)}</span>
-                      <span className="text-neutral-700">|</span>
-                      <span className="text-neutral-500">
+                      <span className="text-muted-foreground">{formatDate(post.metadata.publishedAt)}</span>
+                      <span className="text-muted-foreground/60">|</span>
+                      <span className="text-muted-foreground">
                         {post.metadata.readingTime ?? 1} min
                       </span>
                     </div>
+                    <p className="text-[11px] text-muted-foreground">{post.languageLabel}</p>
                   </div>
                 </Link>
               );
@@ -214,52 +247,50 @@ export function BlogPosts({ posts }: BlogPostsProps) {
         </section>
       )}
 
-      <div className="divide-y divide-white/5">
+      <div className="divide-y divide-border/60">
         {visiblePosts.map((post, index) => {
           return (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="group block py-6 transition"
+              className="group block rounded-2xl border border-transparent px-1 py-6 transition hover:border-border hover:bg-accent/25 sm:px-3"
             >
-              <div className="grid grid-cols-[auto_1fr_auto] gap-6 items-start">
-                <span className="font-mono text-sm text-neutral-500 pt-1">
+              <div className="grid items-start gap-5 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:gap-6">
+                <span className="pt-1 font-mono text-sm text-muted-foreground">
                   {String(index + 1).padStart(2, "0")}
                 </span>
 
                 <div className="space-y-2">
-                  <h2 className="text-lg sm:text-xl font-medium text-neutral-900 dark:text-neutral-100 group-hover:text-blue-500 transition">
+                  <h2 className="line-clamp-2 text-lg font-medium text-foreground transition group-hover:text-primary sm:text-xl">
                     {post.metadata.title}
                   </h2>
 
                   {post.metadata.description && (
-                    <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-2xl leading-relaxed">
+                    <p className="line-clamp-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
                       {post.metadata.description}
                     </p>
                   )}
 
-                  {post.metadata.tags && (
+                  {post.displayTags.length > 0 && (
                     <div className="flex flex-wrap gap-2 pt-1">
-                      {post.metadata.tags.slice(0, MAX_POST_TAGS).map((tag) => (
+                      {post.displayTags.map((tag) => (
                         <span
                           key={tag}
-                          className="text-xs text-neutral-500 dark:text-neutral-400 border border-white/10 rounded-full px-2 py-0.5"
+                          className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground"
                         >
                           {tag}
                         </span>
                       ))}
-                      {post.metadata.tags.length > MAX_POST_TAGS && (
-                        <span className="text-xs text-neutral-500 dark:text-neutral-400 border border-white/10 rounded-full px-2 py-0.5">
-                          +{post.metadata.tags.length - MAX_POST_TAGS} more
-                        </span>
-                      )}
                     </div>
                   )}
                 </div>
 
-                <div className="space-y-2 pt-1 text-right text-xs whitespace-nowrap">
-                  <div className="text-neutral-500">{formatDate(post.metadata.publishedAt)}</div>
-                  <div className="text-neutral-500">{post.metadata.readingTime ?? 1} min</div>
+                <div className="space-y-2 pt-1 text-left text-xs whitespace-nowrap sm:text-right">
+                  <div className="text-muted-foreground">{formatDate(post.metadata.publishedAt)}</div>
+                  <div className="text-muted-foreground">{post.metadata.readingTime ?? 1} min</div>
+                  <div className="max-w-[15rem] text-[11px] leading-snug whitespace-normal text-muted-foreground sm:text-right">
+                    {post.languageLabel}
+                  </div>
                 </div>
               </div>
             </Link>
@@ -268,7 +299,7 @@ export function BlogPosts({ posts }: BlogPostsProps) {
       </div>
 
       {filteredBlogs.length === 0 && (
-        <div className="rounded-xl border border-white/10 bg-neutral-950/50 p-6 text-center text-sm text-neutral-400">
+        <div className="rounded-xl border border-border bg-muted/25 p-6 text-center text-sm text-muted-foreground">
           No blog posts matched your current search/filter.
         </div>
       )}
@@ -277,11 +308,11 @@ export function BlogPosts({ posts }: BlogPostsProps) {
         <div className="flex flex-col items-center gap-3 pt-2">
           <button
             onClick={() => setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, filteredBlogs.length))}
-            className="rounded-full border border-white/10 px-5 py-2 text-sm text-neutral-300 transition hover:bg-neutral-800"
+            className="rounded-full border border-border px-5 py-2 text-sm text-foreground transition hover:bg-accent"
           >
             Load more posts
           </button>
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-muted-foreground">
             Showing {visiblePosts.length} of {filteredBlogs.length}
           </p>
         </div>

@@ -5,7 +5,7 @@ import Image from "next/image"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Download, ExternalLink, Share2, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react"
+import { Download, ExternalLink, Share2, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface ImageData {
@@ -96,13 +96,16 @@ export function ImageModal({ images, currentIndex, isOpen, onClose, projectTitle
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-7xl w-full h-[90vh] p-0 overflow-hidden">
+      <DialogContent
+        showCloseButton={false}
+        className="!w-[96vw] sm:!w-[min(96vw,1200px)] !max-w-[96vw] sm:!max-w-[min(96vw,1200px)] h-[min(92vh,860px)] gap-0 p-0 overflow-hidden"
+      >
         <div className="relative h-full flex flex-col">
           {/* Header */}
-          <DialogHeader className="p-4 border-b bg-background/95 backdrop-blur">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <DialogTitle className="text-lg font-semibold truncate">
+          <DialogHeader className="border-b bg-background/95 p-4 backdrop-blur">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <DialogTitle className="truncate pr-1 text-base font-semibold sm:text-lg">
                   {currentImage.alt || `${projectTitle} - Image ${imageIndex + 1}`}
                 </DialogTitle>
                 {images.length > 1 && (
@@ -113,46 +116,79 @@ export function ImageModal({ images, currentIndex, isOpen, onClose, projectTitle
               </div>
 
               {/* Action buttons */}
-              <div className="flex items-center gap-2 ml-4">
-                <Button variant="ghost" size="sm" onClick={() => setIsZoomed(!isZoomed)} className="gap-2">
+              <div className="ml-2 flex shrink flex-wrap items-center justify-end gap-1 sm:gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsZoomed(!isZoomed)}
+                  className="h-8 gap-1.5 px-2 sm:px-3"
+                  title={isZoomed ? "Zoom Out" : "Zoom In"}
+                >
                   {isZoomed ? <ZoomOut className="h-4 w-4" /> : <ZoomIn className="h-4 w-4" />}
-                  {isZoomed ? "Zoom Out" : "Zoom In"}
+                  <span className="hidden xl:inline">{isZoomed ? "Zoom Out" : "Zoom In"}</span>
                 </Button>
 
-                <Button variant="ghost" size="sm" onClick={downloadImage} className="gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={downloadImage}
+                  className="h-8 gap-1.5 px-2 sm:px-3"
+                  title="Download"
+                >
                   <Download className="h-4 w-4" />
-                  Download
+                  <span className="hidden xl:inline">Download</span>
                 </Button>
 
-                <Button variant="ghost" size="sm" onClick={openInNewTab} className="gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={openInNewTab}
+                  className="h-8 gap-1.5 px-2 sm:px-3"
+                  title="Open in New Tab"
+                >
                   <ExternalLink className="h-4 w-4" />
-                  Open
+                  <span className="hidden xl:inline">Open</span>
                 </Button>
 
-                <Button variant="ghost" size="sm" onClick={shareImage} className="gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={shareImage}
+                  className="h-8 gap-1.5 px-2 sm:px-3"
+                  title="Share"
+                >
                   <Share2 className="h-4 w-4" />
-                  Share
+                  <span className="hidden xl:inline">Share</span>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleOpenChange(false)}
+                  className="h-8 px-2 sm:px-2.5"
+                  title="Close"
+                >
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
             </div>
           </DialogHeader>
 
           {/* Image container */}
-          <div className="flex-1 relative overflow-hidden bg-black/5 dark:bg-black/20">
+          <div className="relative flex-1 overflow-hidden bg-muted/30">
             <div
               className={cn(
                 "relative h-full w-full transition-transform duration-300 ease-out",
-                isZoomed ? "scale-150 cursor-grab active:cursor-grabbing" : "cursor-zoom-in",
+                isZoomed ? "scale-125 cursor-grab active:cursor-grabbing" : "cursor-default",
               )}
             >
               <Image
                 src={currentImage.src || "/placeholder.svg"}
                 alt={currentImage.alt}
                 fill
-                className="object-contain"
+                className="object-contain object-top"
                 sizes="100vw"
                 priority
-                onClick={() => setIsZoomed(!isZoomed)}
               />
             </div>
 

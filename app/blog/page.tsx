@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import { BlogPosts } from '@/components/BlogPosts';
-import { getBlogPosts } from "@/lib/getBlogs";
+import { getBlogListingPosts } from "@/lib/getBlogs";
 
 export const metadata: Metadata = {
   title: 'Blog - Amir Aliu',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  const posts = getBlogPosts().sort(
+  const posts = getBlogListingPosts().sort(
     (a, b) =>
       new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime()
   );

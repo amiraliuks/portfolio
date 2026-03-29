@@ -5,6 +5,7 @@ import Image, { ImageProps } from 'next/image';
 import { MDXRemote, MDXRemoteProps } from 'next-mdx-remote/rsc';
 import { highlight } from 'sugar-high';
 import remarkGfm from 'remark-gfm'
+import { slugifyHeading } from '@/lib/blog-content';
 
 function StyledTable(props: React.TableHTMLAttributes<HTMLTableElement>) {
   return (
@@ -99,10 +100,11 @@ function StyledPre(props: React.HTMLAttributes<HTMLPreElement>) {
         sm:px-5 sm:py-4
         overflow-x-auto
         text-[13px]
-        leading-5
+        leading-6
         not-prose
-        bg-neutral-100 border-neutral-200
-        dark:bg-neutral-950 dark:border-neutral-800
+        font-mono
+        bg-[#f6f8fa] border-[#d0d7de]
+        dark:bg-[#1e1e1e] dark:border-[#2d2d30]
       "
     />
   );
@@ -164,7 +166,7 @@ function Code({ children, className, ...props }: CodeProps) {
     return (
       <code
         dangerouslySetInnerHTML={{ __html: codeHTML }}
-        className="block font-mono text-[13px] leading-5 text-neutral-900 dark:text-neutral-100"
+        className="block font-mono text-[13px] leading-6 text-[#24292f] dark:text-[#d4d4d4]"
         {...props}
       />
     );
@@ -189,24 +191,30 @@ function Code({ children, className, ...props }: CodeProps) {
   );
 }
 
-function slugify(str: string) {
-  return str
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/&/g, '-and-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-');
+function extractTextFromNode(node: ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") {
+    return String(node);
+  }
+
+  if (Array.isArray(node)) {
+    return node.map((child) => extractTextFromNode(child)).join("");
+  }
+
+  if (React.isValidElement<{ children?: ReactNode }>(node)) {
+    return extractTextFromNode(node.props.children);
+  }
+
+  return "";
 }
 
-function createHeading(level: number) {
+function createHeading(level: number, getUniqueSlug: (text: string) => string) {
   const Heading: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const slug = typeof children === 'string' ? slugify(children) : undefined;
+    const headingText = extractTextFromNode(children).trim();
+    const slug = headingText ? getUniqueSlug(headingText) : undefined;
 
     return React.createElement(
       `h${level}`,
-      slug ? { id: slug } : undefined,
+      slug ? { id: slug, className: "scroll-mt-24" } : undefined,
       slug
         ? [
           React.createElement('a', {
@@ -224,13 +232,7 @@ function createHeading(level: number) {
   return Heading;
 }
 
-const components = {
-  h1: createHeading(1),
-  h2: createHeading(2),
-  h3: createHeading(3),
-  h4: createHeading(4),
-  h5: createHeading(5),
-  h6: createHeading(6),
+const baseComponents = {
   Image: RoundedImage,
   a: CustomLink,
   code: Code,
@@ -245,10 +247,29 @@ const components = {
 };
 
 export function CustomMDX(props: MDXRemoteProps) {
+  const slugCounts = new Map<string, number>();
+  const getUniqueSlug = (text: string) => {
+    const baseSlug = slugifyHeading(text);
+    if (!baseSlug) return "";
+
+    const count = slugCounts.get(baseSlug) ?? 0;
+    slugCounts.set(baseSlug, count + 1);
+    return count === 0 ? baseSlug : `${baseSlug}-${count + 1}`;
+  };
+
+  const headingComponents = {
+    h1: createHeading(1, getUniqueSlug),
+    h2: createHeading(2, getUniqueSlug),
+    h3: createHeading(3, getUniqueSlug),
+    h4: createHeading(4, getUniqueSlug),
+    h5: createHeading(5, getUniqueSlug),
+    h6: createHeading(6, getUniqueSlug),
+  };
+
   return (
     <MDXRemote
       {...props}
-      components={{ ...components, ...(props.components || {}) }}
+      components={{ ...baseComponents, ...headingComponents, ...(props.components || {}) }}
       options={{
         mdxOptions: {
           remarkPlugins: [remarkGfm],

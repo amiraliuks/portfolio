@@ -5,7 +5,8 @@ const experience = [
     company: "writeupify.app",
     start: "2026",
     end: "Present",
-    description: "Founded and developed Writeupify, a full-stack web application for creating, reviewing, and exporting cybersecurity writeups. Initially built as a local-first editor, later expanded into a collaborative platform with backend persistence, authentication, team management, invitations, notifications, and admin tooling. Architected a scalable system and designed an intuitive UX tailored for security researchers and teams managing structured vulnerability reports.",
+    description:
+      "- Built a collaborative platform for cybersecurity writeups with scalable backend architecture.\n- Designed features for team-based research, content sharing, and structured vulnerability documentation.\n- Focused on secure development practices and performance optimization.",
   },
 
   {
@@ -14,7 +15,8 @@ const experience = [
     company: "Independent",
     start: "2018",
     end: "Present",
-    description: "Website design, development, and maintenance for communities and small-to-medium clients. Delivered responsive, user-focused solutions and ongoing technical support.",
+    description:
+      "- Developed and maintained websites for communities and SMB clients.\n- Delivered responsive, user-focused applications with ongoing support.\n- Implemented backend systems and database integrations.",
   },
 
   {
@@ -23,7 +25,8 @@ const experience = [
     company: "Independent",
     start: "2014",
     end: "2018",
-    description: "Managed gaming communities as a Developer and Systems Administrator, designing and maintaining high-availability servers on Windows, Ubuntu, and CentOS. Developed custom game modes, automated server tasks, and optimized performance and reliability. Built and maintained community websites and forums, coordinated events, and fostered a positive player environment.",
+    description:
+      "- Managed and developed gaming communities with high-availability servers.\n- Built custom game systems, automation tools, and backend services.\n- Optimized performance, uptime, and infrastructure reliability.",
   },
 
   {
@@ -32,7 +35,8 @@ const experience = [
     company: "Musa Zajmi",
     start: "2013",
     end: "2018",
-    description: "Provided technical support for PCs, laptops, and printers in a school environment. Assisted with setup and maintenance of classroom technology, supported staff and students during daily activities and events, and guided users in software tools like Microsoft Office and educational platforms.",
+    description:
+      "- Provided IT support for school systems, devices, and users.\n- Assisted in deployment and maintenance of classroom technology.",
   },
 ];
 

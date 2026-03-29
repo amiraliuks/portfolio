@@ -47,10 +47,11 @@ export default function MainContent() {
               options={{
                 strings: [
                   "Full Stack Developer",
-                  "Cybersecurity Enthusiast",
+                  "Cybersecurity Student",
+                  "Reverse Engineering Student",
+                  "Vulnerability Researcher",
                   "Privacy Advocate",
-                  "IT & Networking Learner",
-                  "Game Development Hobbyist",
+                  "CTF Player",
                 ],
                 autoStart: true,
                 loop: true,

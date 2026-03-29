@@ -732,20 +732,6 @@ const projects: Project[] = [
   },
 
   {
-    id: 16,
-    title: "TBA",
-    slug: "tba",
-    createdAt: "2025-11-12",
-    description:
-      "TBA.",
-    features: [
-      "TBA",
-    ],
-
-    badge: ["Nextjs"],
-  },
-
-  {
     id: 17,
     title: "Silent Hill Archive",
     slug: "silent-hill-archive",
@@ -823,58 +809,6 @@ const projects: Project[] = [
       },
       {
         src: "/projects/kosovo-gov-site-verification/extension-popup.png",
-        alt: "Showcasing the extension popup",
-        caption: "Showcasing the extension popup",
-      },
-    ],
-
-    links: [
-      {
-        type: "Source Code",
-        href: "https://github.com/AmirAliuA/kosovo-gov-site-verification/releases",
-        icon: FaGithub,
-      },
-    ],
-  },
-
-  {
-    id: 19,
-    title: "Albania Government Domain Checker",
-    slug: "albania-gov-site-verification",
-    createdAt: "2025-12-08",
-    description:
-      "A lightweight browser extension that verifies whether the website you are visiting belongs to an official government domain of the Republic of Albania.",
-    features: [
-      "Checks against a built-in list of official domains",
-      "Simple banner with Albania flag and icon set",
-      "Automatic language detection (EN / SQ / SR)",
-      "Popup page with manual check button",
-      "Fully offline, no analytics, no network requests",
-      "Runs on <all_urls>",
-    ],
-
-    badge: ["Javascript", "HTML", "CSS"],
-
-    image: "/projects/albania-gov-site-verification/al-emblem.png",
-
-    postImages: [
-      {
-        src: "/projects/albania-gov-site-verification/extension-result-en.png",
-        alt: "Showcasing the extension result in English language",
-        caption: "Showcasing the extension result in English language",
-      },
-      {
-        src: "/projects/albania-gov-site-verification/extension-result-al.png",
-        alt: "Showcasing the extension result in Albanian language",
-        caption: "Showcasing the extension result in Albanian language",
-      },
-      {
-        src: "/projects/albania-gov-site-verification/extension-result-sr.png",
-        alt: "Showcasing the extension result in Serbian language",
-        caption: "Showcasing the extension result in Serbian language",
-      },
-      {
-        src: "/projects/albania-gov-site-verification/extension-popup.png",
         alt: "Showcasing the extension popup",
         caption: "Showcasing the extension popup",
       },

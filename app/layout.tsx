@@ -106,7 +106,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               richColors
               closeButton
               toastOptions={{
-                className: 'bg-gray-800 text-white',
+                className: 'border border-border bg-background text-foreground',
                 duration: 5000,
                 style: {
                   fontFamily: 'DM Sans, sans-serif',

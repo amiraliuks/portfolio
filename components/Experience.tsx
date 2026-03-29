@@ -16,23 +16,23 @@ export default function Experience() {
       {experience.map((item) => (
         <div
           key={item.id}
-          className="border-b border-border/40 pb-3 cursor-pointer"
+          className="cursor-pointer border-b border-border/40 pb-3"
           onClick={() => toggle(item.id)}
         >
-          <div className="flex justify-between items-start">
+          <div className="flex items-start justify-between">
             <div>
-              <p className="font-medium text-[13px] leading-tight">
+              <p className="text-[13px] font-medium leading-tight">
                 {item.role}
               </p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
+              <p className="mt-0.5 text-[11px] text-muted-foreground">
                 {item.company}
               </p>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0 text-muted-foreground/70 text-[11px] font-mono">
+            <div className="shrink-0 font-mono text-[11px] text-muted-foreground/70 flex items-center gap-2">
               <Calendar className="h-3 w-3" />
               <span>
-                {item.start} – {item.end}
+                {item.start} - {item.end}
               </span>
               <ChevronDown
                 className={`h-3.5 w-3.5 transition-transform ${expanded[item.id] ? "rotate-180" : ""
@@ -42,7 +42,7 @@ export default function Experience() {
           </div>
 
           {expanded[item.id] && (
-            <p className="mt-2 text-[12px] text-muted-foreground leading-relaxed">
+            <p className="mt-2 whitespace-pre-line text-[12px] leading-relaxed text-muted-foreground">
               {item.description}
             </p>
           )}
