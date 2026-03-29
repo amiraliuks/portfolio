@@ -263,6 +263,22 @@
     line-height: 1.45;
   }
 
+  .prose pre [data-line] {
+    @apply px-4;
+  }
+
+  .prose pre [data-line]::selection {
+    @apply bg-blue-500/25;
+  }
+
+  .prose pre .code-line-highlighted {
+    @apply bg-blue-500/10 border-l-2 border-blue-400;
+  }
+
+  .prose pre .code-word-highlighted {
+    @apply rounded bg-cyan-500/20 px-1 py-0.5;
+  }
+
   .prose img {
     /* Don't apply styles to next/image */
     @apply m-0;

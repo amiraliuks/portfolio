@@ -3,9 +3,12 @@ import Link from 'next/link';
 import Image, { ImageProps } from 'next/image';
 
 import { MDXRemote, MDXRemoteProps } from 'next-mdx-remote/rsc';
-import { highlight } from 'sugar-high';
 import remarkGfm from 'remark-gfm'
+import rehypePrettyCode from "rehype-pretty-code";
 import { slugifyHeading } from '@/lib/blog-content';
+import { cn } from "@/lib/utils";
+import { toSafeHref } from "@/lib/url-safety";
+import { baseUrl } from "@/app/sitemap";
 
 function StyledTable(props: React.TableHTMLAttributes<HTMLTableElement>) {
   return (
@@ -116,24 +119,29 @@ interface CustomLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> 
 }
 
 function CustomLink({ href, children, ...rest }: CustomLinkProps) {
-  if (href.startsWith('/')) {
+  const safeHref = toSafeHref(href, baseUrl);
+  if (!safeHref) {
+    return <span {...rest}>{children}</span>;
+  }
+
+  if (safeHref.startsWith('/')) {
     return (
-      <Link href={href} {...rest}>
+      <Link href={safeHref} {...rest}>
         {children}
       </Link>
     );
   }
 
-  if (href.startsWith('#')) {
+  if (safeHref.startsWith('#')) {
     return (
-      <a href={href} {...rest}>
+      <a href={safeHref} {...rest}>
         {children}
       </a>
     );
   }
 
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" {...rest}>
+    <a href={safeHref} target="_blank" rel="noopener noreferrer" {...rest}>
       {children}
     </a>
   );
@@ -149,26 +157,14 @@ interface CodeProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 function Code({ children, className, ...props }: CodeProps) {
-  const rawCode = React.Children.toArray(children)
-    .map((child) =>
-      typeof child === "string" || typeof child === "number"
-        ? String(child)
-        : ""
-    )
-    .join("");
-
-  const normalizedCode = rawCode.replace(/\r\n?/g, "\n");
-  const isBlock = className?.includes("language-") || normalizedCode.includes("\n");
-
-  if (isBlock) {
-    const codeHTML = highlight(normalizedCode.replace(/\n$/, ""));
-
+  if (className?.includes("language-")) {
     return (
       <code
-        dangerouslySetInnerHTML={{ __html: codeHTML }}
-        className="block font-mono text-[13px] leading-6 text-[#24292f] dark:text-[#d4d4d4]"
+        className={cn("font-mono text-[13px] leading-6", className)}
         {...props}
-      />
+      >
+        {children}
+      </code>
     );
   }
 
@@ -246,6 +242,25 @@ const baseComponents = {
   td: StyledTd,
 };
 
+const prettyCodeOptions = {
+  theme: {
+    dark: "github-dark-default",
+    light: "github-light-default",
+  },
+  keepBackground: false,
+  onVisitLine(node: { children: Array<unknown> }) {
+    if (!node.children.length) {
+      node.children = [{ type: "text", value: " " }];
+    }
+  },
+  onVisitHighlightedLine(node: { properties: { className?: string[] } }) {
+    node.properties.className = [...(node.properties.className ?? []), "code-line-highlighted"];
+  },
+  onVisitHighlightedWord(node: { properties: { className?: string[] } }) {
+    node.properties.className = [...(node.properties.className ?? []), "code-word-highlighted"];
+  },
+};
+
 export function CustomMDX(props: MDXRemoteProps) {
   const slugCounts = new Map<string, number>();
   const getUniqueSlug = (text: string) => {
@@ -273,6 +288,7 @@ export function CustomMDX(props: MDXRemoteProps) {
       options={{
         mdxOptions: {
           remarkPlugins: [remarkGfm],
+          rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
         },
       }}
     />

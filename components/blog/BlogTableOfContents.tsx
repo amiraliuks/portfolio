@@ -1,8 +1,17 @@
 "use client";
 
 import { MouseEvent, useEffect, useMemo, useState } from "react";
+import { ListTree } from "lucide-react";
 
 import type { TableOfContentsItem } from "@/lib/blog-content";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 interface BlogTableOfContentsProps {
   headings: TableOfContentsItem[];
@@ -11,6 +20,7 @@ interface BlogTableOfContentsProps {
 export function BlogTableOfContents({ headings }: BlogTableOfContentsProps) {
   const [activeHeading, setActiveHeading] = useState<string>(headings[0]?.id ?? "");
   const [progress, setProgress] = useState(0);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const headingIds = useMemo(() => headings.map((heading) => heading.id), [headings]);
 
   useEffect(() => {
@@ -105,9 +115,7 @@ export function BlogTableOfContents({ headings }: BlogTableOfContentsProps) {
     };
   }, []);
 
-  const handleHeadingClick = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
-    event.preventDefault();
-
+  const scrollToHeading = (id: string) => {
     const target = document.getElementById(id);
     if (!target) return;
 
@@ -119,60 +127,121 @@ export function BlogTableOfContents({ headings }: BlogTableOfContentsProps) {
     setActiveHeading(id);
   };
 
+  const handleHeadingClick = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
+    event.preventDefault();
+    scrollToHeading(id);
+  };
+
   if (!headings.length) return null;
 
   const roundedProgress = Math.round(progress);
+  const renderReadingProgress = (
+    <div className="mb-4 border-b border-border pb-4">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          Reading
+        </span>
+        <span className="text-xs font-semibold tabular-nums text-foreground">
+          {roundedProgress}%
+        </span>
+      </div>
+      <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-300 transition-[width] duration-150 ease-out"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    </div>
+  );
+
+  const renderHeadingLinks = (mode: "desktop" | "mobile") => (
+    <nav className="mt-3 space-y-1">
+      {headings.map((heading) => {
+        const isActive = activeHeading === heading.id;
+        const levelSpacing =
+          heading.level === 1 ? "pl-0" : heading.level === 2 ? "pl-3" : "pl-6";
+
+        if (mode === "mobile") {
+          return (
+            <button
+              key={`${heading.id}-${heading.text}-mobile`}
+              onClick={() => {
+                scrollToHeading(heading.id);
+                setIsMobileOpen(false);
+              }}
+              className={[
+                "block w-full truncate rounded-md py-1.5 pr-1 text-left text-sm transition-colors",
+                levelSpacing,
+                isActive
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground",
+              ].join(" ")}
+              title={heading.text}
+            >
+              {heading.text}
+            </button>
+          );
+        }
+
+        return (
+          <a
+            key={`${heading.id}-${heading.text}`}
+            href={`#${heading.id}`}
+            onClick={(event) => handleHeadingClick(event, heading.id)}
+            className={[
+              "block cursor-pointer truncate rounded-md py-1.5 pr-1 text-sm transition-colors",
+              levelSpacing,
+              isActive
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground",
+            ].join(" ")}
+            title={heading.text}
+          >
+            {heading.text}
+          </a>
+        );
+      })}
+    </nav>
+  );
 
   return (
-    <aside className="hidden self-start xl:sticky xl:top-24 xl:block">
-      <div className="max-h-[calc(100vh-7rem)] overflow-y-auto rounded-xl border border-border bg-card/40 p-4">
-        <div className="mb-4 border-b border-border pb-4">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-              Reading
-            </span>
-            <span className="text-xs font-semibold tabular-nums text-foreground">
-              {roundedProgress}%
-            </span>
-          </div>
-          <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-300 transition-[width] duration-150 ease-out"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
-
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          On This Page
-        </p>
-
-        <nav className="mt-3 space-y-1">
-          {headings.map((heading) => {
-            const isActive = activeHeading === heading.id;
-            const levelSpacing =
-              heading.level === 1 ? "pl-0" : heading.level === 2 ? "pl-3" : "pl-6";
-
-            return (
-              <a
-                key={`${heading.id}-${heading.text}`}
-                href={`#${heading.id}`}
-                onClick={(event) => handleHeadingClick(event, heading.id)}
-                className={[
-                  "block cursor-pointer truncate rounded-md py-1.5 pr-1 text-sm transition-colors",
-                  levelSpacing,
-                  isActive
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground",
-                ].join(" ")}
-                title={heading.text}
-              >
-                {heading.text}
-              </a>
-            );
-          })}
-        </nav>
+    <>
+      <div className="fixed bottom-5 right-5 z-30 xl:hidden">
+        <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
+          <SheetTrigger asChild>
+            <Button
+              variant="outline"
+              className="gap-2 rounded-full border-border bg-background/90 backdrop-blur"
+            >
+              <ListTree className="h-4 w-4" />
+              On This Page
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="max-h-[80vh] overflow-hidden rounded-t-2xl">
+            <SheetHeader className="px-0 pb-2">
+              <SheetTitle className="text-sm uppercase tracking-wide text-muted-foreground">
+                On This Page
+              </SheetTitle>
+            </SheetHeader>
+            <div className="max-h-[65vh] overflow-y-auto pr-1">
+              {renderReadingProgress}
+              {renderHeadingLinks("mobile")}
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
-    </aside>
+
+      <aside className="hidden self-start xl:sticky xl:top-24 xl:block">
+        <div className="max-h-[calc(100vh-7rem)] overflow-y-auto rounded-xl border border-border bg-card/40 p-4">
+          {renderReadingProgress}
+
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            On This Page
+          </p>
+
+          {renderHeadingLinks("desktop")}
+        </div>
+      </aside>
+    </>
   );
 }

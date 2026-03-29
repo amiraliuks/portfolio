@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 
 import { ImageModal } from "@/components/image-modal";
+import { tinyBlurDataURL } from "@/lib/image";
 
 type MediaItem = {
   src: string;
@@ -95,6 +96,8 @@ export function ProjectMediaShowcase({
                 priority
                 className="object-cover transition-transform duration-200 group-hover:scale-[1.01]"
                 sizes="(min-width: 1024px) 896px, 100vw"
+                placeholder="blur"
+                blurDataURL={tinyBlurDataURL}
               />
             </button>
           )}
@@ -135,6 +138,8 @@ export function ProjectMediaShowcase({
                           fill
                           className="object-cover transition-transform duration-200 group-hover:scale-[1.01]"
                           sizes="(min-width: 768px) 50vw, 100vw"
+                          placeholder="blur"
+                          blurDataURL={tinyBlurDataURL}
                         />
                       </button>
                     )}

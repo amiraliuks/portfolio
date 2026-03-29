@@ -33,7 +33,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     name: 'Amir Aliu',
     alternateName: 'Amir Aliu',
     url: 'https://amiraliu.vercel.app',
-    image: 'https://amiraliu.vercel.app/og.png',
+    image:
+      'https://amiraliu.vercel.app/og?title=Amir%20Aliu&description=Cybersecurity%20research%20and%20modern%20web%20development',
     jobTitle: 'Full Stack Developer',
     worksFor: {
       '@type': 'Organization',

@@ -8,6 +8,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { normalizeBlogTags } from "@/lib/blog-tags";
 import { formatDate } from "@/lib/utils";
 import type { BlogPost } from "@/types/types";
+import { tinyBlurDataURL } from "@/lib/image";
 
 interface BlogPostsProps {
   posts: BlogPost[];
@@ -218,6 +219,8 @@ export function BlogPosts({ posts }: BlogPostsProps) {
                         height={630}
                         className="h-44 w-full object-cover transition duration-500 group-hover:scale-[1.04]"
                         sizes="(min-width: 768px) 50vw, 100vw"
+                        placeholder="blur"
+                        blurDataURL={tinyBlurDataURL}
                       />
                     ) : (
                       <div className="h-44 w-full bg-gradient-to-br from-muted to-accent" />

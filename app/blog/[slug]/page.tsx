@@ -15,11 +15,17 @@ import { getBlogPosts } from "@/lib/getBlogs";
 import { calculateReadingTime, formatDate } from "@/lib/utils";
 import { baseUrl } from "@/app/sitemap";
 import { BlogPost, BlogPageProps } from "@/types/types";
+import { tinyBlurDataURL } from "@/lib/image";
+import { toSafeHttpUrl } from "@/lib/url-safety";
 
 function toAbsoluteImageUrl(image?: string) {
   if (!image) return undefined;
-  if (image.startsWith("http://") || image.startsWith("https://")) return image;
-  return image.startsWith("/") ? `${baseUrl}${image}` : `${baseUrl}/${image}`;
+  if (image.startsWith("http://") || image.startsWith("https://")) {
+    return toSafeHttpUrl(image);
+  }
+
+  const absolute = image.startsWith("/") ? `${baseUrl}${image}` : `${baseUrl}/${image}`;
+  return toSafeHttpUrl(absolute);
 }
 
 export async function generateStaticParams() {
@@ -49,7 +55,7 @@ export async function generateMetadata({ params }: BlogPageProps) {
   const absoluteImage = toAbsoluteImageUrl(image);
   const ogImage =
     absoluteImage ??
-    `https://amiraliu.vercel.app/og?title=${encodeURIComponent(
+    `${baseUrl}/og?title=${encodeURIComponent(
       title
     )}&description=${encodeURIComponent(safeDescription)}`;
 
@@ -136,7 +142,7 @@ export default async function Blog({ params }: BlogPageProps) {
   const absoluteImage = toAbsoluteImageUrl(post.metadata.image);
   const ogImage =
     absoluteImage ??
-    `https://amiraliu.vercel.app/og?title=${encodeURIComponent(
+    `${baseUrl}/og?title=${encodeURIComponent(
       post.metadata.title
     )}&description=${encodeURIComponent(safeDescription)}`;
 
@@ -294,6 +300,9 @@ export default async function Blog({ params }: BlogPageProps) {
             height={900}
             sizes="(min-width: 1024px) 1024px, 100vw"
             className="h-auto w-full object-cover"
+            placeholder="blur"
+            blurDataURL={tinyBlurDataURL}
+            priority
           />
         </div>
       )}

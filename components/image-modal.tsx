@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { type TouchEventHandler, useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Download, ExternalLink, Share2, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { toSafeFilename, toSafeHttpUrl } from "@/lib/url-safety"
 
 interface ImageData {
   src: string
@@ -22,45 +23,24 @@ interface ImageModalProps {
   projectTitle: string
 }
 
-function resolveSafeHttpUrl(value: string) {
-  try {
-    const base =
-      typeof window === "undefined" ? "https://example.com" : window.location.origin
-    const url = new URL(value, base)
-    if (url.protocol !== "http:" && url.protocol !== "https:") return null
-    return url.toString()
-  } catch {
-    return null
-  }
-}
-
-function toSafeFilename(value: string) {
-  const sanitized = value
-    .replace(/[^\w.-]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-    .slice(0, 80)
-
-  return sanitized || "image"
-}
-
 export function ImageModal({ images, currentIndex, isOpen, onClose, projectTitle }: ImageModalProps) {
   const [offset, setOffset] = useState(0)
   const [isZoomed, setIsZoomed] = useState(false)
+  const touchStartXRef = useRef<number | null>(null)
   const imageIndex = (currentIndex + (isOpen ? offset : 0) + images.length) % images.length
 
   const currentImage = images[imageIndex]
-  const safeImageUrl = resolveSafeHttpUrl(currentImage.src)
+  const safeImageUrl = toSafeHttpUrl(currentImage.src)
 
-  const nextImage = () => {
+  const nextImage = useCallback(() => {
     setOffset((prev) => prev + 1)
     setIsZoomed(false)
-  }
+  }, [])
 
-  const prevImage = () => {
+  const prevImage = useCallback(() => {
     setOffset((prev) => prev - 1)
     setIsZoomed(false)
-  }
+  }, [])
 
   const downloadImage = () => {
     if (!safeImageUrl) return
@@ -105,11 +85,59 @@ export function ImageModal({ images, currentIndex, isOpen, onClose, projectTitle
     window.open(safeImageUrl, "_blank", "noopener,noreferrer")
   }
 
-  const handleOpenChange = (open: boolean) => {
+  const handleOpenChange = useCallback((open: boolean) => {
     if (!open) {
       setOffset(0)
       setIsZoomed(false)
       onClose()
+    }
+  }, [onClose])
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault()
+        handleOpenChange(false)
+        return
+      }
+
+      if (images.length <= 1) return
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault()
+        nextImage()
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault()
+        prevImage()
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [handleOpenChange, images.length, isOpen, nextImage, prevImage])
+
+  const handleTouchStart: TouchEventHandler<HTMLDivElement> = (event) => {
+    if (images.length <= 1) return
+    touchStartXRef.current = event.touches[0]?.clientX ?? null
+  }
+
+  const handleTouchEnd: TouchEventHandler<HTMLDivElement> = (event) => {
+    if (images.length <= 1) return
+    const startX = touchStartXRef.current
+    touchStartXRef.current = null
+    if (startX === null) return
+
+    const endX = event.changedTouches[0]?.clientX ?? startX
+    const delta = endX - startX
+    const threshold = 48
+
+    if (Math.abs(delta) < threshold) return
+    if (delta < 0) {
+      nextImage()
+    } else {
+      prevImage()
     }
   }
 
@@ -194,7 +222,11 @@ export function ImageModal({ images, currentIndex, isOpen, onClose, projectTitle
           </DialogHeader>
 
           {/* Image container */}
-          <div className="relative flex-1 overflow-hidden bg-muted/30">
+          <div
+            className="relative flex-1 overflow-hidden bg-muted/30"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             <div
               className={cn(
                 "relative h-full w-full transition-transform duration-300 ease-out",

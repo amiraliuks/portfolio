@@ -12,11 +12,11 @@ export const metadata: Metadata = {
     title: 'Certifications — Amir aliu',
     description:
       "Browse through my various certifications. A collection that reflects the areas I genuinely enjoy working in. Each certification represents skills I've built over time and shows my commitment to continuous learning, improvement, and staying active in the fields I care about most.",
-    url: 'https://amiraliu.vercel.app/projects',
+    url: 'https://amiraliu.vercel.app/certifications',
     siteName: 'Amir Aliu Portfolio',
     images: [
       {
-        url: 'https://amiraliu.vercel.app/og?title=Projects%20%E2%80%94%20Amir%20Aliu&description=Explore%20my%20portfolio%20of%20web%20applications%20and%20open-source%20contributions',
+        url: 'https://amiraliu.vercel.app/og?title=Certifications%20-%20Amir%20Aliu&description=Browse%20my%20certifications%20across%20cybersecurity%2C%20support%2C%20and%20professional%20training',
         width: 1200,
         height: 630,
         alt: 'Amir Aliu Certifications',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     title: 'Certifications — Amir Aliu',
     description: "Browse through my various certifications. A collection that reflects the areas I genuinely enjoy working in. Each certification represents skills I've built over time and shows my commitment to continuous learning, improvement, and staying active in the fields I care about most.",
     images: [
-      'https://amiraliu.vercel.app/og?title=Certifications%20%E2%80%94%20Amir%20Aliu&description=Explore%20my%20portfolio%20of%20web%20applications%20and%20open-source%20contributions',
+      'https://amiraliu.vercel.app/og?title=Certifications%20-%20Amir%20Aliu&description=Browse%20my%20certifications%20across%20cybersecurity%2C%20support%2C%20and%20professional%20training',
     ],
   },
   alternates: {

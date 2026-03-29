@@ -1,4 +1,5 @@
 import { getBlogPosts } from '@/lib/getBlogs';
+import { projects } from '@/data/projects';
 
 export const baseUrl = 'https://amiraliu.vercel.app';
 
@@ -8,10 +9,15 @@ export default async function sitemap() {
     lastModified: post.metadata.publishedAt,
   }));
 
-  const routes = ['', '/about', '/projects', '/certificataions', '/blog'].map((route) => ({
+  const projectRoutes = projects.map((project) => ({
+    url: `${baseUrl}/projects/${project.slug}`,
+    lastModified: project.createdAt,
+  }));
+
+  const routes = ['', '/about', '/projects', '/certifications', '/blog'].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date().toISOString().split('T')[0],
   }));
 
-  return [...routes, ...blogs];
+  return [...routes, ...blogs, ...projectRoutes];
 }

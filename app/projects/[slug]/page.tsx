@@ -1,11 +1,15 @@
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Calendar } from "lucide-react";
 
 import { ProjectMediaShowcase } from "@/components/ProjectMediaShowcase";
 import { projects } from "@/data/projects";
 import { formatProjectDate } from "@/lib/utils";
+import { toSafeHref, toSafeHttpUrl } from "@/lib/url-safety";
+import { baseUrl } from "@/app/sitemap";
 
 const MAX_FEATURES = 8;
+const IMAGE_FILE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".webp", ".gif", ".avif", ".svg"];
 
 function splitFeature(feature: string) {
   const [label, ...rest] = feature.split(" - ");
@@ -20,8 +24,81 @@ function shortenFeature(feature: string, maxLength = 170) {
   return `${feature.slice(0, maxLength - 3).trimEnd()}...`;
 }
 
+function toAbsoluteProjectImageUrl(image?: string) {
+  if (!image) return undefined;
+  if (image.startsWith("http://") || image.startsWith("https://")) {
+    return toSafeHttpUrl(image);
+  }
+
+  const absolute = image.startsWith("/") ? `${baseUrl}${image}` : `${baseUrl}/${image}`;
+  return toSafeHttpUrl(absolute);
+}
+
+function isLikelyImagePath(value?: string) {
+  if (!value) return false;
+  const withoutQuery = value.split("?")[0]?.toLowerCase() ?? "";
+  return IMAGE_FILE_EXTENSIONS.some((extension) => withoutQuery.endsWith(extension));
+}
+
+function getProjectOgImage(project: (typeof projects)[number]) {
+  if (isLikelyImagePath(project.image)) {
+    return toAbsoluteProjectImageUrl(project.image);
+  }
+
+  const galleryImage = project.postImages?.find((item) => isLikelyImagePath(item.src))?.src;
+  return toAbsoluteProjectImageUrl(galleryImage);
+}
+
 export async function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const project = projects.find((p) => p.slug === slug);
+  if (!project) return {};
+
+  const absoluteImage = getProjectOgImage(project);
+  const safeDescription = project.description;
+  const pageUrl = `${baseUrl}/projects/${project.slug}`;
+
+  const ogImage =
+    absoluteImage ??
+    `${baseUrl}/og?title=${encodeURIComponent(project.title)}&description=${encodeURIComponent(
+      safeDescription
+    )}`;
+
+  return {
+    title: `${project.title} - Project`,
+    description: safeDescription,
+    openGraph: {
+      title: project.title,
+      description: safeDescription,
+      url: pageUrl,
+      type: "article",
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: project.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: project.title,
+      description: safeDescription,
+      images: [ogImage],
+    },
+    alternates: {
+      canonical: pageUrl,
+    },
+  };
 }
 
 export default async function ProjectPage({
@@ -34,7 +111,12 @@ export default async function ProjectPage({
 
   if (!project) return notFound();
 
-  const validLinks = (project.links || []).filter((link) => link.href?.trim().length);
+  const validLinks = (project.links || [])
+    .map((link) => ({
+      ...link,
+      safeHref: toSafeHref(link.href, baseUrl),
+    }))
+    .filter((link) => Boolean(link.safeHref));
   const featureItems = (project.features || []).filter(Boolean);
   const visibleFeatures = featureItems.slice(0, MAX_FEATURES);
   const galleryItems = project.postImages ?? [];
@@ -44,9 +126,34 @@ export default async function ProjectPage({
   const hasFeatures = visibleFeatures.length > 0;
   const hasLinks = validLinks.length > 0;
   const hiddenFeatureCount = Math.max(0, featureItems.length - visibleFeatures.length);
+  const pageUrl = `${baseUrl}/projects/${project.slug}`;
+  const absoluteImage = getProjectOgImage(project);
+
+  const projectSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    name: project.title,
+    description: project.description,
+    codeRepository: project.links?.find((link) => /source|github/i.test(link.type))?.href,
+    dateCreated: project.createdAt,
+    url: pageUrl,
+    image: absoluteImage,
+    author: {
+      "@type": "Person",
+      name: "Amir Aliu",
+      url: baseUrl,
+    },
+  };
 
   return (
     <section className="mx-auto max-w-4xl space-y-8 px-4 py-10 sm:space-y-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(projectSchema),
+        }}
+      />
+
       <ProjectMediaShowcase
         projectTitle={project.title}
         heroImage={project.image}
@@ -76,7 +183,7 @@ export default async function ProjectPage({
             return (
               <a
                 key={i}
-                href={link.href}
+                href={link.safeHref!}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="

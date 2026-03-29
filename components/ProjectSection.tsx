@@ -11,6 +11,9 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowUpRight, Github } from "lucide-react";
 import { projects } from "@/data/projects";
 import { formatProjectDate, parseProjectDate } from "@/lib/utils";
+import { toSafeHref } from "@/lib/url-safety";
+import { baseUrl } from "@/app/sitemap";
+import { tinyBlurDataURL } from "@/lib/image";
 
 export default function ProjectsSection() {
   const sorted = [...projects].sort(
@@ -29,7 +32,7 @@ export default function ProjectsSection() {
             overflow-hidden
             rounded-2xl
             border border-neutral-200/80
-            bg-gradient-to-b from-neutral-50 to-neutral-100/60
+            bg-linear-to-b from-neutral-50 to-neutral-100/60
             py-0
             shadow-[0_16px_40px_-28px_rgba(2,6,23,0.35)]
             transition-all duration-300 ease-out
@@ -72,6 +75,8 @@ export default function ProjectsSection() {
                 sizes="(min-width: 768px) 50vw, 100vw"
                 quality={82}
                 className="h-34 w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.03] sm:h-36"
+                placeholder="blur"
+                blurDataURL={tinyBlurDataURL}
               />
             ) : (
               <div className="flex h-34 w-full items-center justify-center bg-muted text-xs text-muted-foreground sm:h-36">
@@ -79,7 +84,7 @@ export default function ProjectsSection() {
               </div>
             )}
 
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent" />
+            <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/60 via-black/15 to-transparent" />
             <div className="absolute right-3 top-3 rounded-full border border-white/30 bg-black/35 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-white/90 backdrop-blur-sm">
               Featured
             </div>
@@ -153,8 +158,10 @@ export default function ProjectsSection() {
 
               {project.links?.map((lnk, idx) => {
                 const Icon = lnk.icon;
+                const safeHref = toSafeHref(lnk.href, baseUrl);
+                if (!safeHref) return null;
                 return (
-                  <Link href={lnk.href} target="_blank" rel="noopener noreferrer" key={idx}>
+                  <Link href={safeHref} target="_blank" rel="noopener noreferrer" key={idx}>
                     <Badge
                       variant="outline"
                       className="
@@ -180,30 +187,39 @@ export default function ProjectsSection() {
                 );
               })}
 
-              {project.href && (
-                <Link href={project.href} target="_blank" rel="noopener noreferrer">
-                  <Badge
-                    variant="outline"
-                    className="
-                      flex gap-1.5
-                      rounded-full
-                      border-neutral-300
-                      bg-white/80
-                      px-2.5 py-1
-                      text-[10px]
-                      text-neutral-700
-                      transition-colors
-                      hover:bg-neutral-100
-                      dark:border-neutral-700
-                      dark:bg-neutral-900/75
-                      dark:text-neutral-100
-                      dark:hover:bg-neutral-800
-                    "
+              {(() => {
+                const safeProjectHref = project.href ? toSafeHref(project.href, baseUrl) : null;
+                if (!safeProjectHref) return null;
+
+                return (
+                  <Link
+                    href={safeProjectHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <Github className="w-3 h-3" /> Source
-                  </Badge>
-                </Link>
-              )}
+                    <Badge
+                      variant="outline"
+                      className="
+                        flex gap-1.5
+                        rounded-full
+                        border-neutral-300
+                        bg-white/80
+                        px-2.5 py-1
+                        text-[10px]
+                        text-neutral-700
+                        transition-colors
+                        hover:bg-neutral-100
+                        dark:border-neutral-700
+                        dark:bg-neutral-900/75
+                        dark:text-neutral-100
+                        dark:hover:bg-neutral-800
+                      "
+                    >
+                      <Github className="w-3 h-3" /> Source
+                    </Badge>
+                  </Link>
+                );
+              })()}
             </div>
           </CardFooter>
         </Card>

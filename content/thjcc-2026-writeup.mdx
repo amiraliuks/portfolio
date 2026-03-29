@@ -3,6 +3,8 @@ title: THJCC 2026 CTF Writeup
 summary: Layered forensic and steganography solves from THJCC 2026.
 tags: Cybersecurity, CTF, Writeup
 publishedAt: '2026-02-25'
+language: "en"
+translationKey: "thjcc-2026-writeup"
 ---
 
 ![THJCC Logo](/blog-posts/thjcc-2026-writeup/logo.png)
@@ -14,9 +16,10 @@ publishedAt: '2026-02-25'
 
 ------------------------------------------------------------------------
 
-During THJCC 2026, due to having guests at my place, I focused primarily on forensics and steganography challenges.
+This was my first CTF, and of course I had guests over at the same time... so I didn’t go all-in on everything. 
+I mostly stuck to forensics/stego since they’re easier to chip away at without full focus.
 
-This writeup covers two challenges where I directly handled the core solving components:
+I ended up solving these two:
 - CoLoR iS cOdE (forensics / steganography)
 - SSTV Audio Challenge (signal-based steganography using SSTV)
 
@@ -24,17 +27,18 @@ This writeup covers two challenges where I directly handled the core solving com
 
 # 1. CoLoR iS cOdE
 ## Challenge Information
-- Category: forensics / steganography
-- Points: 500
-- Artifact: THJCC_CoLoR_iS_cOdE.zip
-- Hint: colors can say a lot
+| Challenge Name | Category                  | Points | Artifact                | Hint                 |
+| -------------- | ------------------------- | ------ | ----------------------- | -------------------- |
+| CoLoR iS cOdE  | forensics / steganography | 500    | THJCC_CoLoR_iS_cOdE.zip | colors can say a lot |
 
 ------------------------------------------------------------------------
 
-## Step 1 -- Inspect the ZIP
-When I first opened the challenge, I saw a password-protected ZIP file. That immediately made me think:
-- Either brute-force (unlikely for 500 pts)
-- Or cryptographic weakness exploitation.
+## Step 1 - Inspect the ZIP file
+The first thing I saw was the password-protected ZIP file.
+
+At 500 points, brute-forcing didn't make much sense, so I was already thinking:
+- either crypto is weak
+- or there's some trick
 
 To confirm what was inside, I ran:
 ``` python
@@ -43,6 +47,7 @@ z = zipfile.ZipFile("THJCC_CoLoR_iS_cOdE.zip")
 for i in z.infolist():
     print(i.filename, bool(i.flag_bits & 0x1), i.file_size)
 ```
+
 The output showed:
 - Entry: `rainbow.png`
 - Encrypted: `True`
@@ -52,7 +57,7 @@ That’s important because ZipCrypto is weak.
 
 ------------------------------------------------------------------------
 
-## Step 2 -- Known-Plaintext Attack
+## Step 2 - Known-Plaintext Attack
 Since the archive only contained a PNG, I immediately remembered:
 - PNG files always start with the same magic header.
 

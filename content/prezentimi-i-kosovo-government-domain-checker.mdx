@@ -7,125 +7,86 @@ tags: Browser Extension, Cybersecurity, Phishing, Domain Verification, Web Secur
 summary: "Prezantimi i Kosovo Government Domain Checker"
 ---
 
-# 🇽🇰 Prezantimi i Kosovo Government Domain Checker
-*Një mjet i vogël me një qëllim të thjeshtë: t’i ndihmojë njerëzit të qëndrojnë të sigurt online.*
+# 🇽🇰 Kosovo Government Domain Checker
+Kohët e fundit po shoh gjithnjë e më shumë phishing tentime.
 
-Të dallosh nëse një faqe interneti i përket vërtet Qeverisë së Kosovës nuk është gjithmonë e lehtë. Shumë qytetarë—sidomos të moshuarit ose ata që nuk janë të aftë në teknologji—e kanë të vështirë të bëjnë dallimin mes një faqeje zyrtare dhe një faqeje të rreme të krijuar për të vjedhur informacion.
+Gjithfarë sene si "paketa juaj ka mbërritur", "paguani gjobën e policisë", edhe faqe tjera që mundohen me u dukë zyrtare. Disa prej tyre janë aq mirë të bëra sa nëse nuk je duke i kushtu vëmendje, lehtë mundesh me ra në to.
 
-Pikërisht për këtë arsye krijova **Kosovo Government Domain Checker**, një browser extension që verifikon nëse faqja që po vizitoni është pjesë e infrastrukturës zyrtare online të Republikës së Kosovës.
+Shumica e njerëzve nuk duhet me ra në këto. Po realiteti është që shumë bien. Sidomos ata që nuk janë shumë të familjarizuar me teknologjinë ose nuk e kontrollojnë domain-in.
 
----
+Edhe një problem tjetër është që Kosova nuk ka një standard të qartë për domain-e qeveritare. Nuk është aq e thjeshtë sa “shiko a është .gov” si në disa shtete tjera. Kjo e bën edhe më konfuze për përdoruesin mesatar.
 
-## Pse e Krijova Këtë Browser Extension
-
-Vitet e fundit, faqet e rreme, phishing-u dhe portalet që imitojnë shërbimet qeveritare janë shtuar ndjeshëm. Disa duken aq bindëse sa edhe përdoruesit me përvojë hezitojnë para se të fusin të dhënat e tyre personale. Dhe kur diçka duket “zyrtare” — flamuri, ngjyrat, gjuha — shumë njerëz nuk dinë si ta verifikojnë.
-
-Kjo shtesë ua jep atë siguri që shpesh mungon.
-
-Qoftë punonjës i administratës, student që kërkon dokumente, apo dikush që ndihmon gjyshërit për të lundruar në shërbimet online — një indikator i qartë në krye të faqes bën diferencë të madhe.
+Kështu që vendosa me bo diçka të vogël për këtë punë.
 
 ---
 
-## Si Funksionon
+## Si funksionon
+Është shumë e thjeshtë.
+- E kontrollon domain-in e faqes ku je duke navigu  
+- E krahason me një listë të domain-eve zyrtare të institucioneve të Kosovës  
+- Nëse përputhet, shfaqet një **banner blu** që tregon që faqja është e verifikuar  
+- Nëse jo, shfaqet një **paralajmërim i kuq**  
 
-Shtesa është tepër e thjeshtë nga dizajni.
+Kaq. Nuk ka nevojë për klikime, nuk ka konfigurim. Punon në prapavijë.
 
-- Ajo krahason domenin e faqes që po vizitoni me një listë të ndërtuar brenda të domenave zyrtare qeveritare.
-- Nëse domeni përputhet, shfaqet një **banner blu** që tregon se faqja është verifikuar.
-- Nëse nuk ekziston në listë, shfaqet një **banner i kuq** që paralajmëron se faqja nuk është pjesë e rrjetit qeveritar të Kosovës.
-
-Ajo funksionon qetë në prapavijë — pa klikime, pa menu, pa nevojë për njohuri teknike.
-
-Shtesa detekton automatikisht gjuhën e shfletuesit (Anglisht, Shqip, Serbisht) dhe e shfaq njoftimin në gjuhën përkatëse.
-
----
-
-## Kujt i Ndihmon
-
-Edhe pse mund ta përdorë çdokush, shtesa është veçanërisht e dobishme për:
-
-- **Punonjës të institucioneve** që duhet të sigurohen se po hyjnë në shërbime të sakta dhe autentike.
-- **Qytetarë që nuk janë të aftë në teknologji**, përfshirë të moshuarit që shpesh janë shënjestër e mashtrimeve online.
-- **Studentë dhe punonjës** që kërkojnë formularë, dokumente apo portale pa pasur nevojë të dyshojnë çdo herë.
-- **Persona që ndihmojnë të tjerët** — familjarë, kolegë apo klientë — të verifikojnë faqet me lehtësi.
-
-Qëllimi nuk është të zëvendësojë mjetet e sigurisë kibernetike; është thjesht të ofrojë një sinjal të dukshëm e të besueshëm për faqet që duken “zyrtare”.
+Mesazhi shfaqet automatikisht në gjuhën e browser-it (Anglisht, Shqip, ose Serbisht).
 
 ---
 
-## Privatësia e Parë
+## Kujt i hyn në punë
+Mundet me u përdor prej kujtdo, po sidomos:
+- Persona që nuk janë shumë teknik  
+- Njerëz më të moshuar që shpesh targetohen nga këto mashtrime  
+- Ata që ndihmojnë familjarë ose të tjerë me shërbime online  
+- Edhe dev-a që duan një kontroll të shpejtë vizual  
 
-Shtesa funksionon plotësisht offline:
-
-- Pa gjurmim
-- Pa analiza
-- Pa kërkesa në rrjet
-- Pa mbledhje të të dhënave personale
-
-Gjithçka ekzekutohet lokalisht në shfletuesin tuaj. E vetmja gjë që kontrollon është emri i domenit të faqes që po vizitoni.
-
-Informacioni juaj i shfletimit nuk largohet asnjëherë nga pajisja juaj.
+Nuk është zëvendësim për mjete sigurie. Veç ta bën të qartë kur diçka nuk është zyrtare.
 
 ---
 
-## Veçoritë Kryesore
+## Privatësia
+Krejt funksionon lokalisht në browser.
+- Nuk ka tracking  
+- Nuk ka analytics  
+- Nuk dërgon kërkesa në servera  
+- Nuk mbledh të dhëna  
 
-- Listë e integruar e domenave zyrtare të Qeverisë së Kosovës
-- Banner i qartë me flamur dhe ikonë
-- Detektim automatik i gjuhës (EN, SQ, SR)
-- Faqe popup për kontroll manual
-- Funksionon në çdo URL
-- Plotësisht offline dhe miqësore me privatësinë
-- Pa nevojë për konfigurim
-
----
-
-## Instalimi i Shtesës
-
-1. Shkarkoni ose klononi projektin
-2. Hapni `chrome://extensions/`
-3. Aktivizoni **Developer Mode**
-4. Klikoni **Load unpacked**
-5. Zgjidhni dosjen e projektit
-
-Shtesa është gati për përdorim.
+Kontrollon vetëm domain-in e faqes ku je. Asgjë tjetër.
 
 ---
 
-## Struktura e Projektit
+## Features
+- Listë e domain-eve zyrtare të institucioneve të Kosovës  
+- Indikator vizual i qartë (verifikuar / jo)  
+- Detektim automatik i gjuhës (EN, SQ, SR)  
+- Punon në çdo faqe  
+- Plotësisht offline  
+- Pa konfigurim  
 
-```text
-/
-├── manifest.json
-├── assets/
-│   ├── icons/
-│   ├── kosovo-flag.png
-│   └── emblem.png
-└── src/
-    ├── background/
-    ├── content/
-    │   ├── banner.js
-    │   └── banner.css
-    ├── data/
-    │   └── domains.json
-    └── popup/
-        ├── popup.html
-        └── popup.js
-```
+---
 
-## Licensa
+## Instalimi
+1. Shkarko ose klono repository  
+2. Hap `chrome://extensions/`  
+3. Aktivizo **Developer Mode**  
+4. Kliko **Load unpacked**  
+5. Zgjedh folder-in e projektit  
 
-Ky projekt publikohet nën CC BY-NC-ND 4.0.
-Ju lejohet ta shikoni dhe të mësoni nga kodi burimor, por **nuk ju lejohet**:
+Kaq.
 
-- ta përdorni për qëllime komerciale
-- ta rishpërndani
-- të publikoni forks
-- të ndani kopje të modifikuara ose të pamodifikuara
+---
 
-Detajet e plota të licencës:
+## License
+Ky projekt është nën **CC BY-NC-ND 4.0**.
+
+Mundesh me e lexu kodin dhe me mësu prej tij, por nuk mundesh:
+- me e përdor për qëllime komerciale  
+- me e shpërnda  
+- me publiku fork-e  
+- me shpërnda versione të modifikuara ose të pamodifikuara  
+
 https://creativecommons.org/licenses/by-nc-nd/4.0/
 
 ---
 
-Nëse punoni me dokumente zyrtare, ndihmoni qytetarët, apo thjesht dëshironi një mënyrë më të lehtë për të shmangur faqet që shtiren si shërbime shtetërore, kjo shtesë ju ofron një mënyrë të thjeshtë dhe të besueshme për të verifikuar atë që është reale — një domen në një kohë.
+Nëse i ke pa këto faqe fake që duken si "zyrtare", kjo është një mënyrë e thjeshtë për me kontrollu para se me i besu.
