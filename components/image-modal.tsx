@@ -22,12 +22,35 @@ interface ImageModalProps {
   projectTitle: string
 }
 
+function resolveSafeHttpUrl(value: string) {
+  try {
+    const base =
+      typeof window === "undefined" ? "https://example.com" : window.location.origin
+    const url = new URL(value, base)
+    if (url.protocol !== "http:" && url.protocol !== "https:") return null
+    return url.toString()
+  } catch {
+    return null
+  }
+}
+
+function toSafeFilename(value: string) {
+  const sanitized = value
+    .replace(/[^\w.-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 80)
+
+  return sanitized || "image"
+}
+
 export function ImageModal({ images, currentIndex, isOpen, onClose, projectTitle }: ImageModalProps) {
   const [offset, setOffset] = useState(0)
   const [isZoomed, setIsZoomed] = useState(false)
   const imageIndex = (currentIndex + (isOpen ? offset : 0) + images.length) % images.length
 
   const currentImage = images[imageIndex]
+  const safeImageUrl = resolveSafeHttpUrl(currentImage.src)
 
   const nextImage = () => {
     setOffset((prev) => prev + 1)
@@ -39,32 +62,25 @@ export function ImageModal({ images, currentIndex, isOpen, onClose, projectTitle
     setIsZoomed(false)
   }
 
-  const downloadImage = async () => {
-    try {
-      const response = await fetch(currentImage.src)
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = url
-      link.download = `${projectTitle}-${imageIndex + 1}.jpg`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
-    } catch (error) {
-      console.error("Failed to download image:", error)
-      // Fallback: open image in new tab
-      window.open(currentImage.src, "_blank")
-    }
+  const downloadImage = () => {
+    if (!safeImageUrl) return
+
+    const link = document.createElement("a")
+    link.href = safeImageUrl
+    link.download = `${toSafeFilename(projectTitle)}-${imageIndex + 1}.jpg`
+    link.rel = "noopener noreferrer"
+    link.click()
   }
 
   const shareImage = async () => {
+    if (!safeImageUrl) return
+
     if (navigator.share) {
       try {
         await navigator.share({
           title: `${projectTitle} - ${currentImage.alt}`,
           text: currentImage.caption || currentImage.alt,
-          url: currentImage.src,
+          url: safeImageUrl,
         })
       } catch (error) {
         console.error("Failed to share:", error)
@@ -76,14 +92,17 @@ export function ImageModal({ images, currentIndex, isOpen, onClose, projectTitle
   }
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(currentImage.src).then(() => {
+    if (!safeImageUrl) return
+
+    navigator.clipboard.writeText(safeImageUrl).then(() => {
       // You could add a toast notification here
       console.log("Image URL copied to clipboard")
     })
   }
 
   const openInNewTab = () => {
-    window.open(currentImage.src, "_blank")
+    if (!safeImageUrl) return
+    window.open(safeImageUrl, "_blank", "noopener,noreferrer")
   }
 
   const handleOpenChange = (open: boolean) => {
