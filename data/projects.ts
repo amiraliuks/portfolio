@@ -66,7 +66,7 @@ const projects: Project[] = [
     links: [
       {
         type: "Source",
-        href: "https://github.com/AmirAliuA/snapchat-username",
+        href: "https://github.com/amiraliuks/snapchat-username",
         icon: FaGithub,
       },
     ],
@@ -115,7 +115,7 @@ const projects: Project[] = [
     links: [
       {
         type: "Source",
-        href: "https://github.com/AmirAliuA/loginform_amiraliu",
+        href: "https://github.com/amiraliuks/loginform_amiraliu",
         icon: FaGithub,
       },
     ],
@@ -269,7 +269,7 @@ const projects: Project[] = [
     links: [
       {
         type: "Source Code",
-        href: "https://github.com/AmirAliuA/billing-system",
+        href: "https://github.com/amiraliuks/billing-system",
         icon: FaGithub,
       },
     ],
@@ -319,7 +319,7 @@ const projects: Project[] = [
     links: [
       {
         type: "Source Code",
-        href: "https://github.com/AmirAliuA/ai-language-detection",
+        href: "https://github.com/amiraliuks/ai-language-detection",
         icon: FaGithub,
       },
     ],
@@ -354,7 +354,7 @@ const projects: Project[] = [
     links: [
       {
         type: "Source Code",
-        href: "https://github.com/AmirAliuA/banking-app",
+        href: "https://github.com/amiraliuks/banking-app",
         icon: FaGithub,
       },
     ],
@@ -391,12 +391,12 @@ const projects: Project[] = [
     links: [
       {
         type: "Source Code",
-        href: "https://github.com/AmirAliuA/snake-game",
+        href: "https://github.com/amiraliuks/snake-game",
         icon: FaGithub,
       },
       {
         type: "Download Release",
-        href: "https://github.com/AmirAliuA/snake-game/releases/tag/1.0",
+        href: "https://github.com/amiraliuks/snake-game/releases/tag/1.0",
         icon: FaGithub,
       },
     ],
@@ -422,7 +422,7 @@ const projects: Project[] = [
     links: [
       {
         type: "Source Code",
-        href: "https://github.com/AmirAliuA/doom-unity",
+        href: "https://github.com/amiraliuks/doom-unity",
         icon: FaGithub,
       },
     ],
@@ -492,7 +492,7 @@ const projects: Project[] = [
       },
       {
         type: "Source Code",
-        href: "https://github.com/AmirAliuA/steam-kosovo-flag",
+        href: "https://github.com/amiraliuks/steam-kosovo-flag",
         icon: FaGithub,
       },
     ],
@@ -658,6 +658,7 @@ const projects: Project[] = [
     badge: ["Next.js", "Typescript", "Shadcn UI", "TailwindCSS", "Magic UI", "REST API"],
 
     video: "/projects/nasa-apod-api/capture.mp4",
+    image: "/projects/nasa-apod-api/dark-theme.jpeg",
 
     postImages: [
       {
@@ -685,7 +686,7 @@ const projects: Project[] = [
       },
       {
         type: "Source Code",
-        href: "https://github.com/amiraliua/nasa-apod-api/",
+        href: "https://github.com/amiraliuks/nasa-apod-api/",
         icon: FaGithub,
       },
     ],
@@ -720,12 +721,12 @@ const projects: Project[] = [
     links: [
       {
         type: "Download",
-        href: "https://github.com/AmirAliuA/GTA-SA-Fixer/releases",
+        href: "https://github.com/amiraliuks/GTA-SA-Fixer/releases",
         icon: FaGithub,
       },
       {
         type: "Source Code",
-        href: "https://github.com/AmirAliuA/GTA-SA-Fixer/",
+        href: "https://github.com/amiraliuks/GTA-SA-Fixer/",
         icon: FaGithub,
       },
     ],
@@ -765,7 +766,7 @@ const projects: Project[] = [
       },
       {
         type: "Source Code",
-        href: "https://github.com/AmirAliuA/silent-hill-archive/",
+        href: "https://github.com/amiraliuks/silent-hill-archive/",
         icon: FaGithub,
       },
     ],
@@ -817,7 +818,7 @@ const projects: Project[] = [
     links: [
       {
         type: "Source Code",
-        href: "https://github.com/AmirAliuA/kosovo-gov-site-verification/releases",
+        href: "https://github.com/amiraliuks/kosovo-gov-site-verification/releases",
         icon: FaGithub,
       },
     ],
@@ -900,7 +901,7 @@ const projects: Project[] = [
 
     badge: ["Nextjs 16", "shadcn/ui", "Tailwind CSS", "TypeScript", "Spotify API"],
 
-    image: "/projects/medusa-artist-portfolio/demo.gif",
+    image: "/projects/medusa-artist-portfolio/homepage-music-section.png",
 
     postImages: [
       {
@@ -973,17 +974,17 @@ const projects: Project[] = [
     links: [
       {
         type: "Source Code",
-        href: "https://github.com/AmirAliuA/unity-rubiks-cube/",
+        href: "https://github.com/amiraliuks/unity-rubiks-cube/",
         icon: FaGithub,
       },
       {
         type: "Windows Release",
-        href: "https://github.com/AmirAliuA/unity-rubiks-cube/releases",
+        href: "https://github.com/amiraliuks/unity-rubiks-cube/releases",
         icon: FaWindows,
       },
       {
         type: "Linux Release",
-        href: "https://github.com/AmirAliuA/unity-rubiks-cube/releases",
+        href: "https://github.com/amiraliuks/unity-rubiks-cube/releases",
         icon: FaLinux,
       },
     ],

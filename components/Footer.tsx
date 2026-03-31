@@ -9,7 +9,7 @@ export default function Footer() {
       <footer className="text-sm text-muted-foreground flex justify-between items-center w-full">
         <div>© {year} Amir Aliu</div>
         <Link
-          href="https://github.com/AmirAliuA"
+          href="https://github.com/amiraliuks"
           target="_blank"
           rel="noopener noreferrer"
           className="hover:underline flex items-center gap-1"

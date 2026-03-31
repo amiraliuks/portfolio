@@ -3,6 +3,7 @@ title: THJCC 2026 CTF Writeup
 summary: Layered forensic and steganography solves from THJCC 2026.
 tags: Cybersecurity, CTF, Writeup
 publishedAt: '2026-02-25'
+public: true
 language: "en"
 translationKey: "thjcc-2026-writeup"
 ---
@@ -14,16 +15,16 @@ translationKey: "thjcc-2026-writeup"
 |-------------|-----------------------------------------------------|----------|------------------------------------------------------------------------------------------------------|
 | [Taiwan High School Joint Cyber Championship](https://thjcc.org/) | [KSAL Cyber Team](https://ctftime.org/team/424982) | [ctftime.org/event/3088](https://ctftime.org/event/3088) | [ctf2026.thjcc.org](https://ctf2026.thjcc.org/) |
 
-------------------------------------------------------------------------
+---
 
-This was my first CTF, and of course I had guests over at the same time... so I didn’t go all-in on everything. 
+This was my first CTF, and of course I had guests over at the same time... so I didn’t go all-in on everything.
 I mostly stuck to forensics/stego since they’re easier to chip away at without full focus.
 
 I ended up solving these two:
 - CoLoR iS cOdE (forensics / steganography)
 - SSTV Audio Challenge (signal-based steganography using SSTV)
 
-------------------------------------------------------------------------
+---
 
 # 1. CoLoR iS cOdE
 ## Challenge Information
@@ -31,7 +32,7 @@ I ended up solving these two:
 | -------------- | ------------------------- | ------ | ----------------------- | -------------------- |
 | CoLoR iS cOdE  | forensics / steganography | 500    | THJCC_CoLoR_iS_cOdE.zip | colors can say a lot |
 
-------------------------------------------------------------------------
+---
 
 ## Step 1 - Inspect the ZIP file
 The first thing I saw was the password-protected ZIP file.
@@ -41,7 +42,7 @@ At 500 points, brute-forcing didn't make much sense, so I was already thinking:
 - or there's some trick
 
 To confirm what was inside, I ran:
-``` python
+```python
 import zipfile
 z = zipfile.ZipFile("THJCC_CoLoR_iS_cOdE.zip")
 for i in z.infolist():
@@ -55,7 +56,7 @@ The output showed:
 So it was using classic ZIP encryption, most likely ZipCrypto, not AES.
 That’s important because ZipCrypto is weak.
 
-------------------------------------------------------------------------
+---
 
 ## Step 2 - Known-Plaintext Attack
 Since the archive only contained a PNG, I immediately remembered:
@@ -70,7 +71,7 @@ So I thought:
 
 I used bkcrack:
 
-``` powershell
+```powershell
 .\bkcrack\bkcrack-1.8.1-win64\bkcrack.exe `
   -C THJCC_CoLoR_iS_cOdE.zip `
   -c rainbow.png `
@@ -82,12 +83,12 @@ It successfully recovered the internal keys:
 
 That confirmed my suspicion. It was vulnerable ZipCrypto.
 
-------------------------------------------------------------------------
+---
 
 ## Step 3 -- Decrypt Archive
 Now that I had the internal keys, I didn’t need the password anymore.
 
-``` powershell
+```powershell
 .\bkcrack\kcrack-1.8.1-win64\bkcrack.exe `
   -C THJCC_CoLoR_iS_cOdE.zip `
   -k d3b0bb05 2e88b90e ed7f7e33 `
@@ -99,7 +100,7 @@ After extraction, I finally had access to:
 
 Now the real puzzle started.
 
-------------------------------------------------------------------------
+---
 
 ## Step 4 -- EXIF Payload (Ook → Brainfuck)
 Opening the PNG normally didn’t immediately reveal anything.
@@ -124,7 +125,7 @@ That’s clearly part of the flag — but incomplete.
 
 So I knew the image must contain another layer.
 
-------------------------------------------------------------------------
+---
 
 ## Step 5 -- Pixel Frequency Encoding
 The hint said: ```colors can say a lot```
@@ -148,7 +149,7 @@ That worked. It produced:
 
 That confirmed the encoding logic was correct.
 
-------------------------------------------------------------------------
+---
 
 ## Final Flag
 Combining both parts:
@@ -161,7 +162,7 @@ This challenge layered:
 - Pixel-frequency steganography
 - Very clean design.
 
-------------------------------------------------------------------------
+---
 
 # 2. SSTV Audio Challenge
 
@@ -171,7 +172,7 @@ This challenge layered:
 - Sample Rate: 48000 Hz
 - Channels: Mono
 
-------------------------------------------------------------------------
+---
 
 ## Step 1 — Initial Inspection
 The file was:
@@ -236,8 +237,8 @@ plt.tight_layout()
 plt.savefig('spectrogram_900_2500.png', dpi=180)
 ```
 
-It generated this spectogram:
-![Generated spectogram using python code](/blog-posts/thjcc-2026-writeup/spectrogram_900_2500.png)
+It generated this spectrogram:
+![Generated spectrogram using python code](/blog-posts/thjcc-2026-writeup/spectrogram_900_2500.png)
 
 The moment I saw the structured horizontal tone patterns between 900–2500 Hz, I thought:
 - That looks like [SSTV (Slow-scan television)](https://en.wikipedia.org/wiki/Slow-scan_television).

@@ -8,9 +8,11 @@
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "format:content": "node scripts/normalize-content.mjs",
     "validate:content": "node scripts/validate-content.mjs",
     "validate:images": "node scripts/check-images.mjs",
     "validate:images:strict": "node scripts/check-images.mjs --strict",
+    "validate:seo": "node scripts/validate-seo.mjs",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed"
   },

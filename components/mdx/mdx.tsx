@@ -9,6 +9,7 @@ import { slugifyHeading } from '@/lib/blog-content';
 import { cn } from "@/lib/utils";
 import { toSafeHref } from "@/lib/url-safety";
 import { baseUrl } from "@/app/sitemap";
+import { CodeBlock } from "@/components/mdx/CodeBlock";
 
 function StyledTable(props: React.TableHTMLAttributes<HTMLTableElement>) {
   return (
@@ -91,24 +92,15 @@ function StyledTd(props: React.TdHTMLAttributes<HTMLTableCellElement>) {
   );
 }
 
-function StyledPre(props: React.HTMLAttributes<HTMLPreElement>) {
+function StyledImage(props: React.ImgHTMLAttributes<HTMLImageElement>) {
   return (
-    <pre
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       {...props}
-      className="
-        my-8
-        rounded-xl
-        border
-        px-4 py-3
-        sm:px-5 sm:py-4
-        overflow-x-auto
-        text-[13px]
-        leading-6
-        not-prose
-        font-mono
-        bg-[#f6f8fa] border-[#d0d7de]
-        dark:bg-[#1e1e1e] dark:border-[#2d2d30]
-      "
+      alt={props.alt ?? ""}
+      loading={props.loading ?? "lazy"}
+      decoding="async"
+      className={cn("h-auto w-full rounded-xl", props.className)}
     />
   );
 }
@@ -154,10 +146,14 @@ function RoundedImage(props: ImageProps) {
 interface CodeProps extends React.HTMLAttributes<HTMLElement> {
   children?: ReactNode;
   className?: string;
+  "data-language"?: string;
 }
 
 function Code({ children, className, ...props }: CodeProps) {
-  if (className?.includes("language-")) {
+  const isBlockCode =
+    className?.includes("language-") || typeof props["data-language"] === "string";
+
+  if (isBlockCode) {
     return (
       <code
         className={cn("font-mono text-[13px] leading-6", className)}
@@ -230,9 +226,10 @@ function createHeading(level: number, getUniqueSlug: (text: string) => string) {
 
 const baseComponents = {
   Image: RoundedImage,
+  img: StyledImage,
   a: CustomLink,
   code: Code,
-  pre: StyledPre,
+  pre: CodeBlock,
 
   table: StyledTable,
   thead: StyledThead,
@@ -244,10 +241,11 @@ const baseComponents = {
 
 const prettyCodeOptions = {
   theme: {
-    dark: "github-dark-default",
-    light: "github-light-default",
+    dark: "dark-plus",
+    light: "light-plus",
   },
   keepBackground: false,
+  defaultLang: "bash",
   onVisitLine(node: { children: Array<unknown> }) {
     if (!node.children.length) {
       node.children = [{ type: "text", value: " " }];

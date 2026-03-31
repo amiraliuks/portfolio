@@ -6,6 +6,7 @@ export type BlogMetadata = {
   publishedAt: string;
   summary?: string;
   description?: string;
+  public?: boolean;
   tags?: string[];
   readingTime?: number;
   image?: string;

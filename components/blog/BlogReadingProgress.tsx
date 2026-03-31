@@ -26,6 +26,14 @@ export function BlogReadingProgress() {
 
       const contentTop = content.getBoundingClientRect().top + scrollTop;
       const contentHeight = content.offsetHeight;
+      const contentBottom = contentTop + contentHeight;
+      const viewportBottom = scrollTop + viewportHeight;
+
+      if (viewportBottom >= contentBottom - 2) {
+        setProgress(100);
+        return;
+      }
+
       const viewportMarker = scrollTop + viewportHeight * 0.35;
 
       const start = contentTop;

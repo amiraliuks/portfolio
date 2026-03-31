@@ -8,6 +8,7 @@ type Metadata = {
   publishedAt: string;
   summary?: string;
   description?: string;
+  public?: boolean;
   tags?: string[];
   readingTime?: number;
   image?: string;
@@ -24,6 +25,7 @@ type FrontmatterKey =
   | "publishedAt"
   | "summary"
   | "description"
+  | "public"
   | "tags"
   | "readingTime"
   | "image"
@@ -35,6 +37,7 @@ const FRONTMATTER_KEYS = new Set<keyof Metadata>([
   "publishedAt",
   "summary",
   "description",
+  "public",
   "tags",
   "readingTime",
   "image",
@@ -102,6 +105,13 @@ function inferTranslationKey(slug: string, explicitTranslationKey?: string, lang
   return slug;
 }
 
+function parsePublicFlag(value: string): boolean | undefined {
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "true" || normalized === "yes" || normalized === "1") return true;
+  if (normalized === "false" || normalized === "no" || normalized === "0") return false;
+  return undefined;
+}
+
 function parseFrontmatter(fileContent: string) {
   const frontmatterRegex = /---\s*([\s\S]*?)\s*---/;
   const match = frontmatterRegex.exec(fileContent);
@@ -146,6 +156,14 @@ function parseFrontmatter(fileContent: string) {
       return;
     }
 
+    if (key === "public") {
+      const parsed = parsePublicFlag(value);
+      if (parsed !== undefined) {
+        metadata.public = parsed;
+      }
+      return;
+    }
+
     if (key === "language") {
       const parsedLanguage = parseLanguage(value);
       if (parsedLanguage) metadata.language = parsedLanguage;
@@ -184,12 +202,14 @@ function getMDXData(dir: fs.PathLike) {
     const normalizedTags = metadata.tags?.filter(Boolean) ?? [];
     const language = metadata.language ?? inferLanguageFromSlug(slug);
     const translationKey = inferTranslationKey(slug, metadata.translationKey, language);
+    const isPublic = metadata.public ?? true;
 
     return {
       slug,
       content,
       metadata: {
         ...metadata,
+        public: isPublic,
         language,
         translationKey,
         summary: metadata.summary ?? fallbackDescription,
@@ -251,7 +271,7 @@ export function getBlogPosts() {
 }
 
 export function getBlogListingPosts() {
-  const allPosts = getBlogPosts();
+  const allPosts = getBlogPosts().filter((post) => post.metadata.public !== false);
   const grouped = new Map<string, (typeof allPosts)[number]>();
 
   allPosts.forEach((post) => {

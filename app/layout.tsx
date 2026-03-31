@@ -40,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       '@type': 'Organization',
       name: 'Independent',
     },
-    sameAs: ['https://github.com/AmirAliuA', 'https://twitter.com/amiraliudev'],
+    sameAs: ['https://github.com/amiraliuks', 'https://twitter.com/amiraliudev'],
     knowsAbout: [
       'Web Development',
       'Full Stack Development',

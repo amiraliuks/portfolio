@@ -78,7 +78,7 @@ export default function MainContent() {
               </Button>
 
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" asChild>
-                <a href="https://github.com/AmirAliuA" target="_blank" rel="noopener noreferrer">
+                <a href="https://github.com/amiraliuks" target="_blank" rel="noopener noreferrer">
                   <Github className="h-5 w-5" />
                 </a>
               </Button>

@@ -4,10 +4,11 @@ import path from "node:path";
 const contentDir = path.join(process.cwd(), "content");
 const requiredFields = ["title", "publishedAt", "tags", "summary", "language", "translationKey"];
 const validLanguages = new Set(["en", "al"]);
+const validPublicValues = new Set(["true", "false", "yes", "no", "1", "0"]);
 
 function parseFrontmatter(filePath) {
   const raw = fs.readFileSync(filePath, "utf8");
-  const match = raw.match(/^---\s*([\s\S]*?)\s*---/);
+  const match = raw.match(/^\uFEFF?---\s*([\s\S]*?)\s*---/);
   if (!match) return null;
 
   const data = {};
@@ -58,6 +59,15 @@ for (const filePath of files) {
 
   if (frontmatter.language && !validLanguages.has(frontmatter.language)) {
     errors.push(`${name}: invalid language "${frontmatter.language}" (expected "en" or "al")`);
+  }
+
+  if (frontmatter.public) {
+    const normalizedPublic = String(frontmatter.public).trim().toLowerCase();
+    if (!validPublicValues.has(normalizedPublic)) {
+      errors.push(
+        `${name}: invalid public value "${frontmatter.public}" (expected true/false)`
+      );
+    }
   }
 
   if (frontmatter.tags) {
