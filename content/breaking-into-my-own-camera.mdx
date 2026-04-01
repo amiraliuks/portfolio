@@ -506,13 +506,30 @@ It's a chain of problems that together leads you to full device comporomise (inc
 - Sensitive data stored in plaintext (Wi-Fi config, system data)
 
 ### Vulnerability Classification
-- `CWE-306` - Missing Authentication for Critical Function
-- `CWE-522` - Insufficiently Protected Credentials
-- `CWE-284` - Improper Access control
-- `CWE-319` - Cleartext Transmission of Sensitive Information
-- `CWE-78` - OS Command Injection (via `<SYSTEM>` interface)
+The issues identified are not isolated bugs, but a chain of systemic security failures affecting authentication, authorization, data protection, and command execution.
+- `CWE-306` - Missing Authentication for Critical Function  
+  Critical API endpoints under `/PSIA/` allow both read and write operations without requiring authentication.
 
-> (If I mistakenly added or missed something, please contact me )
+- `CWE-287` - Improper Authentication  
+  While a login mechanism exists (`/PSIA/YG/userCheck`), it is not properly enforced server-side, allowing direct interaction with protected functionality.
+
+- `CWE-284` - Improper Access Control  
+  The system fails to enforce authorization boundaries, allowing unrestricted access to sensitive resources and administrative functionality.
+
+- `CWE-200` - Exposure of Sensitive Information to an Unauthorized Actor  
+  Sensitive data such as device configuration, network details, camera feed, and system information is accessible without authentication.
+
+- `CWE-522` - Insufficiently Protected Credentials  
+  User credentials are exposed in plaintext via `/PSIA/Security/AAA/users` and are weakly managed across the filesystem (`/app/shadow`, `/etc/shadow`).
+
+- `CWE-78` - OS Command Injection  
+  The custom `<SYSTEM>` interface allows execution of arbitrary system commands via unauthenticated input, resulting in blind command execution.
+
+- `CWE-269` - Improper Privilege Management  
+  Successful exploitation leads directly to root-level access, with no privilege separation or restriction mechanisms in place.
+
+- `CWE-319` - Cleartext Transmission of Sensitive Information *(context-dependent)*  
+  Certain services (e.g., snapshot endpoint, HTTP interface) transmit sensitive data over unencrypted channels, exposing it to interception.
 
 ### Real World Impact
 You can read all this and just tell me that it's a cheap camera, but realistically:
