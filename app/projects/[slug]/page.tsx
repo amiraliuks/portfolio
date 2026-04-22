@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { Calendar } from "lucide-react";
 
 import { ProjectMediaShowcase } from "@/components/ProjectMediaShowcase";
@@ -63,21 +64,28 @@ export async function generateMetadata({
   if (!project) return {};
 
   const absoluteImage = getProjectOgImage(project);
-  const safeDescription = project.description;
+  const topStack = project.badge?.slice(0, 3).join(", ");
+  const safeDescription = topStack
+    ? `${project.description} Built with ${topStack}.`
+    : project.description;
+  const socialDescription =
+    safeDescription.length > 180 ? `${safeDescription.slice(0, 177).trimEnd()}...` : safeDescription;
   const pageUrl = `${baseUrl}/projects/${project.slug}`;
+  const ogTitle = `${project.title} | Project | Amir Aliu`;
 
   const ogImage =
     absoluteImage ??
-    `${baseUrl}/og?title=${encodeURIComponent(project.title)}&description=${encodeURIComponent(
-      safeDescription
+    `${baseUrl}/og?title=${encodeURIComponent(ogTitle)}&description=${encodeURIComponent(
+      socialDescription
     )}`;
 
   return {
-    title: `${project.title} - Project`,
+    title: project.title,
     description: safeDescription,
+    keywords: project.badge,
     openGraph: {
-      title: project.title,
-      description: safeDescription,
+      title: ogTitle,
+      description: socialDescription,
       url: pageUrl,
       type: "article",
       images: [
@@ -85,14 +93,14 @@ export async function generateMetadata({
           url: ogImage,
           width: 1200,
           height: 630,
-          alt: project.title,
+          alt: `${project.title} project preview`,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: project.title,
-      description: safeDescription,
+      title: ogTitle,
+      description: socialDescription,
       images: [ogImage],
     },
     alternates: {
@@ -253,6 +261,29 @@ export default async function ProjectPage({
           showHero={false}
         />
       )}
+      <aside className="rounded-xl border border-border/70 bg-muted/20 p-4 sm:p-5">
+        <p className="text-xs uppercase tracking-wide text-muted-foreground">Explore More</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link
+            href="/blog"
+            className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+          >
+            Read Related Writeups
+          </Link>
+          <Link
+            href="/certifications"
+            className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+          >
+            View Certifications
+          </Link>
+          <Link
+            href="/projects"
+            className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+          >
+            Back to Projects
+          </Link>
+        </div>
+      </aside>
 
     </section>
   );

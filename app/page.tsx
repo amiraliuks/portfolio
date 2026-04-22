@@ -1,10 +1,22 @@
 import { Metadata } from 'next';
 import MainContent from '@/components/MainContent';
+import { getBlogListingPosts } from '@/lib/getBlogs';
+import { projects } from '@/data/projects';
+import { certifications, countCertificationsByCategory } from '@/data/certifications';
 
 export const metadata: Metadata = {
-  title: 'Amir Aliu - Full Stack Developer',
+  title: {
+    absolute: 'Amir Aliu - Full Stack Developer',
+  },
   description:
     'Full Stack Developer from Kosovo.',
+  keywords: [
+    'Amir Aliu',
+    'Cybersecurity portfolio',
+    'Full stack developer',
+    'CTF competitor',
+    'React and Next.js',
+  ],
   openGraph: {
     title: 'Amir Aliu - Full Stack Developer',
     description:
@@ -31,10 +43,35 @@ export const metadata: Metadata = {
       'https://amiraliu.vercel.app/og?title=Amir%20Aliu%20-%20Full%20Stack%20Developer&description=Building%20scalable%20web%20applications%20with%20modern%20technologies',
     ],
   },
+  alternates: {
+    canonical: 'https://amiraliu.vercel.app',
+  },
 };
 
 export default function HomePage() {
+  const posts = getBlogListingPosts().sort(
+    (a, b) =>
+      new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime()
+  );
+
+  const featuredPosts = posts.slice(0, 2).map((post) => ({
+    slug: post.slug,
+    title: post.metadata.title,
+    description: post.metadata.description ?? post.metadata.summary ?? "",
+    publishedAt: post.metadata.publishedAt,
+    readingTime: post.metadata.readingTime ?? 1,
+    tags: (post.metadata.tags ?? []).slice(0, 2),
+  }));
+
+  const certificationCounts = countCertificationsByCategory(certifications);
+  const metrics = [
+    { label: "Projects", value: projects.length },
+    { label: "Certifications", value: certifications.length },
+    { label: "CTF Certs", value: certificationCounts.ctf },
+    { label: "Blog Posts", value: posts.length },
+  ];
+
   return (
-    <MainContent />
+    <MainContent metrics={metrics} featuredPosts={featuredPosts} />
   )
 }

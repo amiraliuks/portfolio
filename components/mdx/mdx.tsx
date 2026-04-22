@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { toSafeHref } from "@/lib/url-safety";
 import { baseUrl } from "@/app/sitemap";
 import { CodeBlock } from "@/components/mdx/CodeBlock";
+import { HeadingCopyLink } from "@/components/blog/HeadingCopyLink";
 
 function StyledTable(props: React.TableHTMLAttributes<HTMLTableElement>) {
   return (
@@ -206,15 +207,21 @@ function createHeading(level: number, getUniqueSlug: (text: string) => string) {
 
     return React.createElement(
       `h${level}`,
-      slug ? { id: slug, className: "scroll-mt-24" } : undefined,
+      slug ? { id: slug, className: "scroll-mt-24 group/heading" } : undefined,
       slug
         ? [
           React.createElement('a', {
             href: `#${slug}`,
             key: `link-${slug}`,
             className: 'anchor',
+            'aria-label': `Jump to ${headingText}`,
           }),
           children,
+          React.createElement(HeadingCopyLink, {
+            slug,
+            label: headingText || "section",
+            key: `copy-${slug}`,
+          }),
         ]
         : children
     );

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -9,12 +10,24 @@ import {
 } from "@/components/ui/sheet";
 import { MdOpenInFull } from "react-icons/md";
 import { Download, ExternalLink } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 export function ResumeSheet() {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <Sheet>
+    <Sheet
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (open) {
+          trackEvent("resume_sheet_open", { location: "home_hero" });
+        }
+      }}
+    >
       <SheetTrigger asChild>
         <button
+          type="button"
           className="group cursor-pointer flex items-center gap-3 px-4 py-2.5 rounded-lg border border-border bg-muted/30 hover:bg-muted/60 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         >
           <code className="font-mono text-sm text-foreground">Resume</code>
@@ -52,6 +65,11 @@ export function ResumeSheet() {
               href="/amir-aliu-resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                trackEvent("resume_open_new_tab", {
+                  location: "resume_sheet",
+                })
+              }
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-muted hover:bg-muted/70 text-sm text-foreground transition-colors"
             >
               <ExternalLink className="h-4 w-4" />
@@ -62,6 +80,11 @@ export function ResumeSheet() {
             <a
               href="/amir-aliu-resume.pdf"
               download
+              onClick={() =>
+                trackEvent("resume_download", {
+                  location: "resume_sheet",
+                })
+              }
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-muted hover:bg-muted/70 text-sm text-foreground transition-colors"
             >
               <Download className="h-4 w-4" />
@@ -71,7 +94,12 @@ export function ResumeSheet() {
         </SheetHeader>
 
         <div className="w-full h-full">
-          <iframe src="/amir-aliu-resume.pdf" className="w-full h-full" />
+          <iframe
+            src="/amir-aliu-resume.pdf"
+            title="Amir Aliu resume preview"
+            loading="lazy"
+            className="w-full h-full"
+          />
         </div>
       </SheetContent>
     </Sheet>

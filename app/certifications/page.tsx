@@ -1,15 +1,23 @@
-import React from 'react';
+﻿import React from 'react';
+import Link from 'next/link';
 import { Metadata } from 'next';
 import CertificationsSection from '@/components/CertificationSection';
 
 import { certifications } from '@/data/certifications';
 
 export const metadata: Metadata = {
-  title: 'Certifications — Amir aliu',
+  title: 'Certifications',
   description:
     "Browse through my various certifications. A collection that reflects the areas I genuinely enjoy working in. Each certification represents skills I've built over time and shows my commitment to continuous learning, improvement, and staying active in the fields I care about most.",
+  keywords: [
+    'Certifications',
+    'Professional certifications',
+    'CTF certifications',
+    'Cybersecurity training',
+    'Amir Aliu',
+  ],
   openGraph: {
-    title: 'Certifications — Amir aliu',
+    title: 'Certifications | Amir Aliu',
     description:
       "Browse through my various certifications. A collection that reflects the areas I genuinely enjoy working in. Each certification represents skills I've built over time and shows my commitment to continuous learning, improvement, and staying active in the fields I care about most.",
     url: 'https://amiraliu.vercel.app/certifications',
@@ -27,8 +35,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Certifications — Amir Aliu',
-    description: "Browse through my various certifications. A collection that reflects the areas I genuinely enjoy working in. Each certification represents skills I've built over time and shows my commitment to continuous learning, improvement, and staying active in the fields I care about most.",
+    title: 'Certifications | Amir Aliu',
+    description:
+      "Browse through my various certifications. A collection that reflects the areas I genuinely enjoy working in. Each certification represents skills I've built over time and shows my commitment to continuous learning, improvement, and staying active in the fields I care about most.",
     images: [
       'https://amiraliu.vercel.app/og?title=Certifications%20-%20Amir%20Aliu&description=Browse%20my%20certifications%20across%20cybersecurity%2C%20support%2C%20and%20professional%20training',
     ],
@@ -44,7 +53,7 @@ export default function Page() {
     '@type': 'CollectionPage',
     name: 'Certifications Showcase',
     description:
-      'Portfolio of web applications, creative experiments, and open-source contributions built with modern technologies.',
+      'Professional and CTF certifications demonstrating practical skills in cybersecurity and modern technology.',
     url: 'https://amiraliu.vercel.app/certifications',
     author: {
       '@type': 'Person',
@@ -68,7 +77,6 @@ export default function Page() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
-        {/* Header */}
         <div className="mb-12 space-y-2">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
             Certifications
@@ -78,9 +86,9 @@ export default function Page() {
           </p>
         </div>
 
-        {/* Certifications List */}
         <CertificationsSection />
       </div>
     </>
   );
 }
+

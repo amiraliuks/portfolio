@@ -129,11 +129,12 @@ const projects: Project[] = [
     description:
       "Led a team of 6 to build a full-stack e-commerce app with Next.js and PayPal integration during a university bootcamp, earning a perfect score of 100/100.",
     features: [
-      "Checks Snapchat username availability",
-      "Simple PySimpleGUI interface",
-      "Fast requests using the Requests library",
-      "Easy to run and lightweight",
-      "Headers can be updated if Snapchat changes things"
+      "Responsive design across desktop and mobile devices",
+      "User authentication system with login and logout flows",
+      "Product discovery via search, sorting, and filtering by category, price, brand, and ratings",
+      "Cart supports multiple quantities with checkout flow and persisted cookie data",
+      "Order history and shipping-status visibility for users",
+      "Admin tooling for managing products/users and viewing platform-level stats"
     ],
 
     badge: ["Nextjs", "MongoDB", "PayPal SDK"],
@@ -462,12 +463,13 @@ const projects: Project[] = [
     description:
       "A browser extension that fixes the missing Kosovo flag on Steam community profile.",
     features: [
-      "Reminder to take your meds on time",
-      "Reminder to refill your meds before you run out",
-      "Reminder to take the correct dosage",
+      "Detects Steam Community profile pages automatically",
+      "Replaces the missing Kosovo flag placeholder with the correct asset",
+      "Runs with no setup once installed and applies the fix in-page",
+      "Available as a Firefox add-on with source-based install option",
     ],
 
-    badge: ["Typescript", "React Native", "Expo", "Async Storage", "Expo Notifications"],
+    badge: ["Javascript", "Browser Extension", "Firefox Add-on"],
 
     image: "/projects/steam-kosovo-flag-fixer-extension/steam-logo.png",
 

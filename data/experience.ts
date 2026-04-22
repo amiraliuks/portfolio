@@ -3,6 +3,7 @@ const experience = [
     id: 0,
     role: "Founder & Full-Stack Developer",
     company: "writeupify.app",
+    url: "https://writeupify.app/",
     start: "2026",
     end: "Present",
     description:
@@ -11,6 +12,39 @@ const experience = [
 
   {
     id: 1,
+    role: "Contributor",
+    company: "DEFCON GROUP PRISHTINA 38338",
+    url: "https://dc38338.org/",
+    start: "2026",
+    end: "Present",
+    description:
+      "- Participated in local security community activities and knowledge-sharing sessions.\n- Supported community events and technical collaboration where needed.",
+  },
+
+  {
+    id: 2,
+    role: "Contributor",
+    company: "FLOSSK",
+    url: "https://flossk.org/",
+    start: "2026",
+    end: "Present",
+    description:
+      "- Participated in community events and technical initiatives.",
+  },
+
+  {
+    id: 3,
+    role: "Core Member",
+    company: "KSAL Cyber Team",
+    url: "https://ksal.netlify.app/",
+    start: "2026",
+    end: "Present",
+    description:
+      "- Active core member supporting team initiatives, coordination, and cybersecurity-focused activities.\n- Contributed to collaborative technical work, knowledge sharing, and community-facing efforts.",
+  },
+
+  {
+    id: 4,
     role: "Freelance Web Developer",
     company: "Independent",
     start: "2018",
@@ -20,7 +54,7 @@ const experience = [
   },
 
   {
-    id: 2,
+    id: 5,
     role: "Community Manager, Developer & Systems Administrator",
     company: "Independent",
     start: "2014",
@@ -30,7 +64,7 @@ const experience = [
   },
 
   {
-    id: 3,
+    id: 6,
     role: "Technical Support Volunteer",
     company: "Musa Zajmi",
     start: "2013",

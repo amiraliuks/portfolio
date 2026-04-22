@@ -47,7 +47,7 @@ export const operatingSystems = [
 export const webdev = [
   {
     name: 'C#',
-    description: 'Develop backend systems, game logic in Unity, and ASP.NET-based applications',
+    description: 'Build backend services, desktop tools, and Unity gameplay systems',
     icon: <TbBrandCSharp className="text-blue-400 text-4xl" />,
   },
   {
@@ -62,12 +62,12 @@ export const webdev = [
   },
   {
     name: 'JavaScript',
-    description: 'Languages of the web',
+    description: 'Build browser features, extension logic, and client-side interactions',
     icon: <FaJs className="text-yellow-400 text-4xl" />,
   },
   {
     name: 'TypeScript',
-    description: 'JavaScript with Types',
+    description: 'Use type safety across full-stack apps to reduce runtime bugs',
     icon: <SiTypescript className="text-blue-400 text-3xl" />,
   },
   {
@@ -82,17 +82,17 @@ export const webdev = [
   },
   {
     name: 'Tailwind CSS',
-    description: 'CSS Frameworks',
+    description: 'Style interfaces quickly with utility-first patterns and consistent design',
     icon: <SiTailwindcss className="text-cyan-500 dark:text-cyan-400 text-4xl" />,
   },
   {
     name: 'Shadcn UI',
-    description: 'CSS Frameworks',
+    description: 'Compose accessible UI primitives fast and customize them for production',
     icon: <SiShadcnui className="text-cyan-500 dark:text-cyan-400 text-4xl" />,
   },
   {
     name: 'ExpressJS',
-    description: 'Web Framework for Node.js',
+    description: 'Build lightweight APIs, auth flows, and integration endpoints',
     icon: <SiExpress className="text-gray-800 dark:text-gray-400 text-4xl" />,
   },
 ];
@@ -100,7 +100,7 @@ export const webdev = [
 export const gamedev = [
   {
     name: 'Unity',
-    description: 'Game Engine',
+    description: 'Prototype and build gameplay systems, mechanics, and game tooling',
     icon: <FaUnity className="text-gray-400 text-4xl" />,
   },
   {
@@ -113,12 +113,12 @@ export const gamedev = [
 export const tools = [
   {
     name: 'Visual Studio',
-    description: 'Integrated Development Environment (IDE) ',
+    description: 'Use for C# and Unity development with strong debugging workflows',
     icon: <DiVisualstudio className="text-purple-500 text-4xl" />,
   },
   {
     name: 'VS Code',
-    description: 'Code Editor',
+    description: 'Primary editor for web apps, scripts, and fast day-to-day iteration',
     icon: <VscVscode className="text-blue-500 text-4xl" />,
   },
   {
@@ -136,17 +136,17 @@ export const tools = [
 export const database = [
   {
     name: 'MySQL',
-    description: 'Relational Database',
+    description: 'Design relational schemas and query structured app data',
     icon: <SiMysql className="text-white-500 text-4xl" />,
   },
   {
     name: 'MongoDB',
-    description: 'NoSQL Database',
+    description: 'Store flexible document data for fast-moving application features',
     icon: <SiMongodb className="text-green-500 text-4xl" />,
   },
   {
     name: 'PostgreSQL',
-    description: 'Relational Database',
+    description: 'Run production backends with strong relational models and query performance',
     icon: <SiPostgresql className="text-blue-400 text-4xl" />,
   },
 ];

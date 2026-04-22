@@ -1,15 +1,23 @@
 import React from 'react';
+import Link from 'next/link';
 import { Metadata } from 'next';
 import ProjectSection from '@/components/ProjectSection';
 
 import { projects } from '@/data/projects';
 
 export const metadata: Metadata = {
-  title: 'Projects - Amir Aliu',
+  title: 'Projects',
   description:
     'Explore my portfolio of web applications, creative experiments, and open-source contributions built with modern technologies.',
+  keywords: [
+    'Projects',
+    'Portfolio projects',
+    'Open source',
+    'Web development',
+    'Cybersecurity projects',
+  ],
   openGraph: {
-    title: 'Projects - Amir Aliu',
+    title: 'Projects | Amir Aliu',
     description:
       'Explore my portfolio of web applications, creative experiments, and open-source contributions.',
     url: 'https://amiraliu.vercel.app/projects',
@@ -27,7 +35,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Projects - Amir Aliu',
+    title: 'Projects | Amir Aliu',
     description: 'Explore my portfolio of web applications and open-source contributions.',
     images: [
       'https://amiraliu.vercel.app/og?title=Projects%20%E2%80%94%20Amir%20Aliu&description=Explore%20my%20portfolio%20of%20web%20applications%20and%20open-source%20contributions',
@@ -76,6 +84,20 @@ export default function Page() {
           <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-lg">
             A showcase of my work in web development, cybersecurity, and various other tech areas. You&apos;ll find a mix of open-source projects, released products, and select closed-source work I&apos;m able to highlight - all representing the skills I&apos;ve built and the areas I enjoy exploring.
           </p>
+          <div className="flex flex-wrap gap-2 pt-1">
+            <Link
+              href="/blog"
+              className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+            >
+              Read Blog Writeups
+            </Link>
+            <Link
+              href="/certifications"
+              className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+            >
+              View Certifications
+            </Link>
+          </div>
         </div>
 
         {/* Projects List */}

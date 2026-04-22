@@ -1,11 +1,11 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Projects - Amir Aliu',
+  title: 'Projects',
   description:
     'Browse my portfolio of web applications, creative experiments, and open-source contributions. Built with React, Next.js, TypeScript, and modern web technologies.',
   openGraph: {
-    title: 'Projects - Amir Aliu',
+    title: 'Projects | Amir Aliu',
     description:
       'Browse my portfolio of web applications, creative experiments, and open-source contributions.',
     url: 'https://amiraliu.vercel.app/projects',

@@ -16,6 +16,7 @@ type Metadata = {
   translationKey?: string;
   availableLanguages?: BlogLanguage[];
   translationSlugs?: Partial<Record<BlogLanguage, string>>;
+  heroFit?: "cover" | "contain";
 };
 
 export type BlogLanguage = "en" | "al";
@@ -30,7 +31,8 @@ type FrontmatterKey =
   | "readingTime"
   | "image"
   | "language"
-  | "translationKey";
+  | "translationKey"
+  | "heroFit";
 
 const FRONTMATTER_KEYS = new Set<keyof Metadata>([
   "title",
@@ -43,6 +45,7 @@ const FRONTMATTER_KEYS = new Set<keyof Metadata>([
   "image",
   "language",
   "translationKey",
+  "heroFit",
 ]);
 
 const TAG_ALIASES: Record<string, string> = {
@@ -112,6 +115,12 @@ function parsePublicFlag(value: string): boolean | undefined {
   return undefined;
 }
 
+function parseHeroFit(value: string): Metadata["heroFit"] | undefined {
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "cover" || normalized === "contain") return normalized;
+  return undefined;
+}
+
 function parseFrontmatter(fileContent: string) {
   const frontmatterRegex = /---\s*([\s\S]*?)\s*---/;
   const match = frontmatterRegex.exec(fileContent);
@@ -172,6 +181,12 @@ function parseFrontmatter(fileContent: string) {
 
     if (key === "translationKey") {
       metadata.translationKey = value;
+      return;
+    }
+
+    if (key === "heroFit") {
+      const parsedHeroFit = parseHeroFit(value);
+      if (parsedHeroFit) metadata.heroFit = parsedHeroFit;
       return;
     }
 

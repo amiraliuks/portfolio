@@ -14,6 +14,7 @@ export type BlogMetadata = {
   translationKey?: string;
   availableLanguages?: BlogLanguage[];
   translationSlugs?: Partial<Record<BlogLanguage, string>>;
+  heroFit?: "cover" | "contain";
 };
 
 export type BlogPost = {

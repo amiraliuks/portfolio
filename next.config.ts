@@ -18,6 +18,10 @@ const contentSecurityPolicy = [
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  compress: true,
+  experimental: {
+    optimizePackageImports: ["lucide-react", "react-icons"],
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30,

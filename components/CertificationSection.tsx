@@ -1,32 +1,115 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ExternalLink, Github, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BiCertification } from "react-icons/bi";
 import { FaBookOpen } from "react-icons/fa";
 import { SiCredly } from 'react-icons/si';
 import { BadgeSheet } from './BadgeSheet';
+import { trackEvent } from '@/lib/analytics';
 
-import { certifications } from '@/data/certifications';
+import {
+  certifications,
+  type CertificationCategory,
+  getCertificationCategory,
+} from '@/data/certifications';
+
+type CertificationFilter = 'all' | CertificationCategory;
+
+function parseCertificationDate(date: string): number {
+  return new Date(date.split('-').reverse().join('-')).getTime();
+}
 
 function CertificationsSection() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [activeFilter, setActiveFilter] = useState<CertificationFilter>('all');
 
   const toggleExpand = (id: number) => {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  const sortedCerts = [...certifications].sort((a, b) => {
-    const dateA = new Date(a.createdAt.split('-').reverse().join('-'));
-    const dateB = new Date(b.createdAt.split('-').reverse().join('-'));
-    return dateB.getTime() - dateA.getTime();
-  });
+  const sortedCerts = useMemo(
+    () =>
+      [...certifications]
+        .map((certification) => ({
+          ...certification,
+          category: getCertificationCategory(certification),
+        }))
+        .sort((a, b) => parseCertificationDate(b.createdAt) - parseCertificationDate(a.createdAt)),
+    []
+  );
+
+  const categoryCounts = useMemo(() => {
+    const counts: Record<CertificationCategory, number> = {
+      professional: 0,
+      ctf: 0,
+    };
+
+    sortedCerts.forEach((certification) => {
+      counts[certification.category] += 1;
+    });
+
+    return counts;
+  }, [sortedCerts]);
+
+  const filteredCerts = useMemo(() => {
+    if (activeFilter === 'all') return sortedCerts;
+    return sortedCerts.filter((certification) => certification.category === activeFilter);
+  }, [activeFilter, sortedCerts]);
+
+  useEffect(() => {
+    if (expandedId === null) return;
+    if (!filteredCerts.some((certification) => certification.id === expandedId)) {
+      setExpandedId(null);
+    }
+  }, [expandedId, filteredCerts]);
 
   return (
     <section className="max-w-3xl mx-auto">
+      <div className="mb-6 flex flex-wrap gap-2 border-b border-border/60 pb-5">
+        <button
+          type="button"
+          onClick={() => setActiveFilter('all')}
+          aria-pressed={activeFilter === 'all'}
+          className={`px-4 py-1.5 text-sm rounded-full border transition ${
+            activeFilter === 'all'
+              ? 'border-foreground bg-foreground text-background'
+              : 'border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+          }`}
+        >
+          All <span className="text-[11px] opacity-70">{sortedCerts.length}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveFilter('professional')}
+          aria-pressed={activeFilter === 'professional'}
+          className={`px-4 py-1.5 text-sm rounded-full border transition ${
+            activeFilter === 'professional'
+              ? 'border-foreground bg-foreground text-background'
+              : 'border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+          }`}
+        >
+          Professional <span className="text-[11px] opacity-70">{categoryCounts.professional}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveFilter('ctf')}
+          aria-pressed={activeFilter === 'ctf'}
+          className={`px-4 py-1.5 text-sm rounded-full border transition ${
+            activeFilter === 'ctf'
+              ? 'border-foreground bg-foreground text-background'
+              : 'border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+          }`}
+        >
+          CTF <span className="text-[11px] opacity-70">{categoryCounts.ctf}</span>
+        </button>
+      </div>
+
       <div className="divide-y divide-border/40">
-        {sortedCerts.map((certification, index) => {
+        {filteredCerts.map((certification, index) => {
           const isExpanded = expandedId === certification.id;
 
           return (
@@ -42,7 +125,8 @@ function CertificationsSection() {
                   type="button"
                   onClick={() => toggleExpand(certification.id)}
                   className="flex-1 min-w-0 text-left cursor-pointer"
-                  {...(isExpanded && { 'aria-expanded': 'true' })}
+                  aria-expanded={isExpanded}
+                  aria-controls={`project-content-${certification.id}`}
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="font-medium text-foreground truncate">{certification.title}</h3>
@@ -74,6 +158,13 @@ function CertificationsSection() {
                         rel="noopener noreferrer"
                         className="p-1.5 hover:bg-muted rounded transition-colors"
                         aria-label={`View ${certification.title} source code`}
+                        onClick={() =>
+                          trackEvent('certification_link_click', {
+                            source: 'quick_links',
+                            type: 'source',
+                            certificationId: certification.id,
+                          })
+                        }
                       >
                         <Github className="h-4 w-4 text-muted-foreground" />
                       </a>
@@ -85,6 +176,13 @@ function CertificationsSection() {
                         rel="noopener noreferrer"
                         className="p-1.5 hover:bg-muted rounded transition-colors"
                         aria-label={`Visit ${certification.title} live site`}
+                        onClick={() =>
+                          trackEvent('certification_link_click', {
+                            source: 'quick_links',
+                            type: 'live',
+                            certificationId: certification.id,
+                          })
+                        }
                       >
                         <ExternalLink className="h-4 w-4 text-muted-foreground" />
                       </a>
@@ -96,6 +194,13 @@ function CertificationsSection() {
                         rel="noopener noreferrer"
                         className="p-1.5 hover:bg-muted rounded transition-colors"
                         aria-label={`Visit ${certification.title} course site`}
+                        onClick={() =>
+                          trackEvent('certification_link_click', {
+                            source: 'quick_links',
+                            type: 'course',
+                            certificationId: certification.id,
+                          })
+                        }
                       >
                         <BiCertification className="h-4 w-4 text-muted-foreground" />
                       </a>
@@ -108,9 +213,10 @@ function CertificationsSection() {
                   </span>
 
                   <button
+                    type="button"
                     onClick={() => toggleExpand(certification.id)}
                     className="p-1 hover:bg-muted rounded transition-colors"
-                    aria-label={isExpanded ? 'Collapse project details' : 'Expand project details'}
+                    aria-label={isExpanded ? 'Collapse certification details' : 'Expand certification details'}
                   >
                     <ChevronDown
                       className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''
@@ -192,6 +298,13 @@ function CertificationsSection() {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-foreground/80 transition-colors"
+                            onClick={() =>
+                              trackEvent('certification_link_click', {
+                                source: 'details',
+                                type: 'live',
+                                certificationId: certification.id,
+                              })
+                            }
                           >
                             <ExternalLink className="h-4 w-4" />
                             Visit Site
@@ -203,6 +316,13 @@ function CertificationsSection() {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                            onClick={() =>
+                              trackEvent('certification_link_click', {
+                                source: 'details',
+                                type: 'course',
+                                certificationId: certification.id,
+                              })
+                            }
                           >
                             <FaBookOpen className="h-4 w-4" />
                             Course
@@ -214,6 +334,13 @@ function CertificationsSection() {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                            onClick={() =>
+                              trackEvent('certification_link_click', {
+                                source: 'details',
+                                type: 'credly',
+                                certificationId: certification.id,
+                              })
+                            }
                           >
                             <SiCredly className="h-4 w-4" />
                             Credly Badge
@@ -225,6 +352,13 @@ function CertificationsSection() {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                            onClick={() =>
+                              trackEvent('certification_link_click', {
+                                source: 'details',
+                                type: 'certificate',
+                                certificationId: certification.id,
+                              })
+                            }
                           >
                             <BiCertification className="h-4 w-4" />
                             Certification
@@ -239,6 +373,11 @@ function CertificationsSection() {
           );
         })}
       </div>
+      {filteredCerts.length === 0 && (
+        <div className="mt-6 rounded-xl border border-border bg-muted/25 p-5 text-center text-sm text-muted-foreground">
+          No certifications matched this filter.
+        </div>
+      )}
     </section>
   );
 }

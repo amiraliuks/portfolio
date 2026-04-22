@@ -14,13 +14,30 @@ export interface Certification {
   badge: string[];
 }
 
+type CertificationCategory = 'professional' | 'ctf';
+
+const CTF_CLASSIFICATION_REGEX = /ctf|capture the flag|advent of cyber|cybersecurity competition/i;
+
+function getCertificationCategory(certification: Certification): CertificationCategory {
+  const classificationBlob = [
+    certification.title,
+    certification.description,
+    certification.course ?? '',
+    ...certification.badge,
+  ]
+    .join(' ')
+    .toLowerCase();
+
+  return CTF_CLASSIFICATION_REGEX.test(classificationBlob) ? 'ctf' : 'professional';
+}
+
 const certifications: Certification[] = [
   {
     id: 1,
     title: 'NDG LINUX UNHATCHED ENGLISH 0723B CGA',
     course: 'https://www.netacad.com/courses/linux-unhatched?courseLang=en-US',
-    certificateOne: '/certifications/pdfs/ndg-linux-unhatched-certificate-cisco.pdf',
-    certificateTwo: '/certifications/pdfs/ndg-linux-unhatched-certificate-ndg.pdf',
+    certificateOne: '/certifications/pdfs/professional/ndg-linux-unhatched-certificate-cisco.pdf',
+    certificateTwo: '/certifications/pdfs/professional/ndg-linux-unhatched-certificate-ndg.pdf',
     badgeImage: '/certifications/badges/ndg-linux-unhatched.jpg',
     createdAt: '30-07-2023', // DD-MM-YYYY
     description:
@@ -80,7 +97,7 @@ const certifications: Certification[] = [
     id: 3,
     title: 'Python Essentials 1',
     course: 'https://www.netacad.com/courses/python-essentials-1?courseLang=en-US',
-    certificateOne: '/certifications/pdfs/python-essentials-1-cisco.pdf',
+    certificateOne: '/certifications/pdfs/professional/python-essentials-1-cisco.pdf',
     credlyBadge: 'https://www.credly.com/badges/1818d3e8-ed4c-4a1c-9912-658209271ec6',
     badgeImage: '/certifications/badges/python-essentials-i.png',
     createdAt: '01-01-2025', // DD-MM-YYYY
@@ -112,7 +129,7 @@ const certifications: Certification[] = [
     id: 4,
     title: 'IT Customer Support Basics',
     course: 'https://www.netacad.com/courses/it-customer-support-basics?courseLang=en-US',
-    certificateOne: '/certifications/pdfs/IT-Customer-Support-Basics-Certificate.pdf',
+    certificateOne: '/certifications/pdfs/professional/IT-Customer-Support-Basics-Certificate.pdf',
     credlyBadge: 'https://www.credly.com/badges/326f59f3-0d8c-4cb1-8896-d95c7b6faf8e',
     badgeImage: '/certifications/badges/it-customer-support-basics.png',
     createdAt: '31-08-2025', // DD-MM-YYYY
@@ -144,7 +161,7 @@ const certifications: Certification[] = [
     id: 5,
     title: 'Operating Systems Support',
     course: 'https://www.netacad.com/courses/operating-systems-support?courseLang=en-US',
-    certificateOne: '/certifications/pdfs/Operating-Systems-Support-Certificate.pdf',
+    certificateOne: '/certifications/pdfs/professional/Operating-Systems-Support-Certificate.pdf',
     credlyBadge: 'https://www.credly.com/badges/0643c0dd-ef4e-4043-bd1c-c1693b0e7803',
     badgeImage: '/certifications/badges/operating-systems-support.png',
     createdAt: '09-09-2025', // DD-MM-YYYY
@@ -176,7 +193,7 @@ const certifications: Certification[] = [
     id: 6,
     title: 'Security and Connectivity Support',
     course: 'https://www.netacad.com/courses/security-connectivity-support?courseLang=en-US',
-    certificateOne: '/certifications/pdfs/Security-and-Connectivity-Support-Certificate.pdf',
+    certificateOne: '/certifications/pdfs/professional/Security-and-Connectivity-Support-Certificate.pdf',
     credlyBadge: 'https://www.credly.com/badges/6daf4e9b-71a9-461e-87a7-bd86c59aedca',
     badgeImage: '/certifications/badges/security-and-connectivity-support.png',
     createdAt: '10-09-2025', // DD-MM-YYYY
@@ -208,7 +225,7 @@ const certifications: Certification[] = [
     id: 7,
     title: 'Hardware and Upgrade Support',
     course: 'https://www.netacad.com/courses/hardware-upgrade-support?courseLang=en-US',
-    certificateOne: '/certifications/pdfs/Hardware-and-Upgrade-Support-Certificate.pdf',
+    certificateOne: '/certifications/pdfs/professional/Hardware-and-Upgrade-Support-Certificate.pdf',
     credlyBadge: 'https://www.credly.com/badges/f8e0b6e3-4ef0-4ae2-8652-870ba9a1dc17',
     badgeImage: '/certifications/badges/hardware-and-upgrade-support.png',
     createdAt: '11-09-2025', // DD-MM-YYYY
@@ -240,7 +257,7 @@ const certifications: Certification[] = [
     id: 8,
     title: 'Advent of Cyber 2025',
     course: 'https://tryhackme.com/adventofcyber25',
-    certificateOne: '/certifications/pdfs/THM-1X8DNJ5GVX.pdf',
+    certificateOne: '/certifications/pdfs/ctf/THM-1X8DNJ5GVX.pdf',
     credlyBadge: 'https://tryhackme.com/amiraliu/badges/advent-of-cyber-2025?utm_campaign=social_share&utm_medium=social&utm_content=badge&utm_source=copy&sharerId=614a3207b7ceea0048e4a172',
     badgeImage: '/certifications/badges/advent-of-cyber-2025.png',
     createdAt: '15-02-2026', // DD-MM-YYYY
@@ -287,7 +304,7 @@ const certifications: Certification[] = [
     id: 9,
     title: 'Pre Security (New)',
     course: 'https://tryhackme.com/path/outline/presecurity',
-    certificateOne: '/certifications/pdfs/THM-ZCJSNKYH7I.pdf',
+    certificateOne: '/certifications/pdfs/professional/THM-ZCJSNKYH7I.pdf',
     credlyBadge: 'https://tryhackme.com/certificate/THM-ZCJSNKYH7I',
     badgeImage: '/certifications/badges/presecuritynew.svg',
     createdAt: '22-02-2026', // DD-MM-YYYY
@@ -332,7 +349,7 @@ const certifications: Certification[] = [
     id: 10,
     title: 'Love at First Breach – CTF 2026 (Participation)',
     course: 'https://tryhackme.com/module/lafbctf2026',
-    certificateOne: '/certifications/pdfs/THM-2M2WXJZGB9.pdf',
+    certificateOne: '/certifications/pdfs/ctf/THM-2M2WXJZGB9.pdf',
     credlyBadge: 'https://tryhackme.com/certificate/THM-2M2WXJZGB9',
     badgeImage: '/certifications/badges/love-at-first-breach-ctf.png',
     createdAt: '25-02-2026', // DD-MM-YYYY
@@ -364,7 +381,7 @@ const certifications: Certification[] = [
     id: 11,
     title: 'Love at First Breach – Advanced Track (Completion)',
     course: 'https://tryhackme.com/room/lafbctf2026-advanced',
-    certificateOne: '/certifications/pdfs/THM-ENZIZNKVP1.pdf',
+    certificateOne: '/certifications/pdfs/ctf/THM-ENZIZNKVP1.pdf',
     credlyBadge: 'https://tryhackme.com/certificate/THM-ADV-LAFB-2026',
     badgeImage: '/certifications/badges/love-at-first-breach-ctf.png',
     createdAt: '24-02-2026', // DD-MM-YYYY
@@ -411,12 +428,32 @@ const certifications: Certification[] = [
     id: 12,
     title: 'THJCC CTF 2026',
     course: 'https://ctf2026.thjcc.org/',
-    certificateOne: '/certifications/pdfs/4_260227_070041.pdf',
-    credlyBadge: 'https://tryhackme.com/certificate/THM-ADV-LAFB-2026',
+    certificateOne: '/certifications/pdfs/ctf/THJCCCTF2026.pdf',
     badgeImage: '/certifications/badges/thjcc-2026.png',
     createdAt: '27-02-2026', // DD-MM-YYYY
     description:
-      'Participated in THJCC CTF 2026, a Jeopardy-style cybersecurity competition covering diverse challenge categories such as web exploitation, reverse engineering, cryptography, binary exploitation, and misc challenges. Gained experience with real CTF problem solving and practical attack surface analysis.',
+      'THJCC CTF 2026 was the first CTF I ever participated in. In this event, I focused only on forensics and steganography challenges to build a practical foundation in those areas.',
+    skills: [
+      'Forensics',
+      'Steganography',
+      'First CTF Participation'
+    ],
+    badge: [
+      'CTF Competition',
+      'CTF Participation',
+      'Cybersecurity Competition'
+    ],
+  },
+
+  {
+    id: 13,
+    title: 'ApoorvCTF 2026',
+    course: 'https://apoorvctf.iiitkottayam.ac.in/',
+    certificateOne: '/certifications/pdfs/ctf/ApoorvCTF2026.pdf',
+    badgeImage: '/certifications/badges/ApoorvCTF2026.png',
+    createdAt: '06-03-2026', // DD-MM-YYYY
+    description:
+      'Participated in ApoorvCTF 2026, a Jeopardy-style cybersecurity competition. Worked through challenges across web exploitation, reverse engineering, cryptography, binary analysis, and miscellaneous categories, strengthening practical CTF methodology under time constraints.',
     skills: [
       'Web Exploitation',
       'Cryptography Challenges',
@@ -432,6 +469,98 @@ const certifications: Certification[] = [
       'Cybersecurity Competition'
     ],
   },
+
+  {
+    id: 14,
+    title: 'VishwaCTF 2026',
+    course: 'https://play.vishwactf.com/',
+    createdAt: '06-03-2026', // DD-MM-YYYY
+    description:
+      'Participated in VishwaCTF 2026 as a solo player with a dedicated focus on reverse engineering challenges. This participation followed my Kosovo Cyber Team coach\'s reverse engineering syllabus guidance, with the event used as targeted hands-on practice.',
+    skills: [
+      'Reverse Engineering',
+      'Solo CTF Participation',
+      'Challenge Triage',
+      'Static and Dynamic Analysis'
+    ],
+    badge: [
+      'CTF Competition',
+      'CTF Participation',
+      'Cybersecurity Competition'
+    ],
+  },
+
+  {
+    id: 15,
+    title: 'BlueHens CTF 2026 (University of Delaware)',
+    course: 'https://bluehens.ctfd.io/',
+    certificateOne: '/certifications/pdfs/ctf/bluehens_ctf_certificate.pdf',
+    badgeImage: '/certifications/badges/BlueHensCTF2026.png',
+    createdAt: '19-04-2026', // DD-MM-YYYY
+    description:
+      'BlueHens CTF 2026 was the first time KSAL Cyber Team got together live at FLOSSK Hacker Space and solved challenges collaboratively in person. We finished in 6th place with 3839 points.',
+    skills: [
+      'Team Collaboration',
+      'Live CTF Coordination',
+      'CTF Problem Solving',
+      'On-site Communication'
+    ],
+    badge: [
+      'CTF Competition',
+      'CTF Participation',
+      'Cybersecurity Competition'
+    ],
+  },
+
+  {
+    id: 16,
+    title: 'Introduction to Cybersecurity (A.U.K Training and Development Institute)',
+    course: 'https://www.netacad.com/courses/introduction-to-cybersecurity?courseLang=en-US',
+    certificateOne: '/certifications/pdfs/professional/Introduction_to_Cybersecurity_RIT-AUK.pdf',
+    badgeImage: '/certifications/badges/Introduction_to_Cybersecurity_RIT-AUK.png',
+    createdAt: '14-04-2026', // DD-MM-YYYY
+    description:
+      'Introductory cybersecurity course covering foundational concepts such as threat types, attack vectors, security principles, and the importance of protecting data and systems in a connected world. Gained insight into cybersecurity careers, defensive strategies, and best practices for safeguarding devices, networks, and personal information.',
+    skills: [
+      'Understanding threat types & attack vectors',
+      'Cybersecurity principles(CIA triad, risk, vulnerabilities)',
+      'Identifying malware, phishing & social engineering attacks',
+      'Fundamentals of network security & secure communication',
+      'Data protection strategies & password best practices',
+      'Basics of cryptography & authentication',
+      'Security policies, compliance & personal digital safety',
+      'Career paths & roles in cybersecurity'
+    ],
+    badge: [
+      'Cybersecurity Fundamentals',
+      'Threat Awareness',
+      'Network Security Basics',
+      'Social Engineering Awareness',
+      'Data Protection',
+      'Authentication',
+      'Cryptography Basics',
+      'Security Best Practices'
+    ],
+  },
+
 ];
 
-export { certifications };
+function countCertificationsByCategory(items: Certification[]) {
+  const counts: Record<CertificationCategory, number> = {
+    professional: 0,
+    ctf: 0,
+  };
+
+  items.forEach((certification) => {
+    counts[getCertificationCategory(certification)] += 1;
+  });
+
+  return counts;
+}
+
+export {
+  certifications,
+  getCertificationCategory,
+  countCertificationsByCategory,
+  type CertificationCategory,
+};

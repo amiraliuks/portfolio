@@ -22,7 +22,7 @@ export default function ProjectsSection() {
 
   return (
     <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
-      {sorted.map((project) => (
+      {sorted.map((project, index) => (
         <Card
           key={project.id}
           className="
@@ -77,6 +77,7 @@ export default function ProjectsSection() {
                 className="h-34 w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.03] sm:h-36"
                 placeholder="blur"
                 blurDataURL={tinyBlurDataURL}
+                priority={index < 2}
               />
             ) : (
               <div className="flex h-34 w-full items-center justify-center bg-muted text-xs text-muted-foreground sm:h-36">

@@ -40,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       '@type': 'Organization',
       name: 'Independent',
     },
-    sameAs: ['https://github.com/amiraliuks', 'https://twitter.com/amiraliudev'],
+    sameAs: ['https://github.com/amiraliuks', 'https://x.com/amiraliudev'],
     knowsAbout: [
       'Web Development',
       'Full Stack Development',
@@ -98,8 +98,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ProgressBar />
             <div className="app-shell mx-auto max-w-2xl px-5 sm:px-6 lg:px-8 flex flex-col pt-12 min-h-screen">
+              <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                Skip to main content
+              </a>
               <Navbar />
-              <main className="grow">{children}</main>
+              <main id="main-content" className="grow">
+                {children}
+              </main>
               <Footer />
             </div>
             <Toaster

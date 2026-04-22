@@ -11,12 +11,15 @@ import {
   extractTableOfContents,
   stripFirstMatchingImageFromContent,
 } from "@/lib/blog-content";
-import { getBlogPosts } from "@/lib/getBlogs";
+import { getBlogListingPosts, getBlogPosts } from "@/lib/getBlogs";
 import { calculateReadingTime, formatDate } from "@/lib/utils";
 import { baseUrl } from "@/app/sitemap";
 import { BlogPost, BlogPageProps } from "@/types/types";
 import { tinyBlurDataURL } from "@/lib/image";
 import { toSafeHttpUrl } from "@/lib/url-safety";
+import { getBlogHreflangAlternates, getOpenGraphLocales } from "@/lib/blog-hreflang";
+
+const RELATED_POST_LIMIT = 3;
 
 function toAbsoluteImageUrl(image?: string) {
   if (!image) return undefined;
@@ -26,6 +29,48 @@ function toAbsoluteImageUrl(image?: string) {
 
   const absolute = image.startsWith("/") ? `${baseUrl}${image}` : `${baseUrl}/${image}`;
   return toSafeHttpUrl(absolute);
+}
+
+function toNormalizedTagSet(tags: string[] | undefined) {
+  return new Set((tags ?? []).map((tag) => tag.trim().toLowerCase()).filter(Boolean));
+}
+
+function getRelatedPosts(currentPost: BlogPost) {
+  const currentGroupKey = currentPost.metadata.translationKey ?? currentPost.slug;
+  const currentLanguage = currentPost.metadata.language ?? "en";
+  const currentTags = toNormalizedTagSet(currentPost.metadata.tags);
+
+  const scored = getBlogListingPosts()
+    .filter((candidate) => candidate.metadata.public !== false)
+    .filter((candidate) => candidate.slug !== currentPost.slug)
+    .filter((candidate) => (candidate.metadata.translationKey ?? candidate.slug) !== currentGroupKey)
+    .map((candidate) => {
+      const candidateTags = toNormalizedTagSet(candidate.metadata.tags);
+      const sharedTagCount = [...currentTags].filter((tag) => candidateTags.has(tag)).length;
+      const languageBonus = (candidate.metadata.language ?? "en") === currentLanguage ? 0.5 : 0;
+      const score = sharedTagCount + languageBonus;
+
+      return {
+        post: candidate as BlogPost,
+        score,
+        sharedTagCount,
+        publishedAt: new Date(candidate.metadata.publishedAt).getTime(),
+      };
+    })
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return b.publishedAt - a.publishedAt;
+    });
+
+  if (!scored.length) return [];
+
+  const sameLanguage = scored.filter((item) => (item.post.metadata.language ?? "en") === currentLanguage);
+  const languagePool = sameLanguage.length > 0 ? sameLanguage : scored;
+
+  const withSharedTags = languagePool.filter((item) => item.sharedTagCount > 0);
+  const finalPool = withSharedTags.length > 0 ? withSharedTags : languagePool;
+
+  return finalPool.slice(0, RELATED_POST_LIMIT).map((item) => item.post);
 }
 
 export async function generateStaticParams() {
@@ -52,43 +97,45 @@ export async function generateMetadata({ params }: BlogPageProps) {
   } = post.metadata;
 
   const safeDescription = description ?? summary ?? extractPostDescription(post.content);
+  const socialDescription =
+    safeDescription.length > 180 ? `${safeDescription.slice(0, 177).trimEnd()}...` : safeDescription;
   const absoluteImage = toAbsoluteImageUrl(image);
+  const ogTitle = `${title} | Blog | Amir Aliu`;
   const ogImage =
     absoluteImage ??
     `${baseUrl}/og?title=${encodeURIComponent(
-      title
-    )}&description=${encodeURIComponent(safeDescription)}`;
+      ogTitle
+    )}&description=${encodeURIComponent(socialDescription)}`;
 
-  const languageAlternates: Record<string, string> = {};
-  if (post.metadata.translationSlugs?.en) {
-    languageAlternates["en-US"] = `${baseUrl}/blog/${post.metadata.translationSlugs.en}`;
-  }
-  if (post.metadata.translationSlugs?.al) {
-    languageAlternates["sq-AL"] = `${baseUrl}/blog/${post.metadata.translationSlugs.al}`;
-  }
+  const languageAlternates = getBlogHreflangAlternates(post as BlogPost, baseUrl);
+  const openGraphLocales = getOpenGraphLocales(post as BlogPost);
 
   return {
     title,
     description: safeDescription,
+    keywords: post.metadata.tags,
     openGraph: {
-      title,
-      description: safeDescription,
+      title: ogTitle,
+      description: socialDescription,
       type: "article",
       publishedTime,
       url: `${baseUrl}/blog/${post.slug}`,
-      images: [{ url: ogImage }],
+      images: [{ url: ogImage, alt: `${title} preview image` }],
+      locale: openGraphLocales.locale,
+      alternateLocale: openGraphLocales.alternateLocale,
+      authors: ["Amir Aliu"],
+      section: "Blog",
+      tags: post.metadata.tags ?? [],
     },
     twitter: {
       card: "summary_large_image",
-      title,
-      description: safeDescription,
+      title: ogTitle,
+      description: socialDescription,
       images: [ogImage],
     },
     alternates: {
       canonical: `${baseUrl}/blog/${post.slug}`,
-      ...(Object.keys(languageAlternates).length > 0
-        ? { languages: languageAlternates }
-        : {}),
+      languages: languageAlternates,
     },
   };
 }
@@ -113,6 +160,8 @@ export default async function Blog({ params }: BlogPageProps) {
   const tableOfContents = extractTableOfContents(contentForRender);
   const safeDescription =
     post.metadata.description ?? post.metadata.summary ?? extractPostDescription(post.content);
+  const relatedPosts = getRelatedPosts(post);
+  const heroFit = post.metadata.heroFit ?? "contain";
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -160,6 +209,9 @@ export default async function Blog({ params }: BlogPageProps) {
       name: "Amir Aliu",
       url: "https://amiraliu.vercel.app",
     },
+    mainEntityOfPage: `${baseUrl}/blog/${post.slug}`,
+    keywords: (post.metadata.tags ?? []).join(", "),
+    inLanguage: currentLanguage === "al" ? "sq-AL" : "en-US",
   };
 
   const postUrl = `${baseUrl}/blog/${post.slug}`;
@@ -246,6 +298,7 @@ export default async function Blog({ params }: BlogPageProps) {
           href={twitterUrl}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Share this post on X"
           className="
             flex items-center gap-2
             rounded-full border border-border
@@ -262,6 +315,7 @@ export default async function Blog({ params }: BlogPageProps) {
           href={linkedinUrl}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Share this post on LinkedIn"
           className="
             flex items-center gap-2
             rounded-full border border-border
@@ -278,6 +332,7 @@ export default async function Blog({ params }: BlogPageProps) {
           href={facebookUrl}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Share this post on Facebook"
           className="
             flex items-center gap-2
             rounded-full border border-border
@@ -292,14 +347,22 @@ export default async function Blog({ params }: BlogPageProps) {
       </div>
 
       {post.metadata.image && (
-        <div className="mb-14 overflow-hidden rounded-2xl">
+        <div
+          className={`mb-14 overflow-hidden rounded-xl border border-border/60 ${
+            heroFit === "cover" ? "bg-muted/30 p-0" : "bg-muted/20 p-2 sm:p-3"
+          }`}
+        >
           <Image
             src={post.metadata.image}
             alt={post.metadata.title}
             width={1600}
             height={900}
             sizes="(min-width: 1024px) 1024px, 100vw"
-            className="h-auto w-full object-cover"
+            className={
+              heroFit === "cover"
+                ? "h-64 w-full object-cover sm:h-[28rem]"
+                : "h-auto max-h-[18rem] w-full object-contain sm:max-h-[24rem]"
+            }
             placeholder="blur"
             blurDataURL={tinyBlurDataURL}
             priority
@@ -316,6 +379,63 @@ export default async function Blog({ params }: BlogPageProps) {
         </div>
         <BlogTableOfContents headings={tableOfContents} />
       </div>
+
+      {relatedPosts.length > 0 && (
+        <section className="mt-12">
+          <h2 className="text-lg font-semibold tracking-tight">Related Posts</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedPosts.map((relatedPost) => {
+              const relatedSummary =
+                relatedPost.metadata.summary ?? relatedPost.metadata.description ?? "";
+              const relatedReadingTime =
+                relatedPost.metadata.readingTime ?? calculateReadingTime(relatedPost.content);
+
+              return (
+                <Link
+                  key={relatedPost.slug}
+                  href={`/blog/${relatedPost.slug}`}
+                  className="group rounded-xl border border-border/70 bg-muted/20 p-4 transition hover:border-border hover:bg-muted/35"
+                >
+                  <p className="text-xs text-muted-foreground">
+                    {formatDate(relatedPost.metadata.publishedAt)} | {relatedReadingTime}{" "}
+                    {relatedReadingTime === 1 ? "min" : "mins"} read
+                  </p>
+                  <h3 className="mt-2 line-clamp-2 text-sm font-semibold text-foreground/90 transition group-hover:text-foreground">
+                    {relatedPost.metadata.title}
+                  </h3>
+                  {relatedSummary ? (
+                    <p className="mt-2 line-clamp-3 text-xs text-muted-foreground">{relatedSummary}</p>
+                  ) : null}
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      <aside className="mt-12 rounded-xl border border-border/70 bg-muted/20 p-4 sm:p-5">
+        <p className="text-xs uppercase tracking-wide text-muted-foreground">Explore More</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link
+            href="/projects"
+            className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+          >
+            Related Projects
+          </Link>
+          <Link
+            href="/certifications"
+            className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+          >
+            Security Certifications
+          </Link>
+          <Link
+            href="/blog"
+            className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+          >
+            Back to Blog
+          </Link>
+        </div>
+      </aside>
     </article>
   );
 }

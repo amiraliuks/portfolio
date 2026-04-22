@@ -9,6 +9,7 @@ import { normalizeBlogTags } from "@/lib/blog-tags";
 import { formatDate } from "@/lib/utils";
 import type { BlogPost } from "@/types/types";
 import { tinyBlurDataURL } from "@/lib/image";
+import { trackEvent } from "@/lib/analytics";
 
 interface BlogPostsProps {
   posts: BlogPost[];
@@ -131,9 +132,13 @@ export function BlogPosts({ posts }: BlogPostsProps) {
 
   return (
     <div className="space-y-9">
-      <div className="relative">
+      <div className="relative" role="search" aria-label="Search blog posts">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <label htmlFor="blog-search" className="sr-only">
+          Search blog posts by title, summary, or tag
+        </label>
         <input
+          id="blog-search"
           type="search"
           value={searchQuery}
           onChange={(event) => {
@@ -148,12 +153,14 @@ export function BlogPosts({ posts }: BlogPostsProps) {
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2 border-b border-border/60 pb-6">
           <button
+            type="button"
             onClick={() => {
               setActiveTag(null);
               setShowAllTags(false);
               setVisibleCount(PAGE_SIZE);
             }}
-              className={`px-4 py-1.5 text-sm rounded-full border transition
+            aria-pressed={activeTag === null}
+            className={`px-4 py-1.5 text-sm rounded-full border transition
               ${activeTag === null
                 ? "border-foreground bg-foreground text-background"
                 : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -165,10 +172,12 @@ export function BlogPosts({ posts }: BlogPostsProps) {
           {visibleFilterTags.map((tag) => (
             <button
               key={tag}
+              type="button"
               onClick={() => {
                 setActiveTag(tag);
                 setVisibleCount(PAGE_SIZE);
               }}
+              aria-pressed={activeTag === tag}
               className={`px-4 py-1.5 text-sm rounded-full border transition
                 ${activeTag === tag
                   ? "border-foreground bg-foreground text-background"
@@ -184,6 +193,7 @@ export function BlogPosts({ posts }: BlogPostsProps) {
 
           {extraTags.length > 0 && (
             <button
+              type="button"
               onClick={() => setShowAllTags((prev) => !prev)}
               className="rounded-full border border-border px-4 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
             >
@@ -203,12 +213,18 @@ export function BlogPosts({ posts }: BlogPostsProps) {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            {featuredPosts.map((post) => {
+            {featuredPosts.map((post, featuredIndex) => {
               return (
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
                   className="group overflow-hidden rounded-2xl border border-border bg-card/70 transition duration-300 hover:-translate-y-0.5 hover:border-border hover:bg-accent/25"
+                  onClick={() =>
+                    trackEvent("blog_post_open", {
+                      source: "blog_featured",
+                      slug: post.slug,
+                    })
+                  }
                 >
                   <div className="relative overflow-hidden border-b border-border/60">
                     {post.metadata.image ? (
@@ -221,6 +237,7 @@ export function BlogPosts({ posts }: BlogPostsProps) {
                         sizes="(min-width: 768px) 50vw, 100vw"
                         placeholder="blur"
                         blurDataURL={tinyBlurDataURL}
+                        priority={featuredIndex === 0}
                       />
                     ) : (
                       <div className="h-44 w-full bg-gradient-to-br from-muted to-accent" />
@@ -257,6 +274,12 @@ export function BlogPosts({ posts }: BlogPostsProps) {
               key={post.slug}
               href={`/blog/${post.slug}`}
               className="group block rounded-2xl border border-transparent px-1 py-6 transition hover:border-border hover:bg-accent/25 sm:px-3"
+              onClick={() =>
+                trackEvent("blog_post_open", {
+                  source: "blog_list",
+                  slug: post.slug,
+                })
+              }
             >
               <div className="grid items-start gap-5 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:gap-6">
                 <span className="pt-1 font-mono text-sm text-muted-foreground">
@@ -310,6 +333,7 @@ export function BlogPosts({ posts }: BlogPostsProps) {
       {hasMore && (
         <div className="flex flex-col items-center gap-3 pt-2">
           <button
+            type="button"
             onClick={() => setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, filteredBlogs.length))}
             className="rounded-full border border-border px-5 py-2 text-sm text-foreground transition hover:bg-accent"
           >
