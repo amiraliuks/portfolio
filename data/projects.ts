@@ -796,19 +796,14 @@ const projects: Project[] = [
 
     postImages: [
       {
-        src: "/projects/kosovo-gov-site-verification/extension-result-en.png",
-        alt: "Showcasing the extension result in English language",
-        caption: "Showcasing the extension result in English language",
+        src: "/projects/kosovo-gov-site-verification/official-domain.png",
+        alt: "Showcasing the extension where the domain is official",
+        caption: "Showcasing the extension where the domain is official",
       },
       {
-        src: "/projects/kosovo-gov-site-verification/extension-result-al.png",
-        alt: "Showcasing the extension result in Albanian language",
-        caption: "Showcasing the extension result in Albanian language",
-      },
-      {
-        src: "/projects/kosovo-gov-site-verification/extension-result-sr.png",
-        alt: "Showcasing the extension result in Serbian language",
-        caption: "Showcasing the extension result in Serbian language",
+        src: "/projects/kosovo-gov-site-verification/unofficial-domain.png",
+        alt: "Showcasing the extension result where the domain is not official",
+        caption: "Showcasing the extension result where the domain is not official",
       },
       {
         src: "/projects/kosovo-gov-site-verification/extension-popup.png",
@@ -822,6 +817,11 @@ const projects: Project[] = [
         type: "Source Code",
         href: "https://github.com/amiraliuks/kosovo-gov-site-verification/releases",
         icon: FaGithub,
+      },
+      {
+        type: "Firefox Add-on",
+        href: "https://addons.mozilla.org/en-US/firefox/addon/kosovo-government-domain-check/",
+        icon: FaFirefox,
       },
     ],
   },
