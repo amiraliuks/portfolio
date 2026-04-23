@@ -474,6 +474,8 @@ const certifications: Certification[] = [
     id: 14,
     title: 'VishwaCTF 2026',
     course: 'https://play.vishwactf.com/',
+    certificateOne: '/certifications/pdfs/ctf/VishwaCTF2026.pdf',
+    badgeImage: '/certifications/badges/VishwaCTF2026.png',
     createdAt: '06-03-2026', // DD-MM-YYYY
     description:
       'Participated in VishwaCTF 2026 as a solo player with a dedicated focus on reverse engineering challenges. This participation followed my Kosovo Cyber Team coach\'s reverse engineering syllabus guidance, with the event used as targeted hands-on practice.',
