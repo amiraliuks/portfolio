@@ -8,30 +8,31 @@ tags: Cybersecurity, Web Security, CVE, RCE, XSS, SQL Injection, SSTI, Ruby on R
 summary: "What started as CTF curiosity turned into six vulnerabilities in Camaleon CMS 2.9.1"
 ---
 
-![Chamaleon Breached](/blog-posts/camaleon-cms-rce/camaleon-cms-logo.png)
+![Camaleon CMS Logo](/blog-posts/camaleon-cms-rce/camaleon-cms-logo.png)
 
 # Researchers
 
 | Researcher    | Website                                  | GitHub   | LinkedIn                                                                                             |
 |---------------|------------------------------------------|----------|------------------------------------------------------------------------------------------------------|
-| Amir Aliu     | [amiraliu.vercel.app](https://amiraliu.vercel.app)  | [AmirAliuA](https://github.com/amiraliuks) | [LinkedIn](https://linkedin.com/in/amiraliu)             |
+| Amir Aliu     | [amiraliu.vercel.app](https://amiraliu.vercel.app)  | [AmirAliuA](https://github.com/amiraliuks) | [LinkedIn](https://linkedin.com/in/amiraliu)            |
 | Enrik Mustafa | [enrik-m.github.io](https://enrik-m.github.io/)     | [enrik-m](https://github.com/enrik-m) | [LinkedIn](https://linkedin.com/in/enrik-mustafa-36914a231/) |
 
 # Resources
 
-| Resource | Link |
-|---|---|
+| Resource                        | Link                                                                                                    |
+|---------------------------------|---------------------------------------------------------------------------------------------------------|
 | Full Vulnerability Report (PDF) | [camaleon-cms-security-issues.pdf](/blog-posts/camaleon-cms-rce/camaleon-cms-security-issues.pdf)       |
 | Enrik's Technical Analysis      | [Camaleon CMS Vulnerabilities](https://enrik-m.github.io/posts/Camaleon-CMS-Vulnerabilties/)            |
+| Vendor Acknowledgment (2.9.2)   | [Release Notes](https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2)                            |
+| #2 XSS Payload                  | [xss_payload.js](https://github.com/amiraliuks/camaleon-cms-research/blob/main/xss_payload.js)          |
 | #3 RCE PoC                      | [select-eval-rce.py](https://github.com/amiraliuks/camaleon-cms-research/blob/main/select-eval-rce.py)  |
 | #5 SQLite Dump PoC              | [sqlite-dump-poc.py](https://github.com/amiraliuks/camaleon-cms-research/blob/main/sqlite-dump-poc.py)  |
-| #2 XSS Payload                  | [xss_payload.js](https://github.com/amiraliuks/camaleon-cms-research/blob/main/xss_payload.js)          |
 
 # Introduction
 
 Quick background so everything makes sense.
 
-Me and my cousin are in a small CTF team called [KSAL Cyber Team](https://github.com/KSAL-Cyber-Team), a group of like-minded cybersecurity enthusiasts. We had just finished [THJCC CTF 2026](https://ctftime.org/event/3088)
+Me and my cousin (Enrik) are in a small CTF team called [KSAL Cyber Team](https://github.com/KSAL-Cyber-Team), a group of like-minded cybersecurity enthusiasts. We had just finished [THJCC CTF 2026](https://ctftime.org/event/3088)
 so we were rightfully on an adrenaline rush and had nothing else to do.
 
 So we started doing [HackTheBox](https://hackthebox.com/) challenges together and came across one that used [Camaleon CMS](https://github.com/owen2345/camaleon-cms). 
@@ -46,25 +47,33 @@ Huge thanks to the members of [DEFCON GROUP PRISHTINA (DC38338)](http://dc38338.
 ---
 
 # Disclosure Timeline
-This is maybe out of line, but I have to be honest about how it went, because it matters.
 
-On February 19, 2026 (19/02/2026), the same day we found everything, we sent a disclosure email to the vendor. We included all the researchers mentioned in their [SECURITY.MD](https://github.com/owen2345/camaleon-cms/security), laid out some of the vulnerabilities clearly, and told them to contact us for more details.
+| Date       | Event |
+|------------|--------------------------------------------------------------------|
+| 19/02/2026 | Vendor contacted (initial disclosure email sent)                   |
+| 20/02/2026 | Follow-up sent with additional finding (CSRF chain)                |
+| 29/03/2026 | GitHub Issue #1135 opened after no response                      |
+| 09/04/2026 | Full detailed report sent, MITRE submissions initiated             |
+| 01/05/2026 | Vendor released 2.9.2 (all findings patched, researchers credited) |
+| Pending    | CVE assignment by MITRE                                            |
+
+On February 19, 2026 (19/02/2026), the same day we found everything, we sent a disclosure email to the vendor. We included all the researchers mentioned in their [SECURITY.MD](https://github.com/owen2345/camaleon-cms/security), laid out some of the vulnerabilities clearly, and told them to contact us for full details.
 
 Looking back, this was our first mistake. We should have have included full technical details and reproduction steps upfront instead of expecting them to reach out and ask. We were treating it like the start of a conversation when we should have treated it like a complete report.
 
-<ins>However, we never heard back</ins>.
+We didn't receive a response.
 
 While waiting for a response, we actually ended up finding the rest of the vulnerabilities. We figured we'd give them at least 30 days before doing anything, since none of the findings were being actively exploited publicly, we kept digging.
 
 On February 20, Enrik sent a follow-up email with an additional finding (improper CSRF protection on certain admin endpoints), which when chained with the contact form broken access control, gave you a full privilege escalation path to admin account creation and from there into RCE. 
 
-<ins>Still nothing back</ins>.
+No response was received to that email either.
 
 After about 40 days of total silence, we opened [GitHub Issue #1135](https://github.com/owen2345/camaleon-cms/issues/1135) on March 29, 2026 (29/03/2026).
 
-<ins>Also ignored</ins>.
+The issue did not receive a response either.
 
-At some point after that, fixes started quietly appearing in the repository. Whether they read our report, ran a SAST tool, or they were just found, we have no idea, they never told us. No coordination, no confirmation of what was actually fixed, no contact at any point.
+At some point after that, fixes started quietly appearing in the repository. We have no way of knowing whether they were triggered by our report, independent tooling, or something else entirely.
 
 We found out by watching commits:
 - [Commit 7600117, Fix RCE in custom-field i18n rendering and add end-to-end regression coverage](https://github.com/owen2345/camaleon-cms/commit/7600117c2b1978bfaae4357fda82dcdd8190b82c)
@@ -85,26 +94,28 @@ Because of that, we had to drop some findings from this writeup (and our report)
 
 I'll be staying clear from this CMS. Not because of how we were treated, but I have no interest in putting more time into a project that handles disclosure this way. The site constantly crashed during testing, I genuinely couldn't tell if something was our fault or theirs.
 
+**Update (May 1, 2026):** The vendor released version 2.9.2, which addressed all six of our reported findings. Amir Aliu and Enrik Mustafa were credited by name in the release notes for findings #1, #2, #3, #5, and #6. No direct communication was made at any point during the process, but the acknowledgment and fixes are there. Full release notes: [2.9.2](https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2).
+
 ---
 
 # CVE Information
 
-| Field  | Value |
-|--------|-------|
-| CVE ID | Pending assignment |
-| Vendor | [Camaleon CMS](https://github.com/owen2345/camaleon-cms) |
-| Affected Version | ≤ 2.9.1 |
+| Field               | Value                                                                           |
+|---------------------|---------------------------------------------------------------------------------|
+| CVE ID              | Pending assignment                                                              |
+| Vendor              | [Camaleon CMS](https://github.com/owen2345/camaleon-cms)                        |
+| Affected Version    | ≤ 2.9.1                                                                         |
 | Vulnerability Types | Broken Access Control, Stored XSS ×2, Authenticated RCE ×2, SQL Injection, SSTI |
 
 # Findings Summary
-| # | Finding | Severity | CVSS |
-|---|---|---|---|
-| 1 | Broken Access Control in Plugin Administration Routes | Medium | 6.3 |
-| 2 | Stored XSS via Draft Post Title | High | 8.7 |
-| 3 | RCE via `instance_eval` in Select Eval Custom Fields | High | 7.2 |
-| 4 | Stored XSS via Contact Form `previous_html` Rendering | High | 8.7 |
-| 5 | Authenticated SQL Injection via Slug Translations | Medium | 6.5 |
-| 6 | Authenticated SSTI leading to RCE via `render inline` in `test_email` | Medium | 6.6 |
+| # | Finding                                                               | Severity | CVSS |
+|---|-----------------------------------------------------------------------|----------|------|
+| 1 | Broken Access Control in Plugin Administration Routes                 | Medium   | 6.3  |
+| 2 | Stored XSS via Draft Post Title                                       | High     | 8.7  |
+| 3 | RCE via `instance_eval` in Select Eval Custom Fields                  | High     | 7.2  |
+| 4 | Stored XSS via Contact Form `previous_html` Rendering                 | High     | 8.7  |
+| 5 | Authenticated SQL Injection via Slug Translations                     | Medium   | 6.5  |
+| 6 | Authenticated SSTI leading to RCE via `render inline` in `test_email` | Medium   | 6.6  |
 
 ---
 
@@ -635,7 +646,7 @@ Gets evaluated server-side and the output shows up in the response.
 
 # Conclusion
 
-Six vulnerabilities under my belt from what was supposed to be a casual session. Honestly wouldn't trade it for anything in the world.
+Ending the whole situation with six vulnerabilities from what was supposed to be a casual session. Pretty happy.
 
 The technical side was fun, of course, but what I'm taking away from this more than anything is everything that happened after we found the bugs. This whole experience has taught me a lot of things I didn't think about before.
 
@@ -643,9 +654,9 @@ On the reporting side, our first contact email was fine, but looking back at it 
 
 On the vendor side, before doing any research on an open source project, check how they handle security reports. Look at their past CVEs, look at how long it took them to respond, look at how they treated the researchers who reported them. Some projects have a great track record, some of them absolutely not. It doesn't take you that long, but it saves you A LOT of time, trust me.
 
-Timing wise, waiting 40+ days without a response, then fixes showing up in commmits with no communication, that leaves you in a very tough and vulnerable position. Going forward, I'll mention the deadline upfront (the way Google has it) in the initial email, making it clear that public disclosure on a specific date.
+Timing wise, waiting 40+ days without a response, then seeing fixes appear in commmits with no communication, that leaves you in a difficult position. Going forward, I'll mention the deadline upfront (the way Google has it) in the initial email, making it clear that public disclosure on a specific date regardless of vendor response.
 
-<ins>It's a standard practice for a reason.</ins>
+It's a standard practice for a reason.
 
 This was our first real coordinated disclosure and despite how it went on the vendor's end, I'm glad we did it properly on ours. We documented everything, we reported responsibly, we waited, we followed up. We didn't make anything public, making any sites or users vulnerable.
 
