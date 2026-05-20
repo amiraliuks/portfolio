@@ -25,9 +25,11 @@ const projectFilterTags = [
   "Browser Extension Development",
   "Mobile Development",
   "Machine Learning",
+  "Game Modding",
   "Hardware",
   "Security",
   "Automation",
+  "Reverse Engineering",
 ];
 const MAX_VISIBLE_BADGES = 5;
 

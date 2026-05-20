@@ -946,7 +946,7 @@ const projects: Project[] = [
     id: 22,
     title: "Rubik's Cube Unity Game",
     slug: "unity-rubiks-cube",
-    createdAt: "2026-08-02",
+    createdAt: "2026-02-08",
     description:
       "A Rubik's Cube game built in Unity using C#, featuring a fully interactive 3D cube with realistic rotations, scramble logic, and solve-state validation. Designed as both a puzzle game and a foundation for experimenting with cube algorithms and solvers.",
 
@@ -988,6 +988,52 @@ const projects: Project[] = [
         type: "Linux Release",
         href: "https://github.com/amiraliuks/unity-rubiks-cube/releases",
         icon: FaLinux,
+      },
+    ],
+  },
+
+  {
+    id: 23,
+    title: "Silent Hill 3 Enhanced",
+    slug: "silent-hill-3-enhanced",
+    createdAt: "2026-05-13",
+    description:
+      "A community-made enhancement project for Silent Hill 3 PC, built from scratch as an ASI plugin. Fixes longstanding bugs, improves graphics, restores content cut from the PC release, and adds modern compatibility fixes. Fully independent of other existing SH3 patches.",
+
+    features: [
+      "60 FPS mode with correct game speed, plus selectable 30fps / 60fps / unlocked modes",
+      "Registry redirect fix — resolves 'game not installed properly' error without requiring admin rights",
+      "Safe mode disable — prevents settings from reverting after a crash or Alt+F4",
+      "Planned widescreen fix with correct FOV, custom resolutions, and black bar removal",
+      "Planned resolution overrides for depth of field, shadows, inventory, and status screens",
+      "Planned restoration of missing dialogue and cut beta audio removed from the PC release",
+      "Planned content fixes including 'Wish House' correction, typo fixes, and missing sewer text",
+      "Built as a C++ ASI plugin using MinHook, loaded via Ultimate ASI Loader — no separate launcher needed",
+      "Designed as a foundation for further reverse engineering and feature additions",
+    ],
+
+    badge: ["Reverse Engineering", "C++", "Game Modding", "Windows", "DirectX", "Open Source"],
+
+    image: "/projects/silent-hill-3-enhanced/sh3-cover.jpg",
+
+    postImages: [
+      {
+        src: "/projects/silent-hill-3-enhanced/sh3-cover.jpg",
+        alt: "Silent Hill 3 Enhanced — PC enhancement project",
+        caption: "SH3 Enhanced running on PC with 60 FPS and registry fixes applied.",
+      },
+    ],
+
+    links: [
+      {
+        type: "Source Code",
+        href: "https://github.com/amiraliuks/silent-hill-3-enhanced",
+        icon: FaGithub,
+      },
+      {
+        type: "Download",
+        href: "https://github.com/amiraliuks/silent-hill-3-enhanced/releases",
+        icon: FaWindows,
       },
     ],
   },
