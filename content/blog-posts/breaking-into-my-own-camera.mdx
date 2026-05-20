@@ -9,14 +9,16 @@ summary: "Analyzing a cheap IP camera led to unauthenticated access to sensitive
 image: "/blog-posts/home-camera-research/camera.png"
 ---
 
-### Introduction
+# Introduction
+
 We've had this camera in our home for a while now. We bought it, installed their mobile app called [CareCam Pro](https://play.google.com/store/apps/details?id=com.huiyun.care.viewerpro.googleplay&hl=en), set it up and called it a day. It served its purpose to this day.
 
 But I always wondered how it worked, I always wanted to pry it open and tinker with it. Unfortunately, I didn't really know how to do it, I didn't have the right skills. Today I remembered about it so I figured I'd take a look at it properly. Why not.
 
 This is how the camera looks. If you try searching for it online by image or name, you'll get nowhere. It's one of those generic Chinese cameras that's been rebranded a hundred times. Even the files inside (once you get access) reference a bunch of completely different model/company names. At this point I genuinely felt like an LLM hallucinating, I kept seeing different names everywhere. Anyways.
 
-#### Device and Vendor Information
+# Device and Vendor Information
+
 | Field              | Value                                                                             |
 | ------------------ | --------------------------------------------------------------------------------- |
 | SoC / Platform     | FH8626V100 (Fullhan Microelectronics, FH86xx family)                              |
@@ -37,7 +39,8 @@ The Camera I Own           |  The JX-F37P Image Sensor
 
 The camera (this one atleast) uses the JX-F37P image sensor, a cheap 2MP/1080p@30fps over MIPI.
 
-### First Look
+# First Look
+
 I started off with a simple `nmap` scan and it started off interesting, it wasn't just a web interface:
 ```bash
 nmap -sV -p- 192.168.0.115
@@ -66,7 +69,8 @@ PORT      STATE SERVICE         VERSION
 
 For a simple IP camera, these are a lot of ports open.
 
-### The Web Interface
+# The Web Interface
+
 Opening the web panel didn't give much at first. It looked like your average login page, nothing special.
 
 ![Landing Page](/blog-posts/home-camera-research/web-panel-landing-page.png)
@@ -80,7 +84,8 @@ GET /PSIA/YG/userCheck?userName=<user>&password=<pass>
 
 There's no hashing or anything, just plain credentials over HTTPS. It's bad but it gets worse.
 
-### Weird stuff in frontend
+# Weird stuff in frontend
+
 While going through the login script, I noticed a hardcoded check:
 - If the username is `super_yg`, part of the normal login flow is skipped and `jumpPage()` is called before even hitting `userCheck`.
 
@@ -89,7 +94,8 @@ Still, it tells you a lot about how carefully this was put together.
 
 I had a feeling the backend probably wasn't doing much validation either.
 
-### API Exploration
+# API Exploration
+
 The camera exposes a bunch of endpoints under `/PSIA/`/.
 Instead of logging in, I just started calling them directly.
 
@@ -119,7 +125,9 @@ So I tried a few more:
 All of them responded with real data, still though, no authentication.
 At that point it was pretty clear this wasn't just one bad endpoint, the API itself wasn't enforcing authentication properly.
 
-### Finding Endpoints properlyInstead of guessing endpoints, I pulled all the frontend Javascript files and extracted every `/PSIA` route:
+# Finding Endpoints properly
+
+Instead of guessing endpoints, I pulled all the frontend Javascript files and extracted every `/PSIA` route:
 ```bash
 grep -h -oE '/PSIA/[A-Za-z0-9_./]+' \
 /tmp/cam_paramconfig.js /tmp/cam_params_system.js /tmp/cam_params_network.js \
@@ -134,7 +142,8 @@ That gave me a full list of internal endpoints. One immediately stood out:
 
 Anything involving `AAA (Authentication, Authorization, Accounting)` is usually sensitive. So of course I tried it.
 
-### The Big Moment
+# The Big Moment
+
 ```bash
 curl http://192.168.0.115/PSIA/Security/AAA/users
 ```
@@ -150,7 +159,7 @@ It responded with:
 I got... plaintext credentials. PLAINTEXT. With no authentication required.
 This immediately made me think "they legit didn't care about it".
 
-### Verifying the Credentials
+# Verifying the Credentials
 Just to confirm, I logged in the website using those credentials.
 
 It worked and I can see:
@@ -165,7 +174,8 @@ It worked and I can see:
 
 Full admin access.
 
-### It Gets Worse
+# It Gets Worse
+
 At this point I managed to get:
 - The needed admin credentials
 - Full read access
@@ -190,7 +200,8 @@ So you don't need:
 
 That's game over.
 
-### Camera Feed
+# Camera Feed
+
 Do you remember port `6688` from earlier? It looked interesting no?
 ```bash
 curl http://192.168.0.115:6688
@@ -199,7 +210,8 @@ curl http://192.168.0.115:6688
 It returns a live image (hence why snapshot) from the camera and it didn't require any authentication.
 I have no idea why you would do this. At this point it didn't even surprise me. Spooked me but didn't surprise me.
 
-### From RCE to Actual Shell access
+# From RCE to Actual Shell access
+
 If you remember the initial `nmap` scan I did, `telnet` was already running under port `23`.
 At that time I didn't have the credentials, so I ignored it.
 
@@ -217,7 +229,8 @@ and...
 
 Those calls made me think that it was some custom protocol the device uses internally, most likely for control or firmware operations.
 
-### Understanding the Pattern
+# Understanding the Pattern
+
 I wanted to see how the device behaved, so instead of sending random data, I tried to follow the pattern that the device itself uses:
 - structured input
 - wrapped in tags
@@ -242,7 +255,8 @@ echo "<SYSTEM>whoami</SYSTEM>" | nc 192.168.0.115 1300
 echo "<SYSTEM>pwd</SYSTEM>" | nc 192.168.0.115 1300
 ```
 
-### Blind Command Execution
+# Blind Command Execution
+
 At this point it became clear to me that this wasn't a normal interactive screen, it was:
 - accepting commands
 - executing them
@@ -283,7 +297,8 @@ Enter 'help' for a list of built-in commands.
 [/app]# 
 ```
 
-### After Shell Access
+# After Shell Access
+
 Getting a shell completely changed the situation. Up until this point, everything I did was from the outside:
 - calling endpoints
 - reading responses
@@ -291,7 +306,8 @@ Getting a shell completely changed the situation. Up until this point, everythin
 
 Now I was inside the device itself.
 
-### First Look inside
+# First Look inside
+
 The very first thing I did was:
 ```bash
 [/app]# id
@@ -407,7 +423,8 @@ So:
 
 ---
 
-### Important Scripts (what actually runs the device, the fun part)
+# Important Scripts (what actually runs the device, the fun part)
+
 - `app_init.sh` - main startup script
 
 This is executed during boot and it handles:
@@ -469,7 +486,8 @@ Hardware-related scripts for:
 
 ---
 
-### Boot & Services (important finding)
+# Boot & Services (important finding)
+
 From `/etc` (not shown here fully but confirmed):
 - `inittab` -> starts `inetd`
 - `inetd.conf` -> starts `telnet`
@@ -478,7 +496,8 @@ Meaning that `telnet` is enabled by default at boot and no exploit was needed fo
 
 ---
 
-### Network & Routing Behavior
+# Network & Routing Behavior
+
 From config files like `route.txt`:
 - HTTP routing is basically wide open
 - Catch-all routes
@@ -486,7 +505,8 @@ From config files like `route.txt`:
 
 Which explains why all those `/PSIA/` endpoints worked without authentication.
 
-### What I’m NOT showing/including (on purpose):
+# What I’m NOT showing/including (on purpose):
+
 - Dumped configs
 - Dumped scripts
 - Wi-Fi credentials
@@ -494,7 +514,8 @@ Which explains why all those `/PSIA/` endpoints worked without authentication.
 
 Because this exact firmware is reused across a lot of cheap cameras. Publishing those directly would basically expose real devices.
 
-### Vulnerability Summary
+# Vulnerability Summary
+
 It's a chain of problems that together leads you to full device comporomise (including your network if you bother enough to check).
 - Unauthenticated access to API Endpoints.
 - Plaintext credential exposure (`/PSIA/Security/AAA/users`)
@@ -505,7 +526,8 @@ It's a chain of problems that together leads you to full device comporomise (inc
 - Weak credential handling (`/app/shadow` to `/etc/shadow`)
 - Sensitive data stored in plaintext (Wi-Fi config, system data)
 
-### Vulnerability Classification
+# Vulnerability Classification
+
 The issues identified are not isolated bugs, but a chain of systemic security failures affecting authentication, authorization, data protection, and command execution.
 - `CWE-306` - Missing Authentication for Critical Function  
   Critical API endpoints under `/PSIA/` allow both read and write operations without requiring authentication.
@@ -531,7 +553,8 @@ The issues identified are not isolated bugs, but a chain of systemic security fa
 - `CWE-319` - Cleartext Transmission of Sensitive Information *(context-dependent)*  
   Certain services (e.g., snapshot endpoint, HTTP interface) transmit sensitive data over unencrypted channels, exposing it to interception.
 
-### Real World Impact
+# Real World Impact
+
 You can read all this and just tell me that it's a cheap camera, but realistically:
 - If the device is exposed to the internet
 - Or someone is already inside your network (whether you trust them or not)
@@ -545,7 +568,8 @@ Then what this means is that:
 
 All without you ever noticing.
 
-### Personal Note (+ remediation?!?)
+# Personal Note (+ remediation?!?)
+
 I've wanted to do something like this for a long time. I don't want to be just known for playing CTF's. I want to develop myself and my skills by taking a real device and breaking it apart piece by piece.
 I wanted to understand how it worked, and how broken it is, how far I could go with this.
 
@@ -557,7 +581,8 @@ To the owners who have these cameras?
 
 Please, don't use these cameras for critical places, always update your stuff, whenever possible, buy better cameras.
 
-### Proof of Concept & Fun Stuff
+# Proof of Concept & Fun Stuff
+
 #### 1. Quick PoC (Data Extraction)
 This is the simplest possible script that demonstrates how broken the API is:
 - Dumps the users (with plaintext passwords)
