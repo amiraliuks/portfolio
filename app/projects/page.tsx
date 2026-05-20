@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
-import ProjectSection from '@/components/ProjectSection';
+import ProjectSection from '@/components/sections/ProjectSection';
 
 import { projects } from '@/data/projects';
 
@@ -78,6 +78,10 @@ export default function Page() {
       <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12">
         {/* Header */}
         <div className="mb-12 space-y-2">
+          <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+            <span>Selected work archive</span>
+            <span>Last updated May 2026</span>
+          </div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
             Projects
           </h1>
@@ -87,13 +91,13 @@ export default function Page() {
           <div className="flex flex-wrap gap-2 pt-1">
             <Link
               href="/blog"
-              className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+              className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
             >
               Read Blog Writeups
             </Link>
             <Link
               href="/certifications"
-              className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+              className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
             >
               View Certifications
             </Link>

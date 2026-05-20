@@ -1,14 +1,14 @@
 ﻿import React from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
-import CertificationsSection from '@/components/CertificationSection';
+import CertificationsSection from '@/components/sections/CertificationSection';
 
 import { certifications } from '@/data/certifications';
 
 export const metadata: Metadata = {
   title: 'Certifications',
   description:
-    "Browse through my various certifications. A collection that reflects the areas I genuinely enjoy working in. Each certification represents skills I've built over time and shows my commitment to continuous learning, improvement, and staying active in the fields I care about most.",
+    'A timeline of cybersecurity, CTF, and professional certifications documenting hands-on training, competitions, and practical technical growth.',
   keywords: [
     'Certifications',
     'Professional certifications',
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Certifications | Amir Aliu',
     description:
-      "Browse through my various certifications. A collection that reflects the areas I genuinely enjoy working in. Each certification represents skills I've built over time and shows my commitment to continuous learning, improvement, and staying active in the fields I care about most.",
+      'A timeline of cybersecurity, CTF, and professional certifications documenting hands-on training, competitions, and practical technical growth.',
     url: 'https://amiraliu.vercel.app/certifications',
     siteName: 'Amir Aliu Portfolio',
     images: [
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Certifications | Amir Aliu',
     description:
-      "Browse through my various certifications. A collection that reflects the areas I genuinely enjoy working in. Each certification represents skills I've built over time and shows my commitment to continuous learning, improvement, and staying active in the fields I care about most.",
+      'A timeline of cybersecurity, CTF, and professional certifications documenting hands-on training, competitions, and practical technical growth.',
     images: [
       'https://amiraliu.vercel.app/og?title=Certifications%20-%20Amir%20Aliu&description=Browse%20my%20certifications%20across%20cybersecurity%2C%20support%2C%20and%20professional%20training',
     ],
@@ -82,7 +82,7 @@ export default function Page() {
             Certifications
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-lg">
-            Browse through my various certifications. A collection that reflects the areas I genuinely enjoy working in. Each certification represents skills I&apos;ve built over time and shows my commitment to continuous learning, improvement, and staying active in the fields I care about most.
+            A compact timeline of cybersecurity, CTF, and professional certifications. The page highlights recent work first, then groups the full archive by year.
           </p>
         </div>
 
@@ -91,4 +91,3 @@ export default function Page() {
     </>
   );
 }
-

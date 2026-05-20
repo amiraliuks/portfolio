@@ -153,9 +153,9 @@ export function BlogTableOfContents({ headings }: BlogTableOfContentsProps) {
           {roundedProgress}%
         </span>
       </div>
-      <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted">
+      <div className="mt-2 h-1 w-full overflow-hidden bg-muted">
         <div
-          className="h-full rounded-full bg-foreground/70 transition-[width] duration-150 ease-out"
+          className="h-full bg-foreground/70 transition-[width] duration-150 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -178,7 +178,7 @@ export function BlogTableOfContents({ headings }: BlogTableOfContentsProps) {
                 setIsMobileOpen(false);
               }}
               className={[
-                "block w-full truncate rounded-md py-1.5 pr-1 text-left text-sm transition-colors",
+                "block w-full truncate py-1.5 pr-1 text-left text-sm transition-colors",
                 levelSpacing,
                 isActive
                   ? "text-primary"
@@ -197,7 +197,7 @@ export function BlogTableOfContents({ headings }: BlogTableOfContentsProps) {
             href={`#${heading.id}`}
             onClick={(event) => handleHeadingClick(event, heading.id)}
             className={[
-              "block cursor-pointer truncate rounded-md py-1.5 pr-1 text-sm transition-colors",
+              "block cursor-pointer truncate py-1.5 pr-1 text-sm transition-colors",
               levelSpacing,
               isActive
                 ? "text-primary"
@@ -219,13 +219,13 @@ export function BlogTableOfContents({ headings }: BlogTableOfContentsProps) {
           <SheetTrigger asChild>
             <Button
               variant="outline"
-              className="gap-2 rounded-full border-border bg-background/90 backdrop-blur"
+              className="gap-2 rounded-none border-border bg-background/90 backdrop-blur"
             >
               <ListTree className="h-4 w-4" />
               On This Page
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="max-h-[80vh] overflow-hidden rounded-t-xl">
+          <SheetContent side="bottom" className="max-h-[80vh] overflow-hidden rounded-none">
             <SheetHeader className="px-0 pb-2">
               <SheetTitle className="text-sm uppercase tracking-wide text-muted-foreground">
                 On This Page
@@ -240,7 +240,7 @@ export function BlogTableOfContents({ headings }: BlogTableOfContentsProps) {
       </div>
 
       <aside className="hidden self-start xl:sticky xl:top-24 xl:block">
-        <div className="max-h-[calc(100vh-7rem)] overflow-y-auto rounded-lg border border-border bg-card/40 p-4">
+        <div className="max-h-[calc(100vh-7rem)] overflow-y-auto rounded-none border border-border bg-card/40 p-4">
           {renderReadingProgress}
 
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">

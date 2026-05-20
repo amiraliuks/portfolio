@@ -1,0 +1,110 @@
+---
+title: "Prezantimi i Kosovo Government Domain Checker"
+publishedAt: "2025-12-08"
+public: true
+language: "al"
+translationKey: "kosovo-government-domain-checker"
+tags: Browser Extension, Cybersecurity, Phishing, Domain Verification, Web Security, Kosovo, Open Source
+summary: "Prezantimi i Kosovo Government Domain Checker"
+image: "/projects/kosovo-gov-site-verification/emblem.png"
+heroFit: "contain"
+---
+
+# 🇽🇰 Kosovo Government Domain Checker
+Kohët e fundit po shoh gjithnjë e më shumë phishing tentime.
+
+Gjithfarë sene si "paketa juaj ka mbërritur", "paguani gjobën e policisë", edhe faqe tjera që mundohen me u dukë zyrtare. Disa prej tyre janë aq mirë të bëra sa nëse nuk je duke i kushtu vëmendje, lehtë mundesh me ra në to.
+
+Shumica e njerëzve nuk duhet me ra në këto. Po realiteti është që shumë bien. Sidomos ata që nuk janë shumë të familjarizuar me teknologjinë ose nuk e kontrollojnë domain-in.
+
+Edhe një problem tjetër është që Kosova nuk ka një standard të qartë për domain-e qeveritare. Nuk është aq e thjeshtë sa “shiko a është .gov” si në disa shtete tjera. Kjo e bën edhe më konfuze për përdoruesin mesatar.
+
+Kështu që vendosa me bo diçka të vogël për këtë punë.
+
+---
+
+## Si funksionon
+Është shumë e thjeshtë.
+- E kontrollon domain-in e faqes ku je duke navigu
+- E krahason me një listë të domain-eve zyrtare të institucioneve të Kosovës
+- Nëse përputhet, shfaqet një **banner blu** që tregon që faqja është e verifikuar
+- Nëse jo, shfaqet një **paralajmërim i kuq**
+
+Kaq. Nuk ka nevojë për klikime, nuk ka konfigurim. Punon në prapavijë.
+
+Mesazhi shfaqet automatikisht në gjuhën e browser-it (Anglisht, Shqip, ose Serbisht).
+
+---
+
+## Kujt i hyn në punë
+Mundet me u përdor prej kujtdo, po sidomos:
+- Persona që nuk janë shumë teknik
+- Njerëz më të moshuar që shpesh targetohen nga këto mashtrime
+- Ata që ndihmojnë familjarë ose të tjerë me shërbime online
+- Edhe dev-a që duan një kontroll të shpejtë vizual
+
+Nuk është zëvendësim për mjete sigurie. Veç ta bën të qartë kur diçka nuk është zyrtare.
+
+---
+
+## Privatësia
+Krejt funksionon lokalisht në browser.
+- Nuk ka tracking
+- Nuk ka analytics
+- Nuk dërgon kërkesa në servera
+- Nuk mbledh të dhëna
+
+Kontrollon vetëm domain-in e faqes ku je. Asgjë tjetër.
+
+---
+
+## Features
+- Listë e domain-eve zyrtare të institucioneve të Kosovës
+- Indikator vizual i qartë (verifikuar / jo)
+- Detektim automatik i gjuhës (EN, SQ, SR)
+- Punon në çdo faqe
+- Plotësisht offline
+- Pa konfigurim
+
+---
+
+## Instalimi
+1. Shkarko ose klono repository
+2. Hap `chrome://extensions/`
+3. Aktivizo **Developer Mode**
+4. Kliko **Load unpacked**
+5. Zgjedh folder-in e projektit
+
+Kaq.
+
+---
+
+## License
+Ky projekt është nën **CC BY-NC-ND 4.0**.
+
+Mundesh me e lexu kodin dhe me mësu prej tij, por nuk mundesh:
+- me e përdor për qëllime komerciale
+- me e shpërnda
+- me publiku fork-e
+- me shpërnda versione të modifikuara ose të pamodifikuara
+
+https://creativecommons.org/licenses/by-nc-nd/4.0/
+
+---
+
+Nëse i ke pa këto faqe fake që duken si "zyrtare", kjo është një mënyrë e thjeshtë për me kontrollu para se me i besu.
+
+<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", columnGap: "28px", rowGap: "24px", marginTop: "20px" }}>
+  <figure style={{ margin: 0 }}>
+    <img src="/blog-posts/kosovo-gov-domain-checker/extension-popup.png" alt="Extension popup" />
+    <figcaption>Extension popup</figcaption>
+  </figure>
+  <figure style={{ margin: 0 }}>
+    <img src="/blog-posts/kosovo-gov-domain-checker/official-domain.png" alt="Official domain result" />
+    <figcaption>Official domain result</figcaption>
+  </figure>
+  <figure style={{ margin: 0 }}>
+    <img src="/blog-posts/kosovo-gov-domain-checker/unofficial-domain.png" alt="Unofficial domain warning" />
+    <figcaption>Unofficial domain warning</figcaption>
+  </figure>
+</div>

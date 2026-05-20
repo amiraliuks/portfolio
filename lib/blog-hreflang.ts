@@ -10,25 +10,29 @@ const OG_LOCALE_BY_LANGUAGE: Record<BlogLanguage, string> = {
   al: "sq_AL",
 };
 
-export function getBlogHreflangAlternates(post: BlogPost, siteBaseUrl: string) {
+export function getBlogHreflangAlternates(
+  post: BlogPost,
+  siteBaseUrl: string,
+  routeBase = "/blog"
+) {
   const alternates: Record<string, string> = {};
   const translationSlugs = post.metadata.translationSlugs ?? {};
 
   (Object.keys(HREFLANG_BY_LANGUAGE) as BlogLanguage[]).forEach((language) => {
     const slug = translationSlugs[language];
     if (!slug) return;
-    alternates[HREFLANG_BY_LANGUAGE[language]] = `${siteBaseUrl}/blog/${slug}`;
+    alternates[HREFLANG_BY_LANGUAGE[language]] = `${siteBaseUrl}${routeBase}/${slug}`;
   });
 
   if (Object.keys(alternates).length === 0) {
     const fallbackLanguage = post.metadata.language ?? "en";
-    alternates[HREFLANG_BY_LANGUAGE[fallbackLanguage]] = `${siteBaseUrl}/blog/${post.slug}`;
+    alternates[HREFLANG_BY_LANGUAGE[fallbackLanguage]] = `${siteBaseUrl}${routeBase}/${post.slug}`;
   }
 
   if (alternates["en-US"]) {
     alternates["x-default"] = alternates["en-US"];
   } else {
-    alternates["x-default"] = `${siteBaseUrl}/blog/${post.slug}`;
+    alternates["x-default"] = `${siteBaseUrl}${routeBase}/${post.slug}`;
   }
 
   return alternates;

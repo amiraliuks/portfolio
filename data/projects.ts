@@ -46,7 +46,7 @@ const projects: Project[] = [
       "Headers can be updated if Snapchat changes things"
     ],
 
-    badge: ["Python", "Requests", "PySimpleGUI"],
+    badge: ["Automation", "Software Development", "Python", "Requests", "PySimpleGUI"],
 
     image: "/projects/snapchat-usernames/snapchat-logo.png",
 
@@ -85,7 +85,7 @@ const projects: Project[] = [
       "Database-driven user management (add, edit, remove users)",
     ],
 
-    badge: ["C#", "Winforms", "Microsoft SQL Server 2019"],
+    badge: ["Software Development", "Desktop Application", "C#", "Winforms", "Microsoft SQL Server 2019"],
 
     image: "/projects/login-form/c-sharp-logo.png",
 
@@ -137,7 +137,7 @@ const projects: Project[] = [
       "Admin tooling for managing products/users and viewing platform-level stats"
     ],
 
-    badge: ["Nextjs", "MongoDB", "PayPal SDK"],
+    badge: ["Web Development", "Nextjs", "MongoDB", "PayPal SDK"],
 
     video: "/projects/ecommerce-web-application/homepage-view.mp4",
 
@@ -195,7 +195,7 @@ const projects: Project[] = [
       "Timed light cycle (red -> yellow -> green)",
     ],
 
-    badge: ["C++", "Arduino Uno"],
+    badge: ["Hardware", "Embedded Development", "C++", "Arduino Uno"],
 
     image: "/projects/arduino-project/arduino.png",
 
@@ -235,7 +235,7 @@ const projects: Project[] = [
       "Product and category management interfaces",
     ],
 
-    badge: ["C#", "Tier 3 Architecture", "Winforms", "Microsoft SQL Server 2018"],
+    badge: ["Software Development", "Desktop Application", "C#", "Tier 3 Architecture", "Winforms", "Microsoft SQL Server 2018"],
 
     image: "/projects/billing-system/c-sharp-logo.png",
 
@@ -290,7 +290,7 @@ const projects: Project[] = [
       "Lightweight and easy to run on small datasets",
     ],
 
-    badge: ["Python", "Pandas", "Numpy", "Sci-Kit Learn", "Tabulate"],
+    badge: ["Machine Learning", "Software Development", "Python", "Pandas", "Numpy", "Sci-Kit Learn", "Tabulate"],
 
     image: "/projects/ai-language-detection/python-logo.png",
 
@@ -340,7 +340,7 @@ const projects: Project[] = [
       "Simple command-style input system",
     ],
 
-    badge: ["C#", "XUnit", "Interpreted Pattern Design"],
+    badge: ["Software Development", "C#", "XUnit", "Interpreted Pattern Design"],
 
     image: "/projects/banking-app/c-sharp-logo.png",
 
@@ -377,7 +377,7 @@ const projects: Project[] = [
       "Timer-driven game loop for consistent updates"
     ],
 
-    badge: ["Java", "JFrame", "JPanel"],
+    badge: ["Game Development", "Java", "JFrame", "JPanel"],
 
     image: "/projects/snake-game/logo.png",
 
@@ -416,7 +416,7 @@ const projects: Project[] = [
       "Modern visuals while retaining retro aesthetic",
     ],
 
-    badge: ["C#", "Unity"],
+    badge: ["Game Development", "C#", "Unity"],
 
     image: "/projects/doom-clone/doom-logo.png",
 
@@ -442,7 +442,7 @@ const projects: Project[] = [
       "Reminder to take the correct dosage",
     ],
 
-    badge: ["Typescript", "React Native", "Expo", "Async Storage", "Expo Notifications"],
+    badge: ["Mobile Development", "Typescript", "React Native", "Expo", "Async Storage", "Expo Notifications"],
 
     image: "/projects/medtime/react-native-icon.png",
 
@@ -469,7 +469,7 @@ const projects: Project[] = [
       "Available as a Firefox add-on with source-based install option",
     ],
 
-    badge: ["Javascript", "Browser Extension", "Firefox Add-on"],
+    badge: ["Browser Extension Development", "Javascript", "Browser Extension", "Firefox Add-on"],
 
     image: "/projects/steam-kosovo-flag-fixer-extension/steam-logo.png",
 
@@ -514,7 +514,7 @@ const projects: Project[] = [
       "Built with Nextjs and TypeScript",
     ],
 
-    badge: ["Nextjs", "Typescript", "Prisma", "Auth.js", "Magic Link", "Shadcn UI", "Tailwind CSS", "Magic UI", "Mailtrap", "Nodemailer", "PDFjs", "Zod"],
+    badge: ["Web Development", "Nextjs", "Typescript", "Prisma", "Auth.js", "Magic Link", "Shadcn UI", "Tailwind CSS", "Magic UI", "Mailtrap", "Nodemailer", "PDFjs", "Zod"],
 
     video: "/projects/invoice-platform/capture.mp4",
 
@@ -612,7 +612,7 @@ const projects: Project[] = [
       "Fast, lightweight, and mobile-friendly design",
     ],
 
-    badge: ["Nextjs", "Typescript", "Shadcn UI", "Tailwind CSS", "Spotify API"],
+    badge: ["Web Development", "Nextjs", "Typescript", "Shadcn UI", "Tailwind CSS", "Spotify API"],
 
     video: "/projects/artist-portfolio/capture.mp4",
 
@@ -657,7 +657,7 @@ const projects: Project[] = [
       "Clean UI with accessible, modern layout",
     ],
 
-    badge: ["Next.js", "Typescript", "Shadcn UI", "TailwindCSS", "Magic UI", "REST API"],
+    badge: ["Web Development", "Next.js", "Typescript", "Shadcn UI", "TailwindCSS", "Magic UI", "REST API"],
 
     video: "/projects/nasa-apod-api/capture.mp4",
     image: "/projects/nasa-apod-api/dark-theme.jpeg",
@@ -708,7 +708,7 @@ const projects: Project[] = [
       "Focused, lightweight enhancement tool",
     ],
 
-    badge: ["C#", ".NET 8", "Winforms"],
+    badge: ["Software Development", "C#", ".NET 8", "Winforms"],
 
     image: "/projects/gta-sa-fixer/logo.png",
 
@@ -748,7 +748,7 @@ const projects: Project[] = [
       "Media Archive",
     ],
 
-    badge: ["Nextjs", "Typescript", "TailwindCSS", "Shadcn UI"],
+    badge: ["Web Development", "Nextjs", "Typescript", "TailwindCSS", "Shadcn UI"],
 
     image: "/projects/silent-hill-archive/halo_of_the_sun_02.png",
 
@@ -790,7 +790,7 @@ const projects: Project[] = [
       "Runs on <all_urls>",
     ],
 
-    badge: ["Javascript", "HTML", "CSS"],
+    badge: ["Browser Extension Development", "Security", "Javascript", "HTML", "CSS"],
 
     image: "/projects/kosovo-gov-site-verification/emblem.png",
 
@@ -844,7 +844,7 @@ const projects: Project[] = [
       "Fully Responsive Admin UI - works cleanly across desktop, tablet, and mobile for advisors on the go",
     ],
 
-    badge: ["Nextjs 16", "React 19", "Prisma", "PostgreSQL", "TypeScript", "Tailwind CSS"],
+    badge: ["Web Development", "Nextjs 16", "React 19", "Prisma", "PostgreSQL", "TypeScript", "Tailwind CSS"],
 
     image: "/projects/leotrim-selmanaj/logo-full-light.png",
 
@@ -901,7 +901,7 @@ const projects: Project[] = [
       "Fully Responsive - looks great on desktop, tablet, and mobile",
     ],
 
-    badge: ["Nextjs 16", "shadcn/ui", "Tailwind CSS", "TypeScript", "Spotify API"],
+    badge: ["Web Development", "Nextjs 16", "shadcn/ui", "Tailwind CSS", "TypeScript", "Spotify API"],
 
     image: "/projects/medusa-artist-portfolio/homepage-music-section.png",
 
@@ -961,7 +961,7 @@ const projects: Project[] = [
       "Designed as a foundation for future solving algorithms and auto-solver integration",
     ],
 
-    badge: ["Unity", "C#", "3D Game Development", "Algorithm Design", "Open Source"],
+    badge: ["Game Development", "Unity", "C#", "3D Game Development", "Algorithm Design", "Open Source"],
 
     image: "/projects/unity-rubiks-cube/prototype.png",
 

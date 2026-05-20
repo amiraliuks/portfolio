@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import { toSafeHref } from "@/lib/url-safety";
 import { baseUrl } from "@/app/sitemap";
 import { CodeBlock } from "@/components/mdx/CodeBlock";
+import { MDXImageLightbox } from "@/components/mdx/MDXImageLightbox";
+import { ZoomableImage } from "@/components/mdx/ZoomableImage";
 import { HeadingCopyLink } from "@/components/blog/HeadingCopyLink";
 
 function StyledTable(props: React.TableHTMLAttributes<HTMLTableElement>) {
@@ -20,7 +22,7 @@ function StyledTable(props: React.TableHTMLAttributes<HTMLTableElement>) {
         className="
   w-full
   border
-  rounded-xl
+  rounded-none
   overflow-hidden
   text-sm
   border-neutral-300
@@ -94,15 +96,60 @@ function StyledTd(props: React.TdHTMLAttributes<HTMLTableCellElement>) {
 }
 
 function StyledImage(props: React.ImgHTMLAttributes<HTMLImageElement>) {
+  return <ZoomableImage {...props} />;
+}
+
+function isImageElement(node: ReactNode): node is React.ReactElement<React.ImgHTMLAttributes<HTMLImageElement>> {
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      {...props}
-      alt={props.alt ?? ""}
-      loading={props.loading ?? "lazy"}
-      decoding="async"
-      className={cn("h-auto w-full rounded-xl", props.className)}
-    />
+    React.isValidElement<React.ImgHTMLAttributes<HTMLImageElement>>(node) &&
+    (node.type === "img" || node.type === StyledImage)
+  );
+}
+
+function upgradeImageChildren(children: ReactNode): ReactNode {
+  return React.Children.map(children, (child) => {
+    if (!React.isValidElement(child)) return child;
+
+    if (isImageElement(child)) {
+      return <StyledImage {...child.props} />;
+    }
+
+    const childProps = child.props as { children?: ReactNode };
+    if (!childProps.children) return child;
+
+    return React.cloneElement(child, {
+      children: upgradeImageChildren(childProps.children),
+    } as Partial<typeof childProps>);
+  });
+}
+
+function StyledParagraph({ children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
+  const childArray = React.Children.toArray(children);
+  const onlyChild = childArray.length === 1 ? childArray[0] : null;
+
+  if (isImageElement(onlyChild)) {
+    const alt = typeof onlyChild.props.alt === "string" ? onlyChild.props.alt.trim() : "";
+
+    return (
+      <figure className="not-prose my-8">
+        <StyledImage {...onlyChild.props} />
+        {alt ? (
+          <figcaption className="mt-3 border-l-2 border-border pl-3 font-sans text-xs leading-relaxed text-muted-foreground">
+            {alt}
+          </figcaption>
+        ) : null}
+      </figure>
+    );
+  }
+
+  return <p {...props}>{children}</p>;
+}
+
+function StyledFigure({ children, className, ...props }: React.HTMLAttributes<HTMLElement>) {
+  return (
+    <figure {...props} className={cn("not-prose my-8", className)}>
+      {upgradeImageChildren(children)}
+    </figure>
   );
 }
 
@@ -173,7 +220,7 @@ function Code({ children, className, ...props }: CodeProps) {
         text-[13px]
         px-1.5
         py-0.5
-        rounded-md
+        rounded-none
         bg-neutral-200 text-neutral-800
         dark:bg-neutral-900 dark:text-neutral-200
       "
@@ -234,6 +281,8 @@ function createHeading(level: number, getUniqueSlug: (text: string) => string) {
 const baseComponents = {
   Image: RoundedImage,
   img: StyledImage,
+  figure: StyledFigure,
+  p: StyledParagraph,
   a: CustomLink,
   code: Code,
   pre: CodeBlock,
@@ -287,15 +336,17 @@ export function CustomMDX(props: MDXRemoteProps) {
   };
 
   return (
-    <MDXRemote
-      {...props}
-      components={{ ...baseComponents, ...headingComponents, ...(props.components || {}) }}
-      options={{
-        mdxOptions: {
-          remarkPlugins: [remarkGfm],
-          rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
-        },
-      }}
-    />
+    <MDXImageLightbox>
+      <MDXRemote
+        {...props}
+        components={{ ...baseComponents, ...headingComponents, ...(props.components || {}) }}
+        options={{
+          mdxOptions: {
+            remarkPlugins: [remarkGfm],
+            rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
+          },
+        }}
+      />
+    </MDXImageLightbox>
   );
 }

@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
-import MainContent from '@/components/MainContent';
+import MainContent from '@/components/sections/MainContent';
 import { getBlogListingPosts } from '@/lib/getBlogs';
 import { projects } from '@/data/projects';
-import { certifications, countCertificationsByCategory } from '@/data/certifications';
+import { certifications } from '@/data/certifications';
 
 export const metadata: Metadata = {
   title: {
@@ -63,11 +63,10 @@ export default function HomePage() {
     tags: (post.metadata.tags ?? []).slice(0, 2),
   }));
 
-  const certificationCounts = countCertificationsByCategory(certifications);
   const metrics = [
     { label: "Projects", value: projects.length },
     { label: "Certifications", value: certifications.length },
-    { label: "CTF Certs", value: certificationCounts.ctf },
+    { label: "Findings", value: 6, href: "/research" },
     { label: "Blog Posts", value: posts.length },
   ];
 

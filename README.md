@@ -2,7 +2,7 @@
 
 This is my personal portfolio site built with Next.js.
 
-It is both a public profile and a living archive of what I ship: projects, certifications, blog writeups, and security-focused work.
+It is both a public profile and a living archive of what I ship: projects, certifications, research, CTF writeups, and security-focused work.
 
 ## What is included
 - Home page with:
@@ -10,9 +10,14 @@ It is both a public profile and a living archive of what I ship: projects, certi
   - social links
   - live snapshot metrics (projects, certs, posts)
   - featured blog posts
-  - experience and education sections
-- Projects section with sortable cards and detailed project pages
+  - animated experience and education sections
+  - resume preview sheet with open/download fallback links
+- Projects section with:
+  - category filters for web, software, game, browser extension, mobile, ML, hardware, security, and automation work
+  - project cards with stack/category badges
+  - detailed project pages with media galleries and structured metadata
 - Certifications section with category filters (`All`, `Professional`, `CTF`) and expandable details
+- Research section with CVE/disclosure tracking and links to related writeups
 - Blog section with:
   - search and tag filters
   - featured posts
@@ -20,6 +25,7 @@ It is both a public profile and a living archive of what I ship: projects, certi
   - reading time, reading progress bar, and table of contents
   - related posts by language/tag relevance
   - per-post hero image mode (`cover` or `contain`) via frontmatter
+- Writeups section for CTF writeups from solo and team competitions
 - About page with highlights, journey timeline, focus areas, and trust/profile links
 - Testimonials route (currently intentionally not publishing testimonials)
 
@@ -29,7 +35,8 @@ It is both a public profile and a living archive of what I ship: projects, certi
 - JSON-LD structured data (Person, Website, CollectionPage, BlogPosting, Breadcrumbs)
 - Canonical URLs
 - Multilingual alternates (`hreflang`) for EN/AL blog variants
-- Dynamic sitemap with blog/project routes
+- Dynamic sitemap with blog, writeup, project, and core page routes
+- Dynamic OG image route
 
 ## Stack
 - Next.js 16 (App Router)
@@ -69,8 +76,10 @@ npm run test:e2e
 npm run test:e2e:headed
 ```
 
-## Blog content notes
-Blog posts are stored in `content/*.mdx`.
+## Content notes
+Blog posts are stored in `content/blog-posts/*.mdx`.
+
+CTF writeups are stored in `content/writeups/*.mdx`.
 
 Supported frontmatter fields include:
 - `title`
@@ -86,9 +95,19 @@ Supported frontmatter fields include:
 ## Project structure (high-level)
 - `app/` - routes and page-level metadata
 - `components/` - UI and feature components
-- `content/` - MDX blog posts
+  - `components/layout/` - navbar, footer, theme provider, progress bar
+  - `components/sections/` - home, project, research, certification, education, experience sections
+  - `components/media/` - resume sheet, image modal, badge sheet, project media showcase
+  - `components/blog/`, `components/mdx/`, `components/ui/` - blog helpers, MDX rendering, shared UI primitives
+- `content/blog-posts/` - MDX blog posts
+- `content/writeups/` - CTF writeups
 - `data/` - projects, certifications, experience, metadata, tech stack
 - `lib/` - parsing, SEO helpers, analytics helpers, utility functions
+- `public/` - static assets
+  - `public/icons/` - favicon and app icons
+  - `public/brand/` - brand/supporting footer assets
+  - `public/og/` - static OG/reference images
+  - `public/projects/`, `public/certifications/`, `public/education/`, `public/blog-posts/`, `public/ctf-writeups/` - page-specific media
 - `scripts/` - content/SEO/image validation scripts
 - `tests/` - Playwright E2E tests
 

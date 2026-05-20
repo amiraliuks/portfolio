@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Calendar } from "lucide-react";
 
-import { ProjectMediaShowcase } from "@/components/ProjectMediaShowcase";
+import { ProjectMediaShowcase } from "@/components/media/ProjectMediaShowcase";
 import { projects } from "@/data/projects";
 import { formatProjectDate } from "@/lib/utils";
 import { toSafeHref, toSafeHttpUrl } from "@/lib/url-safety";
@@ -174,7 +174,7 @@ export default async function ProjectPage({
       <div className="space-y-4">
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{project.title}</h1>
 
-        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-sm text-muted-foreground">
+        <div className="inline-flex items-center gap-2 rounded-none border border-border bg-muted/40 px-3 py-1 text-sm text-muted-foreground">
           <Calendar className="h-4 w-4" />
           <span>{formatProjectDate(project.createdAt)}</span>
         </div>
@@ -196,7 +196,7 @@ export default async function ProjectPage({
                 rel="noopener noreferrer"
                 className="
                   flex items-center gap-2
-                  rounded-md px-4 py-2
+                  rounded-none px-4 py-2
                   bg-primary text-primary-foreground font-medium
                   transition hover:bg-primary/90
                 "
@@ -215,7 +215,7 @@ export default async function ProjectPage({
             <span
               key={i}
               className="
-                rounded-md border border-border
+                rounded-none border border-border
                 bg-muted/40 px-3 py-1
                 text-xs font-medium text-foreground
               "
@@ -261,24 +261,24 @@ export default async function ProjectPage({
           showHero={false}
         />
       )}
-      <aside className="rounded-xl border border-border/70 bg-muted/20 p-4 sm:p-5">
+      <aside className="rounded-none border border-border/70 bg-muted/20 p-4 sm:p-5">
         <p className="text-xs uppercase tracking-wide text-muted-foreground">Explore More</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link
             href="/blog"
-            className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+            className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
           >
             Read Related Writeups
           </Link>
           <Link
             href="/certifications"
-            className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+            className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
           >
             View Certifications
           </Link>
           <Link
             href="/projects"
-            className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+            className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
           >
             Back to Projects
           </Link>

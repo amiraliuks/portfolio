@@ -236,7 +236,7 @@
   }
 
   .prose .heading-copy-button {
-    @apply ml-2 inline-flex translate-y-[-1px] items-center justify-center rounded-md border border-border/70 bg-background/50 p-1 text-muted-foreground opacity-0 transition hover:bg-accent hover:text-accent-foreground focus-visible:opacity-100;
+    @apply ml-2 inline-flex translate-y-[-1px] items-center justify-center rounded-none border border-border/70 bg-background/50 p-1 text-muted-foreground opacity-0 transition hover:bg-accent hover:text-accent-foreground focus-visible:opacity-100;
   }
 
   .prose h2:hover .heading-copy-button,
@@ -264,11 +264,11 @@
   }
 
   .prose :not(pre)>code {
-    @apply px-1.5 py-0.5 rounded-md bg-neutral-200 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-200;
+    @apply px-1.5 py-0.5 rounded-none bg-neutral-200 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-200;
   }
 
   .prose .mdx-code-block {
-    @apply my-8 overflow-hidden rounded-xl border border-border/80 bg-card/60;
+    @apply my-8 overflow-hidden rounded-none border border-border/80 bg-card/60;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
 
@@ -278,11 +278,11 @@
   }
 
   .prose .mdx-code-language {
-    @apply rounded-md border border-border/80 bg-muted/40 px-2 py-0.5 text-[11px] uppercase tracking-wide text-muted-foreground;
+    @apply rounded-none border border-border/80 bg-muted/40 px-2 py-0.5 text-[11px] uppercase tracking-wide text-muted-foreground;
   }
 
   .prose .mdx-code-copy {
-    @apply inline-flex items-center gap-1.5 rounded-md border border-border/80 px-2 py-1 text-[11px] text-muted-foreground transition hover:bg-accent hover:text-accent-foreground;
+    @apply inline-flex items-center gap-1.5 rounded-none border border-border/80 px-2 py-1 text-[11px] text-muted-foreground transition hover:bg-accent hover:text-accent-foreground;
   }
 
   .prose .mdx-code-pre {
@@ -329,7 +329,7 @@
   }
 
   .prose .mdx-code-pre .code-word-highlighted {
-    @apply rounded bg-cyan-500/20 px-1 py-0.5;
+    @apply rounded-none bg-cyan-500/20 px-1 py-0.5;
   }
 
   .prose .mdx-code-pre [data-line][data-selected="true"] {
@@ -367,12 +367,35 @@
     @apply m-0;
   }
 
+  .prose figure {
+    @apply my-8;
+  }
+
+  .prose figcaption {
+    @apply mt-3 border-l-2 border-border pl-3 font-sans text-xs leading-relaxed text-muted-foreground;
+  }
+
   .prose p {
     @apply my-4 text-neutral-800 dark:text-neutral-200;
   }
 
   .prose hr {
-    @apply my-10 h-px border-0 bg-gradient-to-r from-transparent via-neutral-300/80 to-transparent dark:via-neutral-700;
+    @apply relative my-12 h-px border-0 bg-gradient-to-r from-transparent via-border to-transparent;
+    overflow: visible;
+  }
+
+  .prose hr::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 3.5rem;
+    height: 1px;
+    transform: translate(-50%, -50%);
+    background: color-mix(in oklab, var(--foreground) 42%, transparent);
+    box-shadow:
+      -4.25rem 0 0 -0.5px color-mix(in oklab, var(--foreground) 16%, transparent),
+      4.25rem 0 0 -0.5px color-mix(in oklab, var(--foreground) 16%, transparent);
   }
 
   .prose h1 {
@@ -497,7 +520,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url("/DefconLogo.webp");
+  background-image: url("/brand/defcon-logo.webp");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;

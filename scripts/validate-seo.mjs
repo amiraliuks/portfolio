@@ -3,6 +3,8 @@ import path from "node:path";
 
 const siteUrl = "https://amiraliu.vercel.app";
 const contentDir = path.join(process.cwd(), "content");
+const blogPostsDir = path.join(contentDir, "blog-posts");
+const writeupsDir = path.join(contentDir, "writeups");
 const publicDir = path.join(process.cwd(), "public");
 const projectsFile = path.join(process.cwd(), "data", "projects.ts");
 
@@ -59,19 +61,20 @@ function validateLocalAsset(ref, context) {
   }
 }
 
-function validateBlogSeo() {
-  const files = fs.readdirSync(contentDir).filter((file) => file.endsWith(".mdx"));
+function validatePostSeo({ dir, routeBase, label }) {
+  const files = fs.existsSync(dir) ? fs.readdirSync(dir).filter((file) => file.endsWith(".mdx")) : [];
   const slugs = new Set();
   let publicPostCount = 0;
 
   for (const file of files) {
-    const filePath = path.join(contentDir, file);
+    const resolvedFilePath = path.join(dir, file);
+    const context = path.relative(process.cwd(), resolvedFilePath);
     const slug = path.basename(file, ".mdx");
-    const raw = fs.readFileSync(filePath, "utf8");
+    const raw = fs.readFileSync(resolvedFilePath, "utf8");
     const { frontmatter, body } = parseFrontmatter(raw);
 
     if (!frontmatter) {
-      errors.push(`${file}: missing frontmatter`);
+      errors.push(`${context}: missing frontmatter`);
       continue;
     }
 
@@ -79,31 +82,31 @@ function validateBlogSeo() {
     if (!isPublic) continue;
     publicPostCount += 1;
 
-    if (!frontmatter.title) errors.push(`${file}: missing "title"`);
+    if (!frontmatter.title) errors.push(`${context}: missing "title"`);
     if (!frontmatter.summary && !frontmatter.description) {
-      errors.push(`${file}: missing "summary" or "description"`);
+      errors.push(`${context}: missing "summary" or "description"`);
     }
 
-    if (slugs.has(slug)) errors.push(`${file}: duplicate slug "${slug}"`);
+    if (slugs.has(slug)) errors.push(`${context}: duplicate slug "${slug}"`);
     slugs.add(slug);
 
     const image = frontmatter.image || extractFirstImage(body);
     if (!image) {
-      warnings.push(`${file}: no image found (will fallback to generated /og card)`);
+      warnings.push(`${context}: no image found (will fallback to generated /og card)`);
     } else {
-      validateLocalAsset(image, file);
+      validateLocalAsset(image, context);
       if (!isValidUrl(image) && !image.startsWith("/")) {
-        errors.push(`${file}: invalid image URL "${image}"`);
+        errors.push(`${context}: invalid image URL "${image}"`);
       }
     }
 
-    const canonical = `${siteUrl}/blog/${slug}`;
+    const canonical = `${siteUrl}${routeBase}/${slug}`;
     if (!isValidUrl(canonical)) {
-      errors.push(`${file}: invalid canonical URL "${canonical}"`);
+      errors.push(`${context}: invalid canonical URL "${canonical}"`);
     }
   }
 
-  return publicPostCount;
+  return { label, count: publicPostCount };
 }
 
 function extractField(block, field) {
@@ -154,7 +157,12 @@ function validateProjectSeo() {
   return blocks.length;
 }
 
-const blogCount = validateBlogSeo();
+const blogResult = validatePostSeo({ dir: blogPostsDir, routeBase: "/blog", label: "blog posts" });
+const writeupResult = validatePostSeo({
+  dir: writeupsDir,
+  routeBase: "/writeups",
+  label: "writeups",
+});
 const projectCount = validateProjectSeo();
 
 if (warnings.length) {
@@ -172,4 +180,6 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`SEO validation passed (${blogCount} blog posts, ${projectCount} projects).`);
+console.log(
+  `SEO validation passed (${blogResult.count} ${blogResult.label}, ${writeupResult.count} ${writeupResult.label}, ${projectCount} projects).`
+);

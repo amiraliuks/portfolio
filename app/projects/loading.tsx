@@ -1,12 +1,12 @@
 import { cn } from '@/lib/utils';
 
 const Skeleton = ({ className }: { className?: string }) => (
-  <div className={cn('animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800', className)} />
+  <div className={cn('animate-pulse rounded-none bg-zinc-200 dark:bg-zinc-800', className)} />
 );
 
 export default function Loading() {
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
+    <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12">
       {/* Header Skeleton */}
       <div className="mb-12 space-y-2">
         <Skeleton className="h-10 w-40" />

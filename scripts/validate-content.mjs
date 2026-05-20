@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const contentDir = path.join(process.cwd(), "content");
+const contentRoots = [path.join(contentDir, "blog-posts"), path.join(contentDir, "writeups")];
 const requiredFields = ["title", "publishedAt", "tags", "summary", "language", "translationKey"];
 const validLanguages = new Set(["en", "al"]);
 const validPublicValues = new Set(["true", "false", "yes", "no", "1", "0"]);
@@ -30,16 +31,20 @@ function isValidDateString(value) {
   return Number.isFinite(parsed);
 }
 
-const files = fs
-  .readdirSync(contentDir)
-  .filter((file) => file.endsWith(".mdx"))
-  .map((file) => path.join(contentDir, file));
+const files = contentRoots.flatMap((dir) => {
+  if (!fs.existsSync(dir)) return [];
+
+  return fs
+    .readdirSync(dir)
+    .filter((file) => file.endsWith(".mdx"))
+    .map((file) => path.join(dir, file));
+});
 
 const errors = [];
 const byTranslationKey = new Map();
 
 for (const filePath of files) {
-  const name = path.basename(filePath);
+  const name = path.relative(process.cwd(), filePath);
   const frontmatter = parseFrontmatter(filePath);
 
   if (!frontmatter) {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ExternalLink } from "lucide-react";
 
-import TechStack from "@/components/TechStack";
+import TechStack from "@/components/sections/TechStack";
 import { baseUrl } from "@/app/sitemap";
 import {
   webdev,
@@ -133,6 +133,15 @@ export default function AboutPage() {
     { label: "Resume", href: "/amir-aliu-resume.pdf", note: "PDF version" },
   ];
 
+  const currentInterests = [
+    "CMS security",
+    "Browser extension security",
+    "CTF infrastructure",
+    "Responsible disclosure",
+    "Defensive tooling",
+    "Writeup workflows",
+  ];
+
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -172,19 +181,17 @@ export default function AboutPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
       />
 
-      <section className="rounded-2xl border border-border/70 bg-muted/20 p-6 sm:p-8">
+      <section className="rounded-none border border-border/70 bg-muted/20 p-6 sm:p-8">
         <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">About</p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Amir Aliu</h1>
         <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Cybersecurity practitioner and vulnerability researcher based in Gjilan, Kosovo.
-          In February 2026, I independently discovered and responsibly disclosed a cluster
-          of high-impact vulnerabilities in Camaleon CMS.
+          Cybersecurity practitioner and vulnerability researcher based in Gjilan, Kosovo. I focus on vulnerability research, bug bounty hunting, and offensive security with findings spanning CVE submissions, CMS vulnerabilities, and responsible disclosures across multiple platforms.
         </p>
         <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-          I am a member of Kosovo Cyber Team and an early member of KSAL Cyber Team,
-          focusing on reverse engineering, web security, and CTF competition.
-          I also founded writeupify.app, a collaborative platform for cybersecurity writeups
-          and structured vulnerability documentation.
+          I am a participant of Kosovo Cyber Team 2026 and a core member of KSAL Cyber Team & KSAL Research Team, focusing on reverse engineering, web security, and CTF competition. 
+        </p>
+        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+          I also founded writeupify.app, a collaborative platform for cybersecurity writeups and structured vulnerability documentation.
         </p>
       </section>
 
@@ -194,7 +201,7 @@ export default function AboutPage() {
           {highlights.map((item) => (
             <article
               key={item.label}
-              className="rounded-xl border border-border/70 bg-muted/15 px-4 py-3"
+              className="rounded-none border border-border/70 bg-muted/15 px-4 py-3"
             >
               <p className="text-xl font-semibold leading-none text-foreground">{item.value}</p>
               <p className="mt-2 text-[11px] uppercase tracking-wide text-muted-foreground">
@@ -211,7 +218,7 @@ export default function AboutPage() {
           {journey.map((milestone) => (
             <article
               key={`${milestone.period}-${milestone.title}`}
-              className="rounded-xl border border-border/70 bg-muted/10 p-4"
+              className="rounded-none border border-border/70 bg-muted/10 p-4"
             >
               <p className="text-xs uppercase tracking-wide text-muted-foreground">{milestone.period}</p>
               <h3 className="mt-1 text-sm font-semibold text-foreground">{milestone.title}</h3>
@@ -227,11 +234,28 @@ export default function AboutPage() {
           {focusAreas.map((area) => (
             <article
               key={area.title}
-              className="rounded-xl border border-border/70 bg-muted/15 p-4"
+              className="rounded-none border border-border/70 bg-muted/15 p-4"
             >
               <h3 className="text-sm font-semibold text-foreground">{area.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{area.description}</p>
             </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-10 rounded-none border border-border/70 bg-muted/10 p-4">
+        <h2 className="text-lg font-semibold tracking-tight">Current Interests</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          The areas I am actively sharpening through projects, research, writeups, and community work.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {currentInterests.map((interest) => (
+            <span
+              key={interest}
+              className="rounded-none border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground"
+            >
+              {interest}
+            </span>
           ))}
         </div>
       </section>
@@ -264,7 +288,7 @@ export default function AboutPage() {
               href={link.href}
               target={link.href.startsWith("http") ? "_blank" : undefined}
               rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-              className="group rounded-xl border border-border/70 bg-muted/15 p-4 transition hover:bg-muted/30"
+              className="group rounded-none border border-border/70 bg-muted/15 p-4 transition hover:bg-muted/30"
             >
               <p className="flex items-center gap-2 text-sm font-medium text-foreground">
                 {link.label}

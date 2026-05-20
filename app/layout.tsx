@@ -7,10 +7,10 @@ import "./globals.css";
 import { Toaster } from '@/components/ui/sonner';
 import { JetBrains_Mono } from 'next/font/google';
 
-import { ThemeProvider } from '@/components/theme-provider';
-import { ProgressBar } from '@/components/ProgressBar';
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { ThemeProvider } from '@/components/layout/theme-provider';
+import { ProgressBar } from '@/components/layout/ProgressBar';
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import { metadata as appMetadata } from '@/data/metadata';
 
 

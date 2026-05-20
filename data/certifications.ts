@@ -545,6 +545,37 @@ const certifications: Certification[] = [
     ],
   },
 
+  {
+    id: 17,
+    title: 'Kosova Cyber Team (CTF Attack/Defense with Kosovo & Luxembourg)',
+    course: 'https://www.linkedin.com/feed/update/urn:li:activity:7459510111787655168/',
+    certificateOne: '/certifications/pdfs/ctf/KOSOVA-AD.pdf',
+    badgeImage: '/certifications/badges/KOSOVA-AD.png',
+    createdAt: '09-05-2026',
+    description:
+      'Competed in an international Attack/Defense CTF representing Kosovo alongside a joint team with Luxembourg. Took on a blue team role — focused on defending live services under active attack while simultaneously exploiting opponent infrastructure. Wrote automated scripts to streamline flag submission, monitor service availability, and patch vulnerabilities faster than manual workflows allowed. The team secured a winning result through coordinated defense, quick patching cycles, and consistent offensive pressure.',
+    skills: [
+      'Attack/Defense CTF methodology',
+      'Blue team defense under live attack conditions',
+      'Service hardening & rapid vulnerability patching',
+      'Automated flag submission scripting',
+      'Service availability monitoring',
+      'Offensive exploitation of opponent services',
+      'Team coordination under time pressure',
+      'Incident response & triage',
+    ],
+    badge: [
+      'Attack/Defense CTF',
+      'Blue Teaming',
+      'Offensive Security',
+      'Automation & Scripting',
+      'Service Hardening',
+      'Incident Response',
+      'Team Collaboration',
+      'Competitive Cybersecurity',
+    ],
+  },
+
 ];
 
 function countCertificationsByCategory(items: Certification[]) {

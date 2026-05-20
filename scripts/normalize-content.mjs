@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const contentDir = path.join(process.cwd(), "content");
+const contentRoots = [path.join(contentDir, "blog-posts"), path.join(contentDir, "writeups")];
 const mojibakeFixes = new Map([
   ["â€™", "’"],
   ["â€œ", "“"],
@@ -42,10 +43,14 @@ function normalizeMarkdown(input) {
   return output.trimEnd() + "\n";
 }
 
-const files = fs
-  .readdirSync(contentDir)
-  .filter((file) => file.endsWith(".mdx"))
-  .map((file) => path.join(contentDir, file));
+const files = contentRoots.flatMap((dir) => {
+  if (!fs.existsSync(dir)) return [];
+
+  return fs
+    .readdirSync(dir)
+    .filter((file) => file.endsWith(".mdx"))
+    .map((file) => path.join(dir, file));
+});
 
 let changed = 0;
 

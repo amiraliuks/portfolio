@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Twitter, Linkedin, Facebook } from "lucide-react";
@@ -11,7 +11,7 @@ import {
   extractTableOfContents,
   stripFirstMatchingImageFromContent,
 } from "@/lib/blog-content";
-import { getBlogListingPosts, getBlogPosts } from "@/lib/getBlogs";
+import { getBlogListingPosts, getBlogPosts, getWriteupPosts } from "@/lib/getBlogs";
 import { calculateReadingTime, formatDate } from "@/lib/utils";
 import { baseUrl } from "@/app/sitemap";
 import { BlogPost, BlogPageProps } from "@/types/types";
@@ -144,7 +144,11 @@ export default async function Blog({ params }: BlogPageProps) {
   const { slug } = await params;
   const post = getBlogPosts().find((entry) => entry.slug === slug) as BlogPost | undefined;
 
-  if (!post) notFound();
+  if (!post) {
+    const writeup = getWriteupPosts().find((entry) => entry.slug === slug);
+    if (writeup) redirect(`/writeups/${slug}`);
+    notFound();
+  }
 
   const readingTime = calculateReadingTime(post.content);
   const currentLanguage = post.metadata.language ?? "en";
@@ -271,7 +275,7 @@ export default async function Blog({ params }: BlogPageProps) {
             <span className="text-xs uppercase tracking-wide text-muted-foreground">Language</span>
             <Link
               href={`/blog/${englishSlug}`}
-              className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+              className={`rounded-none border px-3 py-1 text-xs font-medium transition ${
                 currentLanguage === "en"
                   ? "border-foreground bg-foreground text-background"
                   : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -281,7 +285,7 @@ export default async function Blog({ params }: BlogPageProps) {
             </Link>
             <Link
               href={`/blog/${albanianSlug}`}
-              className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+              className={`rounded-none border px-3 py-1 text-xs font-medium transition ${
                 currentLanguage === "al"
                   ? "border-foreground bg-foreground text-background"
                   : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -301,7 +305,7 @@ export default async function Blog({ params }: BlogPageProps) {
           aria-label="Share this post on X"
           className="
             flex items-center gap-2
-            rounded-full border border-border
+            rounded-none border border-border
             px-3 py-1.5 text-xs
             transition-all duration-200
             hover:bg-accent
@@ -318,7 +322,7 @@ export default async function Blog({ params }: BlogPageProps) {
           aria-label="Share this post on LinkedIn"
           className="
             flex items-center gap-2
-            rounded-full border border-border
+            rounded-none border border-border
             px-3 py-1.5 text-xs
             transition-all duration-200
             hover:bg-accent
@@ -335,7 +339,7 @@ export default async function Blog({ params }: BlogPageProps) {
           aria-label="Share this post on Facebook"
           className="
             flex items-center gap-2
-            rounded-full border border-border
+            rounded-none border border-border
             px-3 py-1.5 text-xs
             transition-all duration-200
             hover:bg-accent
@@ -348,7 +352,7 @@ export default async function Blog({ params }: BlogPageProps) {
 
       {post.metadata.image && (
         <div
-          className={`mb-14 overflow-hidden rounded-xl border border-border/60 ${
+          className={`mb-14 overflow-hidden rounded-none border border-border/60 ${
             heroFit === "cover" ? "bg-muted/30 p-0" : "bg-muted/20 p-2 sm:p-3"
           }`}
         >
@@ -394,7 +398,7 @@ export default async function Blog({ params }: BlogPageProps) {
                 <Link
                   key={relatedPost.slug}
                   href={`/blog/${relatedPost.slug}`}
-                  className="group rounded-xl border border-border/70 bg-muted/20 p-4 transition hover:border-border hover:bg-muted/35"
+                  className="group rounded-none border border-border/70 bg-muted/20 p-4 transition hover:border-border hover:bg-muted/35"
                 >
                   <p className="text-xs text-muted-foreground">
                     {formatDate(relatedPost.metadata.publishedAt)} | {relatedReadingTime}{" "}
@@ -413,24 +417,24 @@ export default async function Blog({ params }: BlogPageProps) {
         </section>
       )}
 
-      <aside className="mt-12 rounded-xl border border-border/70 bg-muted/20 p-4 sm:p-5">
+      <aside className="mt-12 rounded-none border border-border/70 bg-muted/20 p-4 sm:p-5">
         <p className="text-xs uppercase tracking-wide text-muted-foreground">Explore More</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link
             href="/projects"
-            className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+            className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
           >
             Related Projects
           </Link>
           <Link
             href="/certifications"
-            className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+            className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
           >
             Security Certifications
           </Link>
           <Link
             href="/blog"
-            className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+            className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
           >
             Back to Blog
           </Link>

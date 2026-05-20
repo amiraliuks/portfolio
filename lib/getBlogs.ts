@@ -206,6 +206,8 @@ function readMDXFile(filePath: string) {
 }
 
 function getMDXData(dir: fs.PathLike) {
+  if (!fs.existsSync(dir)) return [];
+
   const mdxFiles = getMDXFiles(dir);
 
   const rawPosts = mdxFiles.map((file) => {
@@ -281,12 +283,8 @@ function getMDXData(dir: fs.PathLike) {
   });
 }
 
-export function getBlogPosts() {
-  return getMDXData(path.join(process.cwd(), 'content'));
-}
-
-export function getBlogListingPosts() {
-  const allPosts = getBlogPosts().filter((post) => post.metadata.public !== false);
+function groupListingPosts(posts: ReturnType<typeof getMDXData>) {
+  const allPosts = posts.filter((post) => post.metadata.public !== false);
   const grouped = new Map<string, (typeof allPosts)[number]>();
 
   allPosts.forEach((post) => {
@@ -315,4 +313,24 @@ export function getBlogListingPosts() {
   });
 
   return Array.from(grouped.values());
+}
+
+export function getContentPosts() {
+  return getMDXData(path.join(process.cwd(), 'content', 'blog-posts'));
+}
+
+export function getBlogPosts() {
+  return getContentPosts();
+}
+
+export function getBlogListingPosts() {
+  return groupListingPosts(getBlogPosts());
+}
+
+export function getWriteupPosts() {
+  return getMDXData(path.join(process.cwd(), 'content', 'writeups'));
+}
+
+export function getWriteupListingPosts() {
+  return groupListingPosts(getWriteupPosts());
 }

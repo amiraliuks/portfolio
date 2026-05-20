@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 
 const Skeleton = ({ className }: { className?: string }) => (
-  <div className={cn('animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800', className)} />
+  <div className={cn('animate-pulse rounded-none bg-zinc-200 dark:bg-zinc-800', className)} />
 );
 
 export default function Loading() {
