@@ -50,8 +50,8 @@ function getCategoryLabel(category: CertificationCategory): string {
 
 function getCategoryClassName(category: CertificationCategory): string {
   return category === 'ctf'
-    ? 'border-sky-500/30 bg-sky-500/10 text-sky-200'
-    : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200';
+    ? 'border-foreground/20 bg-foreground text-background'
+    : 'border-border bg-muted/40 text-foreground';
 }
 
 function CertificationsSection() {
@@ -189,7 +189,7 @@ function CertificationsSection() {
                         <div className="mb-2 flex flex-wrap items-center gap-2">
                           <h3 className="font-medium text-foreground">{certification.title}</h3>
                           <span
-                            className={`shrink-0 border px-1.5 py-0.5 text-[9px] uppercase tracking-wide ${getCategoryClassName(
+                            className={`shrink-0 border px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide ${getCategoryClassName(
                               certification.category
                             )}`}
                           >
