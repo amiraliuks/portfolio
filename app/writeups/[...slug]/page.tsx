@@ -6,15 +6,20 @@ import { Twitter, Linkedin, Facebook } from "lucide-react";
 import { CustomMDX } from "@/components/mdx";
 import { BlogReadingProgress } from "@/components/blog/BlogReadingProgress";
 import { BlogTableOfContents } from "@/components/blog/BlogTableOfContents";
+import { ChallengeList } from "@/components/writeups/ChallengeList";
 import {
   extractPostDescription,
   extractTableOfContents,
   stripFirstMatchingImageFromContent,
 } from "@/lib/blog-content";
-import { getWriteupListingPosts, getWriteupPosts } from "@/lib/getBlogs";
+import {
+  getWriteupChallengePosts,
+  getWriteupListingPosts,
+  getWriteupPosts,
+} from "@/lib/getBlogs";
 import { calculateReadingTime, formatDate } from "@/lib/utils";
 import { baseUrl } from "@/app/sitemap";
-import { BlogPost, BlogPageProps } from "@/types/types";
+import { BlogPost, WriteupPageProps } from "@/types/types";
 import { tinyBlurDataURL } from "@/lib/image";
 import { toSafeHttpUrl } from "@/lib/url-safety";
 import { getBlogHreflangAlternates, getOpenGraphLocales } from "@/lib/blog-hreflang";
@@ -77,12 +82,13 @@ export async function generateStaticParams() {
   const posts = getWriteupPosts();
 
   return posts.map((post) => ({
-    slug: post.slug,
+    slug: post.slug.split("/"),
   }));
 }
 
-export async function generateMetadata({ params }: BlogPageProps) {
-  const { slug } = await params;
+export async function generateMetadata({ params }: WriteupPageProps) {
+  const { slug: slugParts } = await params;
+  const slug = slugParts.join("/");
   const posts = getWriteupPosts();
   const post = posts.find((entry) => entry.slug === slug);
 
@@ -140,8 +146,9 @@ export async function generateMetadata({ params }: BlogPageProps) {
   };
 }
 
-export default async function Writeup({ params }: BlogPageProps) {
-  const { slug } = await params;
+export default async function Writeup({ params }: WriteupPageProps) {
+  const { slug: slugParts } = await params;
+  const slug = slugParts.join("/");
   const post = getWriteupPosts().find((entry) => entry.slug === slug) as BlogPost | undefined;
 
   if (!post) notFound();
@@ -162,6 +169,15 @@ export default async function Writeup({ params }: BlogPageProps) {
     post.metadata.description ?? post.metadata.summary ?? extractPostDescription(post.content);
   const relatedPosts = getRelatedPosts(post);
   const heroFit = post.metadata.heroFit ?? "contain";
+  const challengePosts = slug.includes("/") ? [] : getWriteupChallengePosts(slug);
+  const challengeListPosts = challengePosts.map((challengePost) => ({
+    slug: challengePost.slug,
+    title: challengePost.metadata.title,
+    summary: challengePost.metadata.summary ?? challengePost.metadata.description ?? "",
+    publishedAt: challengePost.metadata.publishedAt,
+    readingTime: challengePost.metadata.readingTime ?? calculateReadingTime(challengePost.content),
+    tags: challengePost.metadata.tags ?? [],
+  }));
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -379,6 +395,10 @@ export default async function Writeup({ params }: BlogPageProps) {
         </div>
         <BlogTableOfContents headings={tableOfContents} />
       </div>
+
+      {challengePosts.length > 0 && (
+        <ChallengeList posts={challengeListPosts} />
+      )}
 
       {relatedPosts.length > 0 && (
         <section className="mt-12">

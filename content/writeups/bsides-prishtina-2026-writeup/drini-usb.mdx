@@ -1,0 +1,170 @@
+﻿---
+title: Drini USB
+summary: Forensics challenge writeup from BSides Prishtina 2026.
+tags: CTF Writeups, BSides Prishtina 2026, Forensics
+publishedAt: '2026-05-25'
+public: true
+language: "en"
+translationKey: "bsides-prishtina-2026-drini-usb"
+---
+| Category  | Difficulty | Points | Protocol           |
+| --------- | ---------- | ------ | ------------------ |
+| Forensics | Medium     | 350    | .pcap capture file |
+
+---
+
+# Challenge Information
+
+USB capture
+A colleague plugged in a "lost" USB stick. We caught the keyboard traffic
+before her policy blocked the typed payload. Find the passphrase the device
+tried to write.
+
+Submit:
+
+```http
+POST /verify
+content-type: application/json
+{"passphrase":"..."}
+```
+
+---
+
+# Introduction
+
+The important hints were:
+- The capture was USB traffic
+- The device behaved like a keyboard
+- The goal was not to run the typed payload
+- The passphrase was inside the attempted keystrokes
+
+---
+
+# Triage
+
+First I checked the capture metadata:
+
+```bash
+capinfos 'capture.pcap'
+```
+
+Relevant output:
+
+```text
+File encapsulation:  USB packets with Linux header and padding
+Number of packets:   166
+Capture duration:    15.169995 seconds
+```
+
+Then I listed the packets with tshark:
+
+```bash
+tshark -r 'capture.pcap' -c 20
+```
+
+The packets were all interrupt transfers from a USB device to the host:
+
+```text
+1.1.1 -> host USB URB_INTERRUPT in
+```
+
+That is the expected traffic shape for a USB HID keyboard sending key reports.
+
+---
+
+# Extracting HID Reports
+
+The useful bytes were exposed in the `usb.capdata` field:
+
+```bash
+tshark -r 'capture.pcap' -T fields -e frame.number -e usb.capdata
+```
+
+Example output:
+
+```text
+1       0000060000000000
+2       0000000000000000
+3       0000100000000000
+4       0000000000000000
+5       0000070000000000
+6       0000000000000000
+7       00002c0000000000
+8       0000000000000000
+9       0000380000000000
+```
+
+Each value is an 8-byte USB HID boot keyboard report:
+
+```text
+byte 0: modifier keys
+byte 1: reserved
+byte 2: first keycode
+byte 3-7: additional keycodes
+```
+
+The all-zero reports are key releases, so they can be ignored. The first few
+non-zero reports decode as:
+
+| Report | Meaning |
+| --- | --- |
+| `0000060000000000` | `c` |
+| `0000100000000000` | `m` |
+| `0000070000000000` | `d` |
+| `00002c0000000000` | space |
+| `0000380000000000` | `/` |
+| `0200340000000000` | shifted `'`, which is `"` |
+
+The modifier byte `0x02` is left shift. This matters for characters like
+quotes, colons, `>`, and uppercase letters.
+
+---
+
+# Decoding The Keystrokes
+
+Using the standard USB HID keyboard usage table, the capture decoded to this
+full typed command:
+
+```text
+cmd /c "echo passphrase: drini-2026-rubberducky-payload > C:\Users\Public\out.txt"
+```
+
+This is a Windows command. Running it on Kali Linux is not useful, because
+`cmd` is the Windows command interpreter. The command only shows what the USB
+keyboard attempted to type on the victim machine.
+
+The passphrase is the value after `passphrase:`:
+
+```text
+drini-2026-rubberducky-payload
+```
+
+---
+
+# Verification Request
+
+The challenge wanted a JSON POST to `/verify`. The request body would be:
+
+```json
+{"passphrase":"drini-2026-rubberducky-payload"}
+```
+
+```bash
+curl -X POST http://instance:port/verify \
+  -H 'Content-Type: application/json' \
+  -d '{"passphrase":"drini-2026-rubberducky-payload"}'
+```
+
+The verifier returned the flag:
+
+```text
+BSidesPR26{ea9f398c96abd8a22e109825b4b27c3d}
+```
+
+---
+
+# Flag
+
+```text
+BSidesPR26{ea9f398c96abd8a22e109825b4b27c3d}
+```

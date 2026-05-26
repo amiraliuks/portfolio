@@ -1,0 +1,34 @@
+﻿---
+title: Scoreboard Zero
+summary: Misc challenge writeup from BSides Prishtina 2026.
+tags: CTF Writeups, BSides Prishtina 2026, Misc
+publishedAt: '2026-05-25'
+public: true
+language: "en"
+translationKey: "bsides-prishtina-2026-scoreboard-zero"
+---
+| Category            | Difficulty | Points | Protocol                                |
+| ------------------- | ---------- | ------ | --------------------------------------- |
+| Misc, Warmup, Recon | Easy       | 75     | Inside Source Code of Live CTF Platform |
+
+---
+
+# Challenge Information
+
+There is one page on this CTF site nobody links to. Find it. Hint: the navbar isn't the whole sitemap. Robots, sitemaps, and credits are honest places to look.
+
+---
+# Solving
+
+After reading the challenge information, I proceeded reading the source code of every page of the CTF platform. When I reached `view-source:https://ctf.bsidesprishtina.org/credits`, I saw the flag on line 170:
+
+```
+<!-- BSidesPR26{kredit_per_skuadren_qe_lexon_burimin} -->
+```
+
+---
+# Flag
+
+```
+BSidesPR26{kredit_per_skuadren_qe_lexon_burimin}
+```

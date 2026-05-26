@@ -1,0 +1,262 @@
+﻿---
+title: Albanian Eagle VM
+summary: Reverse Engineering challenge writeup from BSides Prishtina 2026.
+tags: CTF Writeups, BSides Prishtina 2026, Reverse Engineering
+publishedAt: '2026-05-25'
+public: true
+language: "en"
+translationKey: "bsides-prishtina-2026-albanian-eagle-vm"
+---
+| Category            | Difficulty | Points | Protocol                       |
+| ------------------- | ---------- | ------ | ------------------------------ |
+| Reverse Engineering | Hard       | 600    | Local chal file + web instance |
+
+
+---
+
+# Challenge Information
+
+The Albanian Eagle Cryptographic Processor speaks its own ISA. Speak to it in its tongue and it may speak back.
+
+---
+
+# Introduction
+
+I started off simple, just ran `file` and `strings` to see what I was dealng with before opening anything in a disassembler.
+
+```bash
+file eagle
+```
+
+```text
+eagle: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-musl-x86_64.so.1, BuildID[sha1]=21ad705d2a85d33430ee43388a2aa0a1cfa58552, stripped
+```
+
+Stripped musl PIE. Not much from `file` alone, so I ran `strings` to look for hardcoded strings, error messages, flag formats, env variable names:
+
+```bash
+strings -a eagle
+```
+
+```text
+wrong
+BSidesPR26{FLAG_PLACEHOLDER}
+eagle>
+FLAG
+correct:
+```
+
+Already useful. The success path calls `getenv("FLAG")`, so locally it falls back to the placeholder, but on the remote the real flag is in the environment.
+
+---
+
+# Finding the VM
+
+Opened the binary in Ghidra. After the program prints the `eagle>` prompt, the disassembly looked like this:
+
+```asm
+0x110a: lea    rdi, [rip + 0xf12]   ; "eagle> "
+0x1111: call   fwrite
+0x111d: call   fflush
+
+0x1122: mov    eax, 0x4a
+0x1127: xor    edx, edx
+...
+0x1133: mov    DWORD PTR [rip + 0x2fc3], 0x0  ; stack depth
+0x113d: mov    DWORD PTR [rip + 0x2f41], 0x0  ; input length
+0x1147: mov    DWORD PTR [rip + 0x2f37], edx  ; pc = 0
+```
+
+It loads the `0x41` (the first byte of the bytecode at `0x20e0`) then immediately XORs it with `0x5a`:
+
+```asm
+0x1130: xor    eax, 0x5a
+0x1177: cmp    al, 0x1d
+0x117b: movzx  eax, al
+0x1183: movsxd rax, DWORD PTR [rbx + rax * 4]
+0x1187: add    rax, rbx
+0x118a: jmp    rax
+```
+
+The whole pattern (decode opcode, bounds check, jump table lookup, indirect jump) is a textbook VM dispatcher. The jump table base is at `0x2060`(loaded into `rbp`). After each handler finishes, execution falls back to the shared fetch loop:
+
+```asm
+0x11a0: mov    edx, DWORD PTR [rip + 0x2ede] ; pc
+0x11ae: movsxd rax, edx
+0x11b4: movzx  eax, BYTE PTR [rbp + rax]
+0x11b9: mov    DWORD PTR [rip + 0x2ec5], edx ; pc++
+0x11bf: xor    eax, 0x5a
+0x11c2: cmp    al, 0x1d
+0x11c4: jbe    0x1180
+```
+
+So the interpreter loop is just:
+
+```asm
+opcode = bytecode[pc] ^ 0x5a
+pc += 1
+dispatch(opcode)
+```
+
+Immediate values aren't XORed, plain little-endian 32-bit ints.
+
+First byte `0x4a ^ 0x5a = 0x10`, the input instruction. Reads up to 32 bytes from stdin, stops on EOF/LF/CR, sets input length to `0x20` if it got exactly 32 bytes.
+
+---
+
+# ISA
+
+Walked each handler in the jump table to recover the full instruction set:
+
+|Opcode|What it does|
+|---|---|
+|`0x00`|halt, print `wrong`|
+|`0x01`|push 32-bit immediate|
+|`0x02`|pop|
+|`0x03`|add|
+|`0x04`|subtract|
+|`0x05`|xor|
+|`0x06`|multiply|
+|`0x07`|modulo|
+|`0x08`|jump if zero|
+|`0x09`|jump if nonzero|
+|`0x0c`|unconditional jump|
+|`0x0d`|push input byte at index|
+|`0x0e`|register store|
+|`0x0f`|register load|
+|`0x10`|read input|
+|`0x11`|print `correct:` + flag|
+|`0x12`|dup stack top|
+|`0x13`|swap stack top|
+|`0x18`|equality check|
+|`0x19`|rotate left|
+|`0x1a`|rotate right|
+|`0x1b`|bitwise and|
+|`0x1c`|bitwise or|
+|`0x1d`|bitwise not|
+
+Stack-based. Arithmetic pops operands, pushes result.
+
+---
+
+# Disassembly
+
+With the ISA mapped out, I wrote a small disassembler to decode the bytecode at `0x20e0`, XOR each opcode byte with `0x5a`, read any 32-bit immediates as-is. The output was 32 repeated validation blocks followed by `0x11` (success). Each block:
+
+```text
+PUSH i
+IN
+PUSH key
+XOR
+DUP
+PUSH 8
+ROL
+OR
+PUSH shift
+ROL
+PUSH 8
+ROR
+PUSH 0xff
+AND
+PUSH add
+ADD
+PUSH 0xff
+AND
+PUSH target
+EQ
+JZ fail
+```
+
+In Python terms:
+
+```python
+x = input[i] ^ key
+y = x | (x << 8)
+z = ror32(rol32(y, shift), 8) & 0xff
+ok = ((z + add) & 0xff) == target
+```
+
+Fail any check â†’ jump to `0x7a3` â†’ opcode `0x00` â†’ `wrong`. Pass all 32 â†’ reach `0x11` â†’ flag.
+
+---
+
+# Solving
+
+Each byte is fully independent â€” no state carried between positions. Brute forcing 256 candidates per byte is trivial:
+
+```python
+def rol32(x, n):
+    n &= 31
+    return ((x << n) | (x >> (32 - n))) & 0xffffffff
+
+def ror32(x, n):
+    n &= 31
+    return ((x >> n) | (x << (32 - n))) & 0xffffffff
+
+keys = [
+    0x37, 0xd4, 0x71, 0x0e, 0xab, 0x48, 0xe5, 0x82,
+    0x1f, 0xbc, 0x59, 0xf6, 0x93, 0x30, 0xcd, 0x6a,
+    0x07, 0xa4, 0x41, 0xde, 0x7b, 0x18, 0xb5, 0x52,
+    0xef, 0x8c, 0x29, 0xc6, 0x63, 0x00, 0x9d, 0x3a,
+]
+
+shifts = [
+    1, 2, 3, 4, 5, 6, 7, 1,
+    2, 3, 4, 5, 6, 7, 1, 2,
+    3, 4, 5, 6, 7, 1, 2, 3,
+    4, 5, 6, 7, 1, 2, 3, 4,
+]
+
+adds = [
+    0x11, 0x2d, 0x4f, 0x63, 0x71, 0x8b, 0xa3, 0xc5,
+    0x11, 0x2d, 0x4f, 0x63, 0x71, 0x8b, 0xa3, 0xc5,
+    0x11, 0x2d, 0x4f, 0x63, 0x71, 0x8b, 0xa3, 0xc5,
+    0x11, 0x2d, 0x4f, 0x63, 0x71, 0x8b, 0xa3, 0xc5,
+]
+
+targets = [
+    0xb5, 0x03, 0xff, 0x89, 0x4a, 0x50, 0x64, 0xa2,
+    0xea, 0xfb, 0xf1, 0x98, 0xb0, 0xae, 0xf4, 0x25,
+    0xd3, 0x29, 0x14, 0xce, 0x7b, 0x67, 0x0e, 0x2d,
+    0xf9, 0x4c, 0xec, 0xb4, 0x75, 0x68, 0x42, 0x76,
+]
+
+solution = []
+
+for key, shift, add, target in zip(keys, shifts, adds, targets):
+    for candidate in range(256):
+        x = candidate ^ key
+        y = x | (x << 8)
+        z = ror32(rol32(y, shift), 8) & 0xff
+        if ((z + add) & 0xff) == target:
+            solution.append(candidate)
+            break
+
+print(bytes(solution))
+```
+
+```text
+b'eagle_flies_over_kosovo_at_dawn!'
+```
+
+---
+
+# Getting the Flag
+
+One shot per connection, so just pipe it straight in:
+
+```bash
+printf 'eagle_flies_over_kosovo_at_dawn!' | nc challs.bsidesprishtina.org 30089
+```
+
+```text
+eagle> correct: BSidesPR26{1883af56e8df7f62973564d328f2bba5}
+```
+
+---
+
+# Flag
+
+```text
+BSidesPR26{1883af56e8df7f62973564d328f2bba5}
+```

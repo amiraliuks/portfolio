@@ -1,0 +1,148 @@
+﻿---
+title: Rusti I Vjeter
+summary: Reverse Engineering challenge writeup from BSides Prishtina 2026.
+tags: CTF Writeups, BSides Prishtina 2026, Reverse Engineering
+publishedAt: '2026-05-25'
+public: true
+language: "en"
+translationKey: "bsides-prishtina-2026-rusti-i-vjeter"
+---
+| Category            | Difficulty | Points | Protocol                       |
+| ------------------- | ---------- | ------ | ------------------------------ |
+| Reverse Engineering | Hard       | 600    | Local chal file + web instance |
+
+---
+
+# Challenge Information
+
+Old Rusti the locksmith is stubborn â€” and he learned Rust late in life, so he mumbles asynchronously. Tell him the right 24 things in the right order and he hands over the key. Anything else and he just says "denied". You get one shot per connection. The binary is in the handout.
+
+---
+
+# Introduction
+
+I started off by checking the binary:
+
+```bash
+file chal
+```
+
+```text
+chal: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=b9ec57ca93b42751d362264025223b2d4d679118, for GNU/Linux 3.2.0, stripped
+```
+
+A stripped rust file. Before I even open Ghidra, I wanna throw `strings` at it real quick:
+
+```bash
+strings -a chal
+```
+
+ I got a LOT in the output, but the most interesting ones were:
+
+```text
+/flag.txt
+BSidesPR26{FLAG_PLACEHOLDER}
+denied
+pollster-0.3.0 # VERY INTERESTING
+```
+
+`pollster` is a Rust crate that blocks on async features. So there's async stuff going on but it's being driven synchronously. That's gonna make the disassembly look messier than it actually is.
+
+I tested this real quick:
+
+```bash
+printf 'test\n' | ./chal
+```
+
+I got `denied`. Instant rejection. Description said one shot per connection too so bruteforcing was out of the picture.
+
+I started checking the sections:
+
+```bash
+readelf -S chal
+```
+
+`.text` at `0x5050`, `.rodata` at `0x45000`. I start tracing from the entry point and eventually find the actual user code around `0x7410`. There's a helper getting called repeatedly at `0x7110`, that's the **per-byte validator**.
+
+```asm
+movzx eax, BYTE PTR [table_a + offset]
+add al, BYTE PTR [input + i]
+xor al, BYTE PTR [table_b + offset]
+```
+
+And then checking if the result is zero. So the condition is:
+
+```text
+(table_a[i] + input[i]) ^ table_b[i] == 0
+```
+
+Flip that around:
+
+```text
+input[i] = table_b[i] - table_a[i] (mod 256)
+```
+
+That's fully reversible. I just need the table addresses. I found them in the same function:
+
+```text
+0x712b: lea r10, [rip + 0x3fa7d] ; 0x46baf
+0x7132: lea r9, [rip + 0x3fb06] ; 0x46c3f
+```
+
+
+24 bytes per row, 6 rows:
+
+```python
+from pathlib import Path
+
+p = Path("chal").read_bytes()
+
+table_a = p[0x46baf:0x46baf + 24 * 6]
+table_b = p[0x46c3f:0x46c3f + 24 * 6]
+
+for row in range(6):
+    candidate = bytes(
+        (table_b[row * 24 + i] - table_a[row * 24 + i]) & 0xff
+        for i in range(24)
+    )
+    print(row, candidate.decode())
+```
+
+```text
+0 rusti_i_vjeter_prishtina
+1 rusti_i_vjeter_prishtina
+2 rusti_i_vjeter_prishtina
+3 rusti_i_vjeter_prishtina
+4 rusti_i_vjeter_prishtina
+5 rusti_i_vjeter_prishtina
+```
+
+All six rows are the same. Okay that was cleaner than expected.
+
+So I tested locally before I waste my one shot on the remote instance:
+
+```bash
+printf 'rusti_i_vjeter_prishtina\n' | ./chal
+```
+
+```text
+BSidesPR26{FLAG_PLACEHOLDER}
+```
+
+Got the placeholder flag, so I went to try on the remote instance:
+
+```bash
+printf 'rusti_i_vjeter_prishtina\n' | nc -N challs.bsidesprishtina.org 30600
+```
+
+```text
+BSidesPR26{04446c7568fc774748c70c65b7dbdb0a}
+```
+
+---
+
+# Flag
+
+```text
+BSidesPR26{04446c7568fc774748c70c65b7dbdb0a}
+```

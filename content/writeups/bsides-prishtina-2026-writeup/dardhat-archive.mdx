@@ -1,0 +1,100 @@
+﻿---
+title: Dardhat Archive
+summary: OSINT challenge writeup from BSides Prishtina 2026.
+tags: CTF Writeups, BSides Prishtina 2026, OSINT
+publishedAt: '2026-05-25'
+public: true
+language: "en"
+translationKey: "bsides-prishtina-2026-dardhat-archive"
+---
+| Category | Difficulty | Points | Protocol    |
+| -------- | ---------- | ------ | ----------- |
+| OSINT    | Hard       | 750    | Git Service |
+
+---
+# Challenge Information
+
+A maintainer of the small open-source dardhat-archive project (a CLI for romanizing Albanian text) had their laptop snapshotted before they could push a clean release. Someone leaked the raw git working directory. The project itself looks unremarkable â€” but during development the maintainer experimented with a few things they decided not to ship. Surface what they thought they buried. Handout: dardhat-archive.tar.gz (static â€” no instance).
+
+---
+# Extract the archive & trust the directory
+
+```bash
+tar -zxf dardha-archive.tar.gz
+git config --global --add safe.directory /dardhat-archive
+# Git refuses the repo due to ownership mismatch, add safe.directory to proceed
+```
+
+---
+
+# Review visible commit history
+
+```bash
+git log --oneline --all
+
+# Output
+d763e03 (HEAD -> main) test(cli): smoke-test romanize subcommand
+211162c ci: github actions for tests 3bdd632 docs: document deromanize() lossiness
+35fac0e build: add pyproject.toml for 0.1.0
+601db93 merge: feature/locale-data into main
+d8588a1 data: restructure locale.json to support variants
+44ac52a data: add locale.json with sq diacritic table
+b4097f5 test(reverse): passthrough behaviour pinned b1ab25d feat(reverse): stub deromanize() â€” known-lossy
+dc8ca54 test: cover basic romanize cases ed3d680 feat: add CLI entrypoint f18682c feat: add romanize() core mapping de42e1b init: project scaffold
+# 13 clean commits, nothing suspicious on any branch
+```
+
+---
+
+# Find dangling objects
+
+I ran `git fsck` to find dangling objects:
+
+```bash
+git fsck --lost-found
+
+# Output
+Checking ref database: 100% (1/1), done.
+Checking object directories: 100% (256/256), done.
+Checking objects: 100% (55/55), done.
+dangling blob 8f6b9de48de807adfc19d77a85180264ad0ba41d
+dangling blob c2cfe047536c946c240fad4bc87ab9fbcc125ba7
+dangling commit 4c897f38b7772d2d079633785b208d8e561e7ced # interesting 
+Verifying commits in commit graph: 100% (13/13), done
+```
+
+---
+# Inspect the dangling commit
+```bash
+git show 4c897f38b7772d2d079633785b208d8e561e7ced
+# Output
+commit 4c897f38b7772d2d079633785b208d8e561e7ced
+Author: Lendrit Krasniqi <lendrit@dardhat-archive.example>
+Date:   Wed May 1 04:00:00 2024 +0000
+
+    wip: stash private review token in NOTES.txt (TODO: rm before push)
+
+diff --git a/NOTES.txt b/NOTES.txt
+new file mode 100644
+index 0000000..4b2a4b7
+--- /dev/null
++++ b/NOTES.txt
+@@ -0,0 +1,9 @@
++Private notes â€” do NOT ship.
++
++While testing the romanizer against a leaked corpus from work, I accidentally
++embedded the upstream review token into a fixture. Pulling it out before any
++of this goes near a public branch.
++
++token: BSidesPR26{0ddc0117e15deadc0debee0fcafe1234}
++
++I'll squash this branch into oblivion before pushing.
+```
+
+---
+
+# Flag
+
+```
+BSidesPR26{0ddc0117e15deadc0debee0fcafe1234}
+```

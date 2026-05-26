@@ -1,0 +1,330 @@
+﻿---
+title: DNS Over Drini
+summary: Forensics challenge writeup from BSides Prishtina 2026.
+tags: CTF Writeups, BSides Prishtina 2026, Forensics
+publishedAt: '2026-05-25'
+public: true
+language: "en"
+translationKey: "bsides-prishtina-2026-dns-over-drini"
+---
+| Category                                   | Difficulty | Points | Protocol  |
+| ------------------------------------------ | ---------- | ------ | --------- |
+| Forensics (DNS, exfiltration, pcap, scapy) | Medium     | 350    | DNS .pcap |
+
+---
+# Challenge Information
+
+A laptop on the Drini riverside cafe WiFi was caught having a very long, very weird conversation with a DNS server. We snapshotted the traffic. What was it really saying?
+
+---
+# Description
+
+The challenge gave us a packet capture named `capture.pcap` and hinted at DNS exfiltration:
+
+> A laptop on the Drini riverside cafe WiFi was caught having a very long, very weird conversation with a DNS server.
+
+Made me think that the goal was to recover what was being sent through DNS.
+
+---
+# Initial Analysis
+
+I started off by checking the capture file at a high level:
+
+```bash
+capinfos capture.pcap
+```
+
+With the output being:
+
+```text
+File name:           capture.pcap
+File type:           Wireshark/tcpdump/... - pcap
+File encapsulation:  Raw IPv4
+File timestamp precision:  microseconds (6)
+Packet size limit:   file hdr: 65535 bytes
+Number of packets:   1,500
+File size:           137 kB
+Data size:           113 kB
+Capture duration:    67.176084 seconds
+Earliest packet time: 2024-05-06 14:53:26.796735
+Latest packet time:   2024-05-06 14:54:33.972819
+Data byte rate:      1,690 bytes/s
+Data bit rate:       13 kbps
+Average packet size: 75.70 bytes
+Average packet rate: 22 packets/s
+SHA256:              10fc2e52ecc15418abc1b6f2137d45982d2932d1e828c42840f8d13fc97e11a8
+SHA1:                b71174775f55201ac8c803f7bdd9ed4cb3eff8ad
+Strict time order:   True
+Number of interfaces in file: 1
+Interface #0 info:
+                     Encapsulation = Raw IPv4 (129 - rawip4)
+                     Capture length = 65535
+                     Time precision = microseconds (6)
+                     Time ticks per second = 1000000
+                     Number of stat entries = 0
+                     Number of packets = 1500
+
+```
+
+The `.pcap` had 1500 packets over about 67 seconds. The protocol hierarchy showed that every packet
+
+```bash
+tshark -r capture.pcap -q -z io,phs
+```
+
+Output:
+
+```text
+===================================================================
+Protocol Hierarchy Statistics
+Filter: 
+
+frame                                    frames:1500 bytes:113549
+  raw                                    frames:1500 bytes:113549
+    ip                                   frames:1500 bytes:113549
+      udp                                frames:1500 bytes:113549
+        dns                              frames:1500 bytes:113549
+===================================================================
+```
+
+---
+
+# Finding the Weird Traffic
+
+I started off listing DNS query names:
+
+```bash
+tshark -r capture.pcap -Y dns -T fields -e frame.number -e ip.src -e ip.dst -e dns.qry.name -e dns.qry.type | sed -n '1,40p'
+```
+
+The output:
+
+```text
+1       10.42.7.13      9.9.9.9 i.scdn.co       1
+2       10.42.7.13      203.0.113.53    mswe3sd2zr6nqec3at4x2md7oxsqzkmf.00299fbm.exfil.drini.example   1
+3       10.42.7.13      9.9.9.9 api29.pixel.facebook.com        1
+4       10.42.7.13      203.0.113.53    u5qarrzc23in3v3a6o7pqfcynbxrhiqn.00e5agd0.exfil.drini.example   1
+5       10.42.7.13      203.0.113.53    gxygfktf7fbpul5x7n5dyjiks6i2pek7.00232xp1.exfil.drini.example   1
+6       10.42.7.13      9.9.9.9 www.nytimes.com 1
+7       10.42.7.13      185.228.168.9   scontent.xx.fbcdn.net   1
+8       10.42.7.13      1.1.1.1 epokainvest.com 1
+9       10.42.7.13      9.9.9.9 fonts.googleapis.com    1
+10      10.42.7.13      203.0.113.53    wv3hactrktmmhoys4hyh4epdnymfix6h.0011gq9f.exfil.drini.example   1
+11      10.42.7.13      1.1.1.1 graph.instagram.com     1
+12      10.42.7.13      9.9.9.9 bpbprivredna.com        1
+13      10.42.7.13      203.0.113.53    g7okmu6vkixq7qo3spqwecm4zsebb576.001d9upw.exfil.drini.example   1
+14      10.42.7.13      203.0.113.53    5y5sjeqnt2cndqn633dtbesaeezv6zai.0138b2vw.exfil.drini.example   1
+15      10.42.7.13      9.9.9.9 pixel.facebook.com      1
+16      10.42.7.13      203.0.113.53    7s2iwfwd3uljg3y2jtiad7oz3v4r62cu.0080lebw.exfil.drini.example   1
+17      10.42.7.13      8.8.8.8 www.netflix.com 1
+18      10.42.7.13      1.1.1.1 addons.mozilla.org      1
+19      10.42.7.13      1.1.1.1 upload.wikimedia.org    28
+20      10.42.7.13      1.1.1.1 www.nytimes.com 28
+21      10.42.7.13      203.0.113.53    37zu4eguumwndx3afzbwxxyh6wojfvra.00db1ict.exfil.drini.example   1
+22      10.42.7.13      1.1.1.1 www.google.com  28
+23      10.42.7.13      185.228.168.9   www.facebook.com        28
+24      10.42.7.13      9.9.9.9 node81.pbs.twimg.com    1
+25      10.42.7.13      9.9.9.9 cdn72.dl.dropboxusercontent.com 1
+26      10.42.7.13      203.0.113.53    wxturiktchepnexkyvij2csu6skkihig.003dmbt2.exfil.drini.example   1
+27      10.42.7.13      8.8.8.8 addons.mozilla.org      1
+28      10.42.7.13      9.9.9.9 p16-sign-va.tiktokcdn.com       28
+29      10.42.7.13      1.1.1.1 api90.openstreetmap.org 28
+30      10.42.7.13      203.0.113.53    z7esquylly6tvpcevbqwxhd4wobx5iw4.009962wk.exfil.drini.example   1
+31      10.42.7.13      9.9.9.9 raw.githubusercontent.com       1
+32      10.42.7.13      8.8.8.8 node28.www.bbc.co.uk    1
+33      10.42.7.13      8.8.8.8 static30.upload.wikimedia.org   1
+34      10.42.7.13      203.0.113.53    mue3xy4gfble5abubb4u35oz7wkojmqx.011e11ix.exfil.drini.example   1
+35      10.42.7.13      8.8.8.8 dl.dropboxusercontent.com       1
+36      10.42.7.13      1.1.1.1 www.bing.com    28
+37      10.42.7.13      203.0.113.53    3ojyx7krhmyigqwzfk55thhcqjvmatf6.0025ilui.exfil.drini.example   1
+38      10.42.7.13      1.1.1.1 m.media-amazon.com      1
+39      10.42.7.13      203.0.113.53    2dn6frl5ap5bjcxhzfngedkywcbm4sll.00cbodid.exfil.drini.example   1
+40      10.42.7.13      8.8.8.8 1password.com   1
+```
+
+The queries looked normal, nytimes, facebook, HOWEVER, I found something suspicious:
+
+```text
+mswe3sd2zr6nqec3at4x2md7oxsqzkmf.00299fbm.exfil.drini.example
+u5qarrzc23in3v3a6o7pqfcynbxrhiqn.00e5agd0.exfil.drini.example
+gxygfktf7fbpul5x7n5dyjiks6i2pek7.00232xp1.exfil.drini.example
+```
+
+The weird parts were:
+- The domain contained **exfil**.
+- The domain used **.example**, which is not a real production TLD.
+- The destination DNS server was `203.0.113.53`, from documentation/test-net address space.
+- The leftmost labels were fixed-length and high entropy.
+
+I filtered only those suspicious DNS queries:
+
+```bash
+tshark -r dns-over-drini/capture.pcap -Y 'dns.qry.name contains "exfil.drini.example"' -T fields -e dns.qry.name | wc -l
+```
+
+There were `400`.
+
+---
+# Understanding The Encoding
+
+Each suspicious query had this structure:
+
+```text
+<32-character label>.<8-character label>.exfil.drini.example
+```
+
+I checked the label lengths:
+
+```bash
+tshark -r dns-over-drini/capture.pcap -Y 'dns.qry.name contains "exfil.drini.example"' -T fields -e dns.qry.name | awk -F. '{print length($1), length($2), $1, $2}' | sed -n '1,12p'
+```
+
+The output:
+
+```text
+32 8 mswe3sd2zr6nqec3at4x2md7oxsqzkmf 00299fbm
+32 8 u5qarrzc23in3v3a6o7pqfcynbxrhiqn 00e5agd0
+32 8 gxygfktf7fbpul5x7n5dyjiks6i2pek7 00232xp1
+32 8 wv3hactrktmmhoys4hyh4epdnymfix6h 0011gq9f
+32 8 g7okmu6vkixq7qo3spqwecm4zsebb576 001d9upw
+32 8 5y5sjeqnt2cndqn633dtbesaeezv6zai 0138b2vw
+32 8 7s2iwfwd3uljg3y2jtiad7oz3v4r62cu 0080lebw
+32 8 37zu4eguumwndx3afzbwxxyh6wojfvra 00db1ict
+32 8 wxturiktchepnexkyvij2csu6skkihig 003dmbt2
+32 8 z7esquylly6tvpcevbqwxhd4wobx5iw4 009962wk
+32 8 mue3xy4gfble5abubb4u35oz7wkojmqx 011e11ix
+32 8 3ojyx7krhmyigqwzfk55thhcqjvmatf6 0025ilui
+```
+
+The first label used characters from the base32 alphabet:
+> a-z and 2-7
+
+A 32-character base32 string decodes to 20 bytes:
+>32 chars * 5 bits = 160 bits = 20 bytes
+
+With 400 queries, that gives us:
+>400 * 20 = 8000 bytes
+
+So the first label was almost certainly the data chunk.
+
+---
+# The Packet Order Was Wrong
+
+I first tried decoding the chunks in capture order. That produced random-looking bytes:
+
+```python
+import subprocess, base64
+
+out = subprocess.check_output([
+    "tshark", "-r", "dns-over-drini/capture.pcap",
+    "-Y", 'dns.qry.name contains "exfil.drini.example"',
+    "-T", "fields", "-e", "dns.qry.name",
+], text=True)
+
+blob = b""
+
+for q in out.splitlines():
+    data, order, *_ = q.split(".")
+    blob += base64.b32decode(data.upper())
+
+print(blob[:32].hex())
+```
+
+The output started with:
+
+```text
+64ac4dc87acc7cd8105b04f97d307f75
+```
+
+That was not a known file header. So the packets were probably shuffled.
+
+---
+# The Second Label Was The Sort Key
+
+The second label looked like Base36:
+
+```text
+00299fbm
+00e5agd0
+00232xp1
+0011gq9f
+```
+
+I sorted chunks by that second label as a Base36 integer, then decoded the first label:
+
+```python
+import subprocess, base64
+
+out = subprocess.check_output([
+	"tshark", "-r", "dns-over-drini/capture.pcap",
+	"-Y", 'dns.qry.name contains "exfil.drini.example"',
+	"-T", "fields", "-e", "dns.qry.name",
+], text=True)
+
+chunks = []
+for q in out.splitlines():
+	data, order, *_ = q.split(".")
+	chunks.append((int(order, 36), base64.b32decode(data.upper())))
+
+blob = b"".join(data for _, data in sorted(chunks))
+print(blob[:10].hex())
+```
+
+This time the bytes started with:
+
+```text
+1f8b08000000000002ff
+```
+
+**1f 8b 08**  is a gzip header. That confirmed the correct order.
+
+---
+
+# Reconstructing The File
+
+The full solve command was:
+```bash
+tshark -r dns-over-drini/capture.pcap -Y 'dns.qry.name contains "exfil.drini.example"' -T fields -e dns.qry.name |
+python3 -c '
+import sys, base64, zlib, tarfile, io
+
+chunks = []
+for q in sys.stdin:
+	q = q.strip()
+	if not q:
+		continue
+	data, order, *_ = q.split(".")
+	chunks.append((int(order, 36), base64.b32decode(data.upper())))
+
+blob = b"".join(data for _, data in sorted(chunks))
+tar_bytes = zlib.decompress(blob, 16 + zlib.MAX_WBITS)
+
+with tarfile.open(fileobj=io.BytesIO(tar_bytes)) as tar:
+	for member in tar:
+		print(member.name)
+		print(tar.extractfile(member).read().decode())
+'
+```
+
+The `tshark` part extracts only the suspicious DNS query names. The `|` sends those query names into Python. The Python code then:
+1. Splits each DNS name on dots.
+2. Takes the first label as base32 data.
+3. Takes the second label as the base36 chunk order.
+4. Sorts all chunks.
+5. Joins the decoded bytes.
+6. Decompress the gzip data.
+7. Opens the tar archive and prints `flag.txt`.
+
+Output:
+
+```text
+flag.txt
+BSidesPR26{92773b919fb5a3b7b959d8c7f49c13e5}
+```
+
+---
+# Flag
+
+```text
+BSidesPR26{92773b919fb5a3b7b959d8c7f49c13e5}
+```

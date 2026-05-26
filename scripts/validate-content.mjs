@@ -31,14 +31,19 @@ function isValidDateString(value) {
   return Number.isFinite(parsed);
 }
 
-const files = contentRoots.flatMap((dir) => {
+function collectMdxFiles(dir) {
   if (!fs.existsSync(dir)) return [];
 
-  return fs
-    .readdirSync(dir)
-    .filter((file) => file.endsWith(".mdx"))
-    .map((file) => path.join(dir, file));
-});
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const entryPath = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) return collectMdxFiles(entryPath);
+    if (entry.isFile() && entry.name.endsWith(".mdx")) return [entryPath];
+    return [];
+  });
+}
+
+const files = contentRoots.flatMap((dir) => collectMdxFiles(dir));
 
 const errors = [];
 const byTranslationKey = new Map();

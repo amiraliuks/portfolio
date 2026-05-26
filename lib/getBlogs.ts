@@ -200,19 +200,54 @@ function getMDXFiles(dir: fs.PathLike) {
   return fs.readdirSync(dir).filter((file) => path.extname(file) === '.mdx');
 }
 
+function getMDXFilesRecursive(dir: string): string[] {
+  if (!fs.existsSync(dir)) return [];
+
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const entryPath = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      return getMDXFilesRecursive(entryPath);
+    }
+
+    if (entry.isFile() && path.extname(entry.name) === ".mdx") {
+      return [entryPath];
+    }
+
+    return [];
+  });
+}
+
 function readMDXFile(filePath: string) {
   const rawContent = fs.readFileSync(filePath, 'utf-8');
   return parseFrontmatter(rawContent);
 }
 
-function getMDXData(dir: fs.PathLike) {
+function getSlugFromFilePath(rootDir: string, filePath: string) {
+  const relativePath = path.relative(rootDir, filePath);
+  const parsedPath = path.parse(relativePath);
+  const slugParts = parsedPath.dir ? parsedPath.dir.split(path.sep) : [];
+
+  if (parsedPath.name !== "index") {
+    slugParts.push(parsedPath.name);
+  }
+
+  return slugParts.join("/");
+}
+
+function getMDXData(dir: fs.PathLike, options?: { recursive?: boolean }) {
   if (!fs.existsSync(dir)) return [];
 
-  const mdxFiles = getMDXFiles(dir);
+  const rootDir = dir.toString();
+  const mdxFiles = options?.recursive
+    ? getMDXFilesRecursive(rootDir)
+    : getMDXFiles(dir).map((file) => path.join(rootDir, file));
 
-  const rawPosts = mdxFiles.map((file) => {
-    const { metadata, content } = readMDXFile(path.join(dir.toString(), file));
-    const slug = path.basename(file, path.extname(file));
+  const rawPosts = mdxFiles.map((filePath) => {
+    const { metadata, content } = readMDXFile(filePath);
+    const slug = options?.recursive
+      ? getSlugFromFilePath(rootDir, filePath)
+      : path.basename(filePath, path.extname(filePath));
     const explicitImage = metadata.image?.trim();
     const fallbackDescription =
       metadata.description ?? metadata.summary ?? extractPostDescription(content);
@@ -328,9 +363,20 @@ export function getBlogListingPosts() {
 }
 
 export function getWriteupPosts() {
-  return getMDXData(path.join(process.cwd(), 'content', 'writeups'));
+  return getMDXData(path.join(process.cwd(), 'content', 'writeups'), { recursive: true });
 }
 
 export function getWriteupListingPosts() {
-  return groupListingPosts(getWriteupPosts());
+  return groupListingPosts(getWriteupPosts().filter((post) => !post.slug.includes("/")));
+}
+
+export function getWriteupChallengePosts(collectionSlug: string) {
+  return getWriteupPosts()
+    .filter((post) => post.metadata.public !== false)
+    .filter((post) => post.slug.startsWith(`${collectionSlug}/`))
+    .sort(
+      (a, b) =>
+        new Date(a.metadata.publishedAt).getTime() -
+        new Date(b.metadata.publishedAt).getTime()
+    );
 }

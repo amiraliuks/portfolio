@@ -28,3 +28,9 @@ export type BlogPageProps = {
     slug: string;
   }>;
 };
+
+export type WriteupPageProps = {
+  params: Promise<{
+    slug: string[];
+  }>;
+};

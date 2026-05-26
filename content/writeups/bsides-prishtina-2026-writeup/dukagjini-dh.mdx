@@ -1,0 +1,86 @@
+﻿---
+title: Dukagjini DH
+summary: Crypto challenge writeup from BSides Prishtina 2026.
+tags: CTF Writeups, BSides Prishtina 2026, Crypto
+publishedAt: '2026-05-25'
+public: true
+language: "en"
+translationKey: "bsides-prishtina-2026-dukagjini-dh"
+---
+| Category                                | Difficulty | Points | Protocol |
+| --------------------------------------- | ---------- | ------ | -------- |
+| Crypto (diffle-hellman, pohlig-hellman) | Hard       | 750    | .gz file |
+
+---
+# Challenge Information
+
+Dukagjini's mountain crypto co-op rolled their own Diffie-Hellman because the big-city primes were "too expensive". They picked a friendly prime that "still has 260 bits, so it's basically the same security, no?" and ship the public value A straight from the wire. Pick your b, complete the exchange, and the server XORs the flag with the shared secret. Easy, right?
+
+---
+
+# Description
+
+The server  simulates a **diffle-hellman** key exchange, but with a fundamental flaw: the prime `p` is smooth, that means the `p-1` factors into small primes. This makes the discrete logarithm solvable via **pohligh-hellman**.
+
+---
+
+# Analysis
+
+Connecting to the target instance with **nc**, the server sends:
+- **p** - a ~260-bit prime
+- **g** - generator
+- **A = g^a mod p** - the server's public key
+Then it waits for our **B = g^b mod p**, and XORs the flag with the shared secret.
+
+The weakness: **p-1** is highly smooth, so **pohlig-hellman** breaks the discrete log trivially.
+
+---
+
+# Solve Script
+
+```python
+from pwn import *
+from sympy.ntheory import discrete_log
+
+io = remote("challs.bsidesprishtina.org", 30370)
+
+p = int(io.recvline().strip())
+g = int(io.recvline().strip())
+A = int(io.recvline().strip())
+
+print(f"[+] p = {p}")
+print(f"[+] g = {g}")
+print(f"[+] A = {A}")
+
+# Pohlig-Hellman via sympy
+print("[+] Solving discrete log...")
+a = discrete_log(p, A, g)
+print(f"[+] Found a = {a}")
+
+b = 133742069
+B = pow(g, b, p)
+io.sendline(str(B).encode())
+
+# Server sends shared secret + encrypted flag
+K = int(io.recvline().strip())
+enc_flag = bytes.fromhex(io.recvline().strip().decode())
+
+# XOR to recover flag
+flag = bytes(x ^ y for x, y in zip(K.to_bytes(32, 'big'), enc_flag))
+print(f"[+] Flag: {flag.decode()}")
+```
+
+---
+
+# How It Works
+
+The server computes **K = A^b mod p**. Since we recover **a** via discrete log, we could compute the shared secret ourselves, but here the server just sends **K** directly. We XOR it against the encrypted flag and we're done.
+
+Smooth prime -> pohligh-hellman -> discrete log in seconds -> we get the flag
+
+---
+# Flag
+
+```text
+BSidesPR26{7f8a2b3c4d5e6f0123456789abcdef12}
+```
