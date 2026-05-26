@@ -576,6 +576,42 @@ const certifications: Certification[] = [
     ],
   },
 
+  {
+    id: 18,
+    title: 'BSides Prishtina 2026 CTF',
+    course: 'https://ctf.bsidesprishtina.org/',
+    href: '/writeups/bsides-prishtina-2026-writeup',
+    certificateOne: '/certifications/pdfs/ctf/bsides-prishtina-2026.pdf',
+    badgeImage: '/certifications/badges/bsides-prishtina-2026.png',
+    createdAt: '25-05-2026',
+    description:
+      'Competed in the BSides Prishtina 2026 CTF with KSAL Cyber Team and finished in 2nd place. Solved challenges across crypto, forensics, misc, OSINT, pwn, reverse engineering, and web, then documented the solves as a full writeup collection.',
+    skills: [
+      'Team-based CTF competition',
+      'Challenge triage across multiple categories',
+      'Web exploitation',
+      'Binary exploitation',
+      'Reverse engineering',
+      'Forensics analysis',
+      'Cryptography problem solving',
+      'OSINT investigation',
+      'Technical writeup documentation',
+    ],
+    badge: [
+      'CTF Competition',
+      'CTF Participation',
+      '2nd Place',
+      'Team Competition',
+      'Web Exploitation',
+      'Binary Exploitation',
+      'Reverse Engineering',
+      'Forensics',
+      'Cryptography',
+      'OSINT',
+      'Technical Writing',
+    ],
+  },
+
 ];
 
 function countCertificationsByCategory(items: Certification[]) {
