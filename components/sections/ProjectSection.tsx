@@ -25,6 +25,7 @@ const projectFilterTags = [
   "Browser Extension Development",
   "Mobile Development",
   "Machine Learning",
+  "Cybersecurity",
   "Game Modding",
   "Hardware",
   "Security",
@@ -107,7 +108,7 @@ export default function ProjectsSection() {
             dark:from-neutral-900/95
             dark:to-neutral-950/95
             dark:hover:border-neutral-700
-            dark:hover:shadow-[0_30px_80px_-35px_rgba(6,182,212,0.25)]
+            dark:hover:shadow-[0_30px_80px_-35px_rgba(255,255,255,0.16)]
           "
           >
             {(() => {
@@ -120,7 +121,7 @@ export default function ProjectsSection() {
                 <>
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_-20%,rgba(34,211,238,0.15),transparent_45%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_-20%,rgba(255,255,255,0.12),transparent_45%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
             />
 
           <Link href={`/projects/${project.slug}`} className="relative block cursor-pointer overflow-hidden border-b border-neutral-200/80 dark:border-neutral-800/80">

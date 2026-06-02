@@ -5,6 +5,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function formatDateToDdMmYy(date: Date) {
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = String(date.getFullYear()).slice(-2);
+
+  return `${day}/${month}/${year}`;
+}
+
 export function formatDate(date: string, includeRelative = false) {
   const currentDate = new Date();
   if (!date.includes('T')) {
@@ -28,11 +36,7 @@ export function formatDate(date: string, includeRelative = false) {
     formattedDate = 'Today';
   }
 
-  const fullDate = targetDate.toLocaleString('en-us', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
+  const fullDate = formatDateToDdMmYy(targetDate);
 
   if (!includeRelative) {
     return fullDate;
@@ -68,9 +72,5 @@ export function formatProjectDate(dateStr: string) {
   const parsedDate = parseProjectDate(dateStr);
   if (Number.isNaN(parsedDate.getTime())) return dateStr;
 
-  return parsedDate.toLocaleDateString("en-US", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-  });
+  return formatDateToDdMmYy(parsedDate);
 }

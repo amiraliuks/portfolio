@@ -1,4 +1,10 @@
 export type CveStatus = "Published" | "Reserved" | "Disclosed" | "In Review";
+export type VendorResponseStatus =
+  | "Acknowledged"
+  | "Fixed and credited"
+  | "No vendor response"
+  | "Awaiting response"
+  | "Not contacted";
 
 export interface CveEntry {
   id: string;
@@ -6,6 +12,8 @@ export interface CveEntry {
   vulnerabilityType: string;
   cvss: string;
   status: CveStatus;
+  vendorResponse: VendorResponseStatus;
+  vendorResponseHref?: string;
   href?: string;
 }
 
@@ -25,6 +33,8 @@ export const cves: CveEntry[] = [
     vulnerabilityType: "Broken Access Control in Plugin Administration Routes",
     cvss: "6.3",
     status: "Reserved",
+    vendorResponse: "Fixed and credited",
+    vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
     href: "/blog/camaleon-cms-cve",
   },
   {
@@ -33,6 +43,8 @@ export const cves: CveEntry[] = [
     vulnerabilityType: "Stored XSS via Draft Post Title",
     cvss: "8.7",
     status: "Reserved",
+    vendorResponse: "Fixed and credited",
+    vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
     href: "/blog/camaleon-cms-cve",
   },
   {
@@ -41,6 +53,8 @@ export const cves: CveEntry[] = [
     vulnerabilityType: "Authenticated RCE via instance_eval in Select Eval Custom Fields",
     cvss: "7.2",
     status: "Reserved",
+    vendorResponse: "Fixed and credited",
+    vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
     href: "/blog/camaleon-cms-cve",
   },
   {
@@ -49,6 +63,8 @@ export const cves: CveEntry[] = [
     vulnerabilityType: "Stored XSS via Contact Form previous_html Rendering",
     cvss: "8.7",
     status: "Reserved",
+    vendorResponse: "Fixed and credited",
+    vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
     href: "/blog/camaleon-cms-cve",
   },
   {
@@ -57,6 +73,8 @@ export const cves: CveEntry[] = [
     vulnerabilityType: "Authenticated SQL Injection via Slug Translations",
     cvss: "6.5",
     status: "Reserved",
+    vendorResponse: "Fixed and credited",
+    vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
     href: "/blog/camaleon-cms-cve",
   },
   {
@@ -65,6 +83,8 @@ export const cves: CveEntry[] = [
     vulnerabilityType: "Authenticated SSTI leading to RCE via render inline in test_email",
     cvss: "6.6",
     status: "Reserved",
+    vendorResponse: "Fixed and credited",
+    vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
     href: "/blog/camaleon-cms-cve",
   },
   {
@@ -73,6 +93,7 @@ export const cves: CveEntry[] = [
     vulnerabilityType: "Unauthenticated PSIA API read/write access and plaintext credential disclosure",
     cvss: "TBD",
     status: "Disclosed",
+    vendorResponse: "No vendor response",
     href: "/blog/breaking-into-my-own-camera",
   },
   {
@@ -81,6 +102,7 @@ export const cves: CveEntry[] = [
     vulnerabilityType: "Blind OS command execution via custom SYSTEM protocol with root telnet compromise",
     cvss: "TBD",
     status: "Disclosed",
+    vendorResponse: "No vendor response",
     href: "/blog/breaking-into-my-own-camera",
   },
 ];
@@ -112,5 +134,14 @@ export const researchCards: ResearchCard[] = [
       "Browser extension research and tooling for identifying official Kosovo government domains and reducing phishing risk.",
     tags: ["Phishing", "Domain Verification", "Browser Extension"],
     href: "/blog/introducing-the-kosovo-government-domain-checker",
+  },
+  {
+    id: 4,
+    title: "Next.js App Router: Path Normalization Middleware Bypass",
+    date: "2026-05-17",
+    description:
+      "Patch-bypass in Next.js App Router (affecting v16.2.6). Discovered that segment-prefetch transport requests (`.segments/.../.segment.rsc`) failed to undergo proper canonical pathname normalization prior to execution, allowing unauthenticated routing bypasses and static RSC layout data leaks despite existing middleware authentication controls.",
+    tags: ["Web Security", "Next.js", "Middleware Bypass", "Path Normalization", "Information Disclosure"],
+    href: "https://github.com/amiraliuks",
   },
 ];

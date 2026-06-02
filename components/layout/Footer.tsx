@@ -3,10 +3,6 @@ import Image from "next/image";
 
 export default function Footer() {
   const year = new Date().getFullYear();
-  const commitId =
-    process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ??
-    process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ??
-    "dev";
 
   return (
     <section className="mt-12 border-t pb-6 pt-4">
@@ -14,13 +10,6 @@ export default function Footer() {
         <div>{"\u00a9"} {year} Amir Aliu</div>
 
         <div className="flex items-center gap-3">
-          <span
-            className="border px-2 py-0.5 font-mono text-[11px] leading-none text-muted-foreground"
-            title="Current deployment commit"
-          >
-            [{commitId}]
-          </span>
-
           <Link
             href="https://github.com/amiraliuks"
             target="_blank"

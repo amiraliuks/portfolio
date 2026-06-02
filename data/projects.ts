@@ -5,6 +5,7 @@ import { PiMicrosoftWordLogoFill } from "react-icons/pi";
 import { FaRegFilePowerpoint, FaAndroid, FaFirefox } from "react-icons/fa";
 import { SiVercel } from "react-icons/si";
 import { FaWindows } from "react-icons/fa";
+import { FaFileAlt } from "react-icons/fa";
 
 export interface Project {
   id: number;
@@ -1034,6 +1035,43 @@ const projects: Project[] = [
         type: "Download",
         href: "https://github.com/amiraliuks/silent-hill-3-enhanced/releases",
         icon: FaWindows,
+      },
+    ],
+  },
+
+  {
+    id: 24,
+    title: "NodeSentry",
+    slug: "node-sentry",
+    createdAt: "2026-05-31",
+    description:
+      "A distributed embedded Wi-Fi security monitoring platform. NodeSentry deploys WeMos D1 Mini Pro nodes around a space to passively monitor 802.11 traffic and detect common Wi-Fi attacks in real time, aggregating data to a central dashboard.",
+
+    features: [
+      "Edge deauth flood detection - parses 802.11 management frames natively on-chip using a sliding window to minimize false positives",
+      "Passive probe request logging - tracks localized footprint inquiries including source MAC, target SSID, and precise temporal signatures",
+      "Hardware OUI fingerprinting - backend dynamically parses MAC prefixes to resolve and display device manufacturers (e.g., Apple, Samsung, Espressif)",
+      "Node status & tamper tracking - utilizes MQTT Last Will and Testament (LWT) to immediately flag on the dashboard if a node loses power or goes offline",
+      "Asynchronous data pipeline - streams live telemetry payloads using Mosquitto MQTT over local Wi-Fi networks to a Python/Flask core engine",
+      "Real-time dark mode dashboard - custom, low-contrast front-end tracking system using WebSockets (SocketIO) and dynamic Chart.js data models",
+      "Planned dynamic spatial mapping - custom SVG floorplan rendering featuring real-time client tracking via multi-node RSSI triangulation",
+      "Planned automation integrations - central webhook notification engine routing high-severity threat alerts directly to Telegram and Discord",
+    ],
+
+    badge: ["Cybersecurity", "C++", "Python", "Embedded Systems", "MQTT", "WebSockets", "IoT Security"],
+
+    image: "/projects/node-sentry/node-sentry-logo.png",
+
+    links: [
+      {
+        type: "Source Code",
+        href: "https://github.com/amiraliuks/node-sentry",
+        icon: FaGithub,
+      },
+      {
+        type: "Documentation",
+        href: "https://github.com/amiraliuks/node-sentry/docs",
+        icon: FaFileAlt,
       },
     ],
   },

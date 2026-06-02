@@ -8,6 +8,7 @@ import { FaBookOpen } from 'react-icons/fa';
 import { SiCredly } from 'react-icons/si';
 import { BadgeSheet } from '@/components/media/BadgeSheet';
 import { trackEvent } from '@/lib/analytics';
+import { formatDateToDdMmYy } from '@/lib/utils';
 
 import {
   certifications,
@@ -37,11 +38,7 @@ function parseCertificationDate(date: string): number {
 function formatCertificationDate(date: string): string {
   const parsed = new Date(date.split('-').reverse().join('-'));
 
-  return new Intl.DateTimeFormat('en', {
-    month: 'short',
-    day: '2-digit',
-    year: 'numeric',
-  }).format(parsed);
+  return formatDateToDdMmYy(parsed);
 }
 
 function getCategoryLabel(category: CertificationCategory): string {
