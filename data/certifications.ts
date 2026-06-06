@@ -612,6 +612,34 @@ const certifications: Certification[] = [
     ],
   },
 
+  {
+    id: 19,
+    title: 'DEFCON Group Prishtina (DC38338) - Wireless Village Workshop #1',
+    course: 'https://www.linkedin.com/company/defcon-group-prishtina/', 
+    certificateOne: '/certifications/pdfs/wireless/defcon-prishtina-wireless-village.pdf',
+    badgeImage: '/certifications/badges/defcon-prishtina-wireless-village.png',
+    createdAt: '20-04-2026',
+    description:
+      'Attended the inaugural Wireless Village Workshop organized by DEFCON Group Prishtina (DC38338) at UBT Dukagjin. Focused on the fundamentals of wireless security, RF signal analysis, and hands-on methodologies for auditing and securing wireless infrastructure. Covered practical wireless exploitation concepts, packet sniffing, and defense mechanisms used to safeguard airborne networks against common over-the-air attack vectors.',
+    skills: [
+      'Wireless security auditing',
+      'RF signal analysis fundamentals',
+      '802.11 protocol analysis',
+      'Wireless traffic sniffing & packet capture',
+      'Identifying rogue access points',
+      'Wireless defense & hardening strategies',
+      'Hands-on lab experimentation',
+    ],
+    badge: [
+      'Wireless Security',
+      'DEFCON Community',
+      'RF Analysis',
+      'Network Auditing',
+      'Wi-Fi Pentesting',
+      'Workshop Participation',
+    ],
+  },
+
 ];
 
 function countCertificationsByCategory(items: Certification[]) {
