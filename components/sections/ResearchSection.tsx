@@ -1,75 +1,110 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, Clock3 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cves, researchCards } from "@/data/research";
+import {
+  cves,
+  researchCards,
+  type CveStatus,
+} from "@/data/research";
 import { formatDate } from "@/lib/utils";
 
-function getStatusClassName(status: string) {
-  if (status === "Published") return "border-neutral-950 bg-neutral-950 text-white dark:border-white dark:bg-white dark:text-neutral-950";
-  if (status === "Reserved") return "border-neutral-300 bg-white text-neutral-700 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-200";
-  if (status === "Disclosed") return "border-neutral-500 bg-neutral-100 text-neutral-900 dark:border-neutral-500 dark:bg-neutral-800 dark:text-neutral-100";
-  return "border-neutral-300 bg-white/70 text-neutral-700 dark:border-neutral-700 dark:bg-neutral-900/75 dark:text-neutral-100";
+const researchDisplayOrder = [
+  "/blog/breaking-into-my-own-camera",
+  "/blog/camaleon-cms-cve",
+];
+
+function getResearchDisplayOrder(href?: string) {
+  const index = href ? researchDisplayOrder.indexOf(href) : -1;
+  return index === -1 ? researchDisplayOrder.length : index;
 }
 
-function getCvssClassName(cvss: string) {
-  const score = Number.parseFloat(cvss);
-  if (!Number.isFinite(score)) return "text-muted-foreground";
-  if (score >= 8) return "text-foreground";
-  if (score >= 6) return "text-neutral-700 dark:text-neutral-200";
-  return "text-muted-foreground";
+function getStatusClassName(status: CveStatus) {
+  switch (status) {
+    case "Reserved":
+      return "border-amber-300/70 bg-amber-50 text-neutral-700 dark:border-amber-900/70 dark:bg-amber-950/20 dark:text-neutral-200";
+    case "Disclosed":
+      return "border-emerald-300/70 bg-emerald-50 text-neutral-700 dark:border-emerald-900/70 dark:bg-emerald-950/20 dark:text-neutral-200";
+    case "Published":
+      return "border-emerald-300/70 bg-emerald-50 text-neutral-700 dark:border-emerald-900/70 dark:bg-emerald-950/20 dark:text-neutral-200";
+    case "In Review":
+      return "border-border bg-muted/40 text-muted-foreground";
+  }
 }
 
-function getVendorResponseClassName(vendorResponse: string) {
-  if (vendorResponse === "No vendor response") {
-    return "border-neutral-400 bg-neutral-100 text-neutral-800 dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-200";
-  }
+function getVendorResponsePresentation(vendorResponse: string) {
+  const positive =
+    vendorResponse === "Fixed and credited" ||
+    vendorResponse === "Acknowledged";
 
-  if (vendorResponse === "Fixed and credited") {
-    return "border-neutral-300 bg-white text-neutral-600 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-300";
-  }
-
-  return "border-neutral-300 bg-white/70 text-neutral-600 dark:border-neutral-700 dark:bg-neutral-900/75 dark:text-neutral-300";
+  return {
+    Icon: positive ? CheckCircle2 : Clock3,
+    className: positive
+      ? "text-emerald-700/80 dark:text-emerald-400/80"
+      : "text-muted-foreground",
+  };
 }
 
 export default function ResearchSection() {
-  const sortedResearchCards = [...researchCards].sort(
-    (a, b) => new Date(`${b.date}T00:00:00`).getTime() - new Date(`${a.date}T00:00:00`).getTime()
+  const orderedResearchCards = [...researchCards].sort(
+    (a, b) =>
+      getResearchDisplayOrder(a.href) - getResearchDisplayOrder(b.href)
   );
 
   const numericCvssScores = cves
     .map((cve) => Number.parseFloat(cve.cvss))
     .filter(Number.isFinite);
-  const highestCvss = numericCvssScores.length > 0 ? Math.max(...numericCvssScores).toFixed(1) : "TBD";
-  const reservedCount = cves.filter((cve) => cve.status === "Reserved").length;
-  const disclosedCount = cves.filter((cve) => cve.status === "Disclosed").length;
-  const groupedCves = cves.reduce<Array<{ product: string; items: typeof cves }>>((groups, cve) => {
-    const existingGroup = groups.find((group) => group.product === cve.product);
+  const highestCvss =
+    numericCvssScores.length > 0
+      ? Math.max(...numericCvssScores).toFixed(1)
+      : "TBD";
+  const reservedCount = cves.filter(
+    (cve) => cve.status === "Reserved"
+  ).length;
+  const disclosedCount = cves.filter(
+    (cve) => cve.status === "Disclosed"
+  ).length;
+  const groupedCves = cves
+    .reduce<Array<{ product: string; items: typeof cves }>>((groups, cve) => {
+      const existingGroup = groups.find(
+        (group) => group.product === cve.product
+      );
 
-    if (existingGroup) {
-      existingGroup.items.push(cve);
-    } else {
-      groups.push({ product: cve.product, items: [cve] });
-    }
+      if (existingGroup) {
+        existingGroup.items.push(cve);
+      } else {
+        groups.push({ product: cve.product, items: [cve] });
+      }
 
-    return groups;
-  }, []);
+      return groups;
+    }, [])
+    .sort(
+      (a, b) =>
+        getResearchDisplayOrder(a.items[0]?.href) -
+        getResearchDisplayOrder(b.items[0]?.href)
+    );
 
-  const linkedText = (href: string | undefined, children: ReactNode, className: string) => {
+  const linkedText = (
+    href: string | undefined,
+    children: ReactNode,
+    className: string
+  ) => {
     if (!href) {
       return <span className={className}>{children}</span>;
     }
 
     return (
-      <Link href={href} className={`${className} underline-offset-4 transition-colors hover:text-foreground hover:underline`}>
+      <Link
+        href={href}
+        className={`${className} underline-offset-4 transition-colors hover:text-foreground hover:underline`}
+      >
         {children}
       </Link>
     );
@@ -77,213 +112,187 @@ export default function ResearchSection() {
 
   return (
     <section className="space-y-10">
-      <div className="flex items-center justify-between border-b border-border/60 pb-3 text-xs text-muted-foreground">
-        <span>Findings and disclosures</span>
-        <span>Last updated May 2026</span>
+      <div className="flex items-center justify-between border-b border-border/60 pb-3">
+        <h2 className="text-sm font-semibold text-foreground">
+          Vulnerability disclosures
+        </h2>
+        <span className="text-xs text-muted-foreground">
+          Updated May 2026
+        </span>
       </div>
 
-      <div className="border border-border/70 bg-muted/10">
-        <div className="border-b border-border/60 px-4 py-4 sm:px-5">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-            <div className="max-w-2xl">
-              <h2 className="text-sm font-semibold text-foreground">Disclosure ledger</h2>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                Compact tracking for CVEs and public vulnerability disclosures, grouped by affected product.
-              </p>
-            </div>
-
-            <span className="shrink-0 font-mono text-xs text-muted-foreground">
-              {groupedCves.length} products
-            </span>
+      <dl className="grid grid-cols-4 border border-border/70">
+        {[
+          ["Findings", cves.length],
+          ["Reserved", reservedCount],
+          ["Disclosed", disclosedCount],
+          ["Max CVSS", highestCvss],
+        ].map(([label, value], index) => (
+          <div
+            key={label}
+            className={`min-w-0 px-2 py-3 text-center sm:px-4 ${
+              index > 0 ? "border-l border-border/70" : ""
+            }`}
+          >
+            <dt className="truncate text-[11px] text-muted-foreground">
+              {label}
+            </dt>
+            <dd className="mt-1 text-base font-semibold leading-none text-foreground">
+              {value}
+            </dd>
           </div>
+        ))}
+      </dl>
 
-          <div className="mt-4 grid grid-cols-2 border border-border/60 text-center sm:grid-cols-4">
-            <div className="border-b border-r border-border/60 px-3 py-3 sm:border-b-0">
-              <div className="font-mono text-lg text-foreground">{cves.length}</div>
-              <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Findings</div>
+      <div className="space-y-5">
+        {groupedCves.map((group) => (
+          <article key={group.product} className="border border-border/70">
+            <header className="flex flex-col gap-2 border-b border-border/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <h3 className="text-sm font-medium text-foreground">
+                  {group.product}
+                </h3>
+                <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1">
+                  {[
+                    ...new Map(
+                      group.items.map((item) => [
+                        `${item.vendorResponse}-${item.vendorResponseHref ?? ""}`,
+                        {
+                          label: item.vendorResponse,
+                          href: item.vendorResponseHref,
+                        },
+                      ])
+                    ).values(),
+                  ].map((vendorResponse) => {
+                    const { Icon, className } =
+                      getVendorResponsePresentation(vendorResponse.label);
+                    const response = (
+                      <span
+                        className={`inline-flex items-center gap-1.5 text-xs ${className}`}
+                      >
+                        <Icon className="size-3.5" aria-hidden />
+                        {vendorResponse.label}
+                      </span>
+                    );
+
+                    if (!vendorResponse.href) {
+                      return (
+                        <span key={vendorResponse.label}>{response}</span>
+                      );
+                    }
+
+                    return (
+                      <Link
+                        key={`${vendorResponse.label}-${vendorResponse.href}`}
+                        href={vendorResponse.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Open vendor reference for ${group.product}`}
+                        className="underline-offset-4 hover:underline"
+                      >
+                        {response}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <span className="shrink-0 text-xs text-muted-foreground">
+                {group.items.length}{" "}
+                {group.items.length === 1 ? "finding" : "findings"}
+              </span>
+            </header>
+
+            <div className="divide-y divide-border/50">
+              {group.items.map((cve, index) => (
+                <div
+                  key={`${cve.id}-${cve.vulnerabilityType}-${index}`}
+                  className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-2 border-l-4 border-l-neutral-400 px-3 py-3 transition-colors hover:bg-muted/30 sm:grid-cols-[8.75rem_minmax(0,1fr)_5.25rem_auto] sm:items-center sm:px-4 dark:border-l-neutral-600"
+                >
+                  {linkedText(
+                    cve.href,
+                    <span className="inline-flex items-center gap-1">
+                      {cve.id}
+                      {cve.href && <ArrowUpRight className="size-3" />}
+                    </span>,
+                    "truncate text-xs font-medium text-foreground"
+                  )}
+
+                  <p className="col-span-2 text-sm leading-relaxed text-muted-foreground sm:col-span-1">
+                    {cve.vulnerabilityType}
+                  </p>
+
+                  <span className="text-xs font-medium text-foreground">
+                    <span className="text-muted-foreground">CVSS </span>
+                    {cve.cvss}
+                  </span>
+
+                  <Badge
+                    variant="outline"
+                    className={`justify-self-end rounded-none px-2 py-0.5 text-[10px] ${getStatusClassName(cve.status)}`}
+                  >
+                    {cve.status}
+                  </Badge>
+                </div>
+              ))}
             </div>
-            <div className="border-b border-border/60 px-3 py-3 sm:border-b-0 sm:border-r">
-              <div className="font-mono text-lg text-foreground">{reservedCount}</div>
-              <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Reserved</div>
-            </div>
-            <div className="border-r border-border/60 px-3 py-3">
-              <div className="font-mono text-lg text-foreground">{disclosedCount}</div>
-              <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Disclosed</div>
-            </div>
-            <div className="px-3 py-3">
-              <div className="font-mono text-lg text-foreground">{highestCvss}</div>
-              <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Max CVSS</div>
-            </div>
-          </div>
+          </article>
+        ))}
+      </div>
+
+      <div className="space-y-4">
+        <div className="border-b border-border/60 pb-3">
+          <h2 className="text-sm font-semibold text-foreground">
+            Research writeups
+          </h2>
         </div>
 
-        <div className="divide-y divide-border/50">
-          {groupedCves.map((group) => (
-            <div key={group.product} className="px-4 py-4 sm:px-5">
-              <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div className="min-w-0 space-y-2">
-                  <h3 className="text-sm font-medium text-foreground">{group.product}</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      ...new Map(
-                        group.items.map((item) => [
-                          `${item.vendorResponse}-${item.vendorResponseHref ?? ""}`,
-                          {
-                            label: item.vendorResponse,
-                            href: item.vendorResponseHref,
-                          },
-                        ])
-                      ).values(),
-                    ].map((vendorResponse) => {
-                      const badge = (
-                        <Badge
-                          variant="outline"
-                          className={`rounded-none px-2.5 py-1 text-[10px] ${getVendorResponseClassName(vendorResponse.label)}`}
-                        >
-                          Vendor: {vendorResponse.label}
-                          {vendorResponse.href && <ArrowUpRight className="h-3 w-3" />}
-                        </Badge>
-                      );
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {orderedResearchCards.map((item) => (
+            <Card
+              key={item.id}
+              className="group h-full gap-0 overflow-hidden rounded-none border-border/70 py-0 shadow-none transition-colors hover:bg-muted/30"
+            >
+              <CardHeader className="space-y-2 px-4 pt-4 pb-0 sm:px-5">
+                <time className="text-[10px] text-muted-foreground">
+                  {formatDate(item.date)}
+                </time>
 
-                      if (!vendorResponse.href) {
-                        return <span key={vendorResponse.label}>{badge}</span>;
-                      }
+                <CardTitle className="line-clamp-2 text-base leading-tight">
+                  {item.title}
+                </CardTitle>
 
-                      return (
-                        <Link
-                          key={`${vendorResponse.label}-${vendorResponse.href}`}
-                          href={vendorResponse.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={`Open vendor reference for ${group.product}`}
-                        >
-                          {badge}
-                        </Link>
-                      );
-                    })}
-                  </div>
+                <p className="line-clamp-4 text-[13px] leading-relaxed text-muted-foreground">
+                  {item.description}
+                </p>
+              </CardHeader>
+
+              <CardContent className="mt-auto px-4 pt-4 pb-4 sm:px-5">
+                <div className="flex flex-wrap gap-1.5">
+                  {item.tags.slice(0, 3).map((tag) => (
+                    <Badge
+                      key={tag}
+                      variant="outline"
+                      className="rounded-none border-border bg-background px-2 py-0.5 text-[9px] text-muted-foreground"
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
                 </div>
 
-                <span className="shrink-0 font-mono text-[11px] text-muted-foreground">
-                  {group.items.length} {group.items.length === 1 ? "finding" : "findings"}
-                </span>
-              </div>
-
-              <div className="divide-y divide-border/40 border-l border-border/60">
-                {group.items.map((cve, index) => (
-                  <div
-                    key={`${cve.id}-${cve.vulnerabilityType}-${index}`}
-                    className="px-4 py-3 transition-colors hover:bg-background/70"
+                {item.href && (
+                  <Link
+                    href={item.href}
+                    className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-foreground underline-offset-4 hover:underline"
                   >
-                    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                      <div className="min-w-0 space-y-1">
-                        {linkedText(
-                          cve.href,
-                          <span className="inline-flex items-center gap-1">
-                            {cve.id}
-                            {cve.href && <ArrowUpRight className="h-3 w-3" />}
-                          </span>,
-                          "font-mono text-xs text-foreground"
-                        )}
-
-                        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-                          {cve.vulnerabilityType}
-                        </p>
-                      </div>
-
-                      <div className="flex shrink-0 flex-wrap items-center gap-2 md:justify-end">
-                        <span className={`font-mono text-xs font-semibold ${getCvssClassName(cve.cvss)}`}>
-                          CVSS {cve.cvss}
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className={`rounded-none px-2.5 py-1 text-[10px] ${getStatusClassName(cve.status)}`}
-                        >
-                          {cve.status}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+                    Read writeup
+                    <ArrowUpRight className="size-3.5" />
+                  </Link>
+                )}
+              </CardContent>
+            </Card>
           ))}
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {sortedResearchCards.map((item) => (
-          <Card
-            key={item.id}
-            className="
-              group
-              relative
-              h-full
-              overflow-hidden
-              rounded-none
-              border border-neutral-200/80
-              bg-linear-to-b from-neutral-50 to-neutral-100/60
-              py-0
-              shadow-[0_16px_40px_-28px_rgba(2,6,23,0.35)]
-              transition-all duration-300 ease-out
-              hover:-translate-y-1
-              hover:border-neutral-300
-              hover:shadow-[0_26px_70px_-35px_rgba(2,6,23,0.5)]
-              dark:border-neutral-800/90
-              dark:from-neutral-900/95
-              dark:to-neutral-950/95
-              dark:hover:border-neutral-700
-              dark:hover:shadow-[0_30px_80px_-35px_rgba(255,255,255,0.16)]
-            "
-          >
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_-20%,rgba(255,255,255,0.12),transparent_45%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-            />
-
-            <CardHeader className="relative space-y-2 px-4 pt-4 pb-0 sm:px-5">
-              <time className="inline-flex w-fit rounded-none border border-neutral-200 bg-white/80 px-2 py-0.5 font-sans text-[10px] text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900/70 dark:text-neutral-300">
-                {formatDate(item.date)}
-              </time>
-
-              <CardTitle className="line-clamp-2 text-base leading-tight">
-                {item.title}
-              </CardTitle>
-
-              <p className="line-clamp-5 font-sans text-[13px] leading-relaxed text-muted-foreground">
-                {item.description}
-              </p>
-            </CardHeader>
-
-            <CardContent className="relative mt-auto flex flex-col px-4 pb-1 sm:px-5">
-              <div className="mt-1 flex flex-wrap gap-1">
-                {item.tags.map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant="outline"
-                    className="rounded-none border-neutral-200 bg-white/70 px-2 py-0.5 text-[9px] font-medium text-neutral-700 dark:border-neutral-700 dark:bg-neutral-900/65 dark:text-neutral-200"
-                  >
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-
-            <CardFooter className="relative px-4 pb-3 pt-1 sm:px-5">
-              {item.href && (
-                <Link href={item.href}>
-                  <Badge
-                    variant="outline"
-                    className="rounded-none border-neutral-300 bg-white px-2.5 py-1 text-[10px] font-semibold text-neutral-800 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800"
-                  >
-                    Open Research
-                    <ArrowUpRight className="h-3.5 w-3.5" />
-                  </Badge>
-                </Link>
-              )}
-            </CardFooter>
-          </Card>
-        ))}
       </div>
     </section>
   );

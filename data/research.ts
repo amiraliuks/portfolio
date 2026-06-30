@@ -140,8 +140,8 @@ export const researchCards: ResearchCard[] = [
     title: "Next.js App Router: Path Normalization Middleware Bypass",
     date: "2026-05-17",
     description:
-      "Patch-bypass in Next.js App Router (affecting v16.2.6). Discovered that segment-prefetch transport requests (`.segments/.../.segment.rsc`) failed to undergo proper canonical pathname normalization prior to execution, allowing unauthenticated routing bypasses and static RSC layout data leaks despite existing middleware authentication controls.",
-    tags: ["Web Security", "Next.js", "Middleware Bypass", "Path Normalization", "Information Disclosure"],
+      "Not public yet, to be disclosed.",
+    tags: ["Web Security", "Next.js", "Information Disclosure"],
     href: "https://github.com/amiraliuks",
   },
 ];
