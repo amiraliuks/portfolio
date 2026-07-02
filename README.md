@@ -1,8 +1,50 @@
-# Amir Aliu Portfolio
+# Amir Aliu - Portfolio & Research Log
 
-This is my personal portfolio site built with Next.js.
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
+![React](https://img.shields.io/badge/React-19-61DAFB)
 
-It is both a public profile and a living archive of what I ship: projects, certifications, research, CTF writeups, and security-focused work.
+A personal portfolio and research log built with Next.js, markdown-driven content, bilingual (EN/AL) blog, dark/light theming, and SEO handled out of the box. Open-sourced so other students and professionals in dev/security don't have to build one from zero.
+
+**Live:** [amiraliu.vercel.app](https://amiraliu.vercel.app) · **Fork it and make it yours**, see [Making it yours](#making-it-yours) below.
+
+## Screenshots
+
+<table>
+<tr>
+<td width="50%"><img src="screenshots/home-page.png" alt="Home page"/><br/><sub align="center">Home</sub></td>
+<td width="50%"><img src="screenshots/research-page.png" alt="Research page"/><br/><sub>Research - CVE/disclosure tracking</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="screenshots/blog-slug-page.png" alt="Blog post page"/><br/><sub>Blog post - TOC, reading progress, MDX</sub></td>
+<td width="50%"><img src="screenshots/projects-page.png" alt="Projects page"/><br/><sub>Projects - filterable, categorized</sub></td>
+</tr>
+</table>
+
+<details>
+<summary>More screenshots (About, Blog index, Project detail, Writeups, Writeup detail, Certifications)</summary>
+<br/>
+
+<table>
+<tr>
+<td width="50%"><img src="screenshots/about-page.png" alt="About page"/><br/><sub>About</sub></td>
+<td width="50%"><img src="screenshots/blog-page.png" alt="Blog index page"/><br/><sub>Blog index</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="screenshots/project-slug-page.png" alt="Project detail page"/><br/><sub>Project detail</sub></td>
+<td width="50%"><img src="screenshots/writeups-page.png" alt="Writeups index page"/><br/><sub>Writeups index</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="screenshots/writeup-slug-page.png" alt="Writeup detail page"/><br/><sub>Writeup detail</sub></td>
+<td width="50%"><img src="screenshots/certifications-page.png" alt="Certifications page"/><br/><sub>Certifications</sub></td>
+</tr>
+</table>
+
+</details>
+
+## Why I built this
+
+Most portfolio templates look generic and don't leave room for an actual body of work. I wanted something closer to a researcher's logbook, CVE tracking, CTF writeups, bilingual blog posts, projects, certs, all in one place, written in plain markdown instead of fought through a CMS. Open-sourcing it so other students and early-career devs/researchers have a real starting point instead of a blank repo.
 
 ## What is included
 - Home page with:
@@ -48,16 +90,46 @@ It is both a public profile and a living archive of what I ship: projects, certi
 - Vercel Analytics + Speed Insights
 - Playwright for E2E tests
 
-## Run locally
+## Making it yours
+
+If you're forking this to build your own portfolio, work through this checklist:
+
+- [ ] Replace personal data in `data/*` (projects, certifications, experience, metadata, tech stack)
+- [ ] Update `baseUrl` in `app/sitemap.ts` to your own domain
+- [ ] Regenerate metadata/OG values (titles, descriptions, social images) to match your own info
+- [ ] Swap assets in `public/icons`, `public/brand`, and page-specific media folders with your own
+- [ ] Update social/profile links (GitHub, LinkedIn, resume, etc.)
+- [ ] Replace or clear out `content/blog-posts/` and `content/writeups/` and add your own MDX content
+- [ ] Set up your own Vercel Analytics/Speed Insights project, or remove those packages if you don't want analytics
+- [ ] Update the `LICENSE` copyright name/year if you want it under your own name too
+
+## Getting started
+
+**Requirements:** Node.js 20+ (required for Next.js 16 / React 19)
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open: `http://localhost:3000`
+Open `http://localhost:3000`
 
-## Scripts
+**Environment variables:** none required for local dev. Vercel Analytics/Speed Insights activate automatically when deployed on Vercel and don't need local config.
+
+## Deploy
+
+The site is built for Vercel. Click below to deploy your own copy (update the URL to point at your fork once it's pushed):
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/amiraliuks/portfolio)
+
+Or build manually:
+
+```bash
+npm run build
+```
+
+<details>
+<summary>Scripts</summary>
 
 ```bash
 npm run dev
@@ -76,7 +148,11 @@ npm run test:e2e
 npm run test:e2e:headed
 ```
 
-## Content notes
+</details>
+
+<details>
+<summary>Content notes</summary>
+
 Blog posts are stored in `content/blog-posts/*.mdx`.
 
 CTF writeups are stored in `content/writeups/*.mdx`.
@@ -92,7 +168,11 @@ Supported frontmatter fields include:
 - `translationKey`
 - `heroFit` (`cover` or `contain`)
 
-## Project structure (high-level)
+</details>
+
+<details>
+<summary>Project structure (high-level)</summary>
+
 - `app/` - routes and page-level metadata
 - `components/` - UI and feature components
   - `components/layout/` - navbar, footer, theme provider, progress bar
@@ -111,15 +191,12 @@ Supported frontmatter fields include:
 - `scripts/` - content/SEO/image validation scripts
 - `tests/` - Playwright E2E tests
 
-## Deploy
-The site is deployed on Vercel.
+</details>
 
-Any push can be built with:
+## License
 
-```bash
-npm run build
-```
+MIT - see [LICENSE](LICENSE). Free to fork, modify, and use for your own portfolio.
 
----
+## Acknowledgments
 
-If you are forking this repo, replace the personal data in `data/*`, update `baseUrl` in `app/sitemap.ts`, and regenerate metadata/OG values to match your own domain.
+Built with [Next.js](https://nextjs.org), [shadcn/ui](https://ui.shadcn.com), [Radix UI](https://www.radix-ui.com), and deployed on [Vercel](https://vercel.com).
