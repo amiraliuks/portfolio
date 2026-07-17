@@ -117,7 +117,7 @@ export default function ResearchSection() {
           Vulnerability disclosures
         </h2>
         <span className="text-xs text-muted-foreground">
-          Updated May 2026
+          Updated July 2026
         </span>
       </div>
 

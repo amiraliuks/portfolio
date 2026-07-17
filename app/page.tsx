@@ -3,6 +3,7 @@ import MainContent from '@/components/sections/MainContent';
 import { getBlogListingPosts } from '@/lib/getBlogs';
 import { projects } from '@/data/projects';
 import { certifications } from '@/data/certifications';
+import { cves } from '@/data/research';
 
 export const metadata: Metadata = {
   title: {
@@ -66,7 +67,7 @@ export default function HomePage() {
   const metrics = [
     { label: "Projects", value: projects.length },
     { label: "Certifications", value: certifications.length },
-    { label: "Findings", value: 6, href: "/research" },
+    { label: "Findings", value: cves.length, href: "/research" },
     { label: "Blog Posts", value: posts.length },
   ];
 

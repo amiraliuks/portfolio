@@ -4,8 +4,8 @@ publishedAt: "2026-03-31"
 public: false
 language: "en"
 translationKey: "breaking-into-my-own-ip-camera"
-tags: IoT Security, Vulnerability Research, Network Security, Reverse Engineering, API Security
-summary: "Analyzing a cheap IP camera led to unauthenticated access to sensitive endpoints, credential disclosure, and full device compromise."
+tags: IoT Security, Vulnerability Research, CVE, Network Security, Reverse Engineering, API Security
+summary: "Six assigned CVEs in a Fullhan-based IP camera cover unauthenticated API access, credential disclosure, command injection, and full device compromise."
 image: "/blog-posts/home-camera-research/camera.png"
 ---
 
@@ -38,6 +38,19 @@ The Camera I Own           |  The JX-F37P Image Sensor
 ![](/blog-posts/home-camera-research/camera.png)  |  ![](/blog-posts/home-camera-research/JX-F37P-Sensor.webp)
 
 The camera (this one atleast) uses the JX-F37P image sensor, a cheap 2MP/1080p@30fps over MIPI.
+
+# CVE Assignments
+
+MITRE assigned six CVE IDs to the findings in this research. The CVSS v3.1 scores below are my assessments based on an attacker reaching the camera from the adjacent local network; the CVE records were reserved at the time of this update.
+
+| CVE ID | Finding | CVSS v3.1 |
+| --- | --- | --- |
+| **CVE-2026-51402** | Unauthenticated blind OS command injection through the custom `<SYSTEM>` protocol on TCP port 1300 | **8.8** (`CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H`) |
+| **CVE-2026-51403** | Unauthenticated read/write access to PSIA API endpoints | **8.8** (`CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H`) |
+| **CVE-2026-51404** | Unauthenticated live snapshots through `/snapshot.jpg` on TCP port 6688 | **6.5** (`CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N`) |
+| **CVE-2026-51405** | BusyBox Telnet enabled by default, exposing an interactive root shell when chained with the credential or command-injection findings | **8.8** (`CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H`) |
+| **CVE-2026-51406** | Unauthenticated plaintext credential disclosure through `/PSIA/Security/AAA/users` | **6.5** (`CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N`) |
+| **CVE-2026-51407** | Plaintext Wi-Fi credentials stored in `/app/userdata/ifcfg.wlan0` | **7.4** (`CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N`) |
 
 # First Look
 
@@ -517,14 +530,13 @@ Because this exact firmware is reused across a lot of cheap cameras. Publishing 
 # Vulnerability Summary
 
 It's a chain of problems that together leads you to full device comporomise (including your network if you bother enough to check).
-- Unauthenticated access to API Endpoints.
-- Plaintext credential exposure (`/PSIA/Security/AAA/users`)
-- No access control on `read/write operations`
-- Exposed camera feed (via `snapshot.jpg`)
-- Blind command execution via custom protocol (port 1300)
-- Telnet enabled by default
+- Blind command execution via the custom protocol on port 1300 (**CVE-2026-51402**)
+- No access control on PSIA API read/write operations (**CVE-2026-51403**)
+- Exposed camera feed via `snapshot.jpg` (**CVE-2026-51404**)
+- Telnet enabled by default (**CVE-2026-51405**)
+- Plaintext credential exposure through `/PSIA/Security/AAA/users` (**CVE-2026-51406**)
+- Sensitive Wi-Fi credentials stored in plaintext (**CVE-2026-51407**)
 - Weak credential handling (`/app/shadow` to `/etc/shadow`)
-- Sensitive data stored in plaintext (Wi-Fi config, system data)
 
 # Vulnerability Classification
 
