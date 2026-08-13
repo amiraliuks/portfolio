@@ -22,17 +22,6 @@ const experience = [
   },
 
   {
-    id: 2,
-    role: "Contributor",
-    company: "FLOSSK",
-    url: "https://flossk.org/",
-    start: "2026",
-    end: "Present",
-    description:
-      "- Participated in community events and technical initiatives.",
-  },
-
-  {
     id: 3,
     role: "Core Member",
     company: "KSAL Cyber Team",

@@ -4,6 +4,7 @@ export interface Certification {
   href?: string;
   live?: string;
   course?: string;
+  showCourse?: boolean;
   certificateOne?: string;
   certificateTwo?: string;
   badgeImage?: string;
@@ -637,6 +638,30 @@ const certifications: Certification[] = [
       'Network Auditing',
       'Wi-Fi Pentesting',
       'Workshop Participation',
+    ],
+  },
+
+  {
+    id: 20,
+    title: 'IPKO National CTF Final Phase 2026',
+    course: 'https://www.linkedin.com/company/kosova-cyber-team/',
+    createdAt: '14-08-2026',
+    description:
+      'Reached the Top 10 in the finals of Kosovo\'s National Cybersecurity Championship with Kosova Cyber Team, competing in an intense multi-round exercise at the IPKO Telecommunications venue. The event was a strong test of practical attack-response thinking, fast analysis, and calm collaboration under pressure.',
+    skills: [
+      'High-pressure competition strategy',
+      'Live cybersecurity challenge participation',
+      'Team-based incident and defense planning',
+      'Technical collaboration in finals environment',
+      'Problem-solving under time constraints',
+      'Networked communication and teamwork'
+    ],
+    badge: [
+      'CTF Competition',
+      'CTF Participation',
+      'National Cybersecurity Finals',
+      'Top 10 Finalist',
+      'Kosova Cyber Team'
     ],
   },
 

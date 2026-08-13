@@ -147,7 +147,7 @@ export default function MainContent({ metrics, featuredPosts }: MainContentProps
 
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" asChild>
                 <a
-                  href="https://profile.hackthebox.com/profile/019c6c5f-08c7-7145-a968-c11ebb264445"
+                  href="https://app.hackthebox.com/users/830466"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Open Hack The Box profile"

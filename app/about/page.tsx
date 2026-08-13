@@ -126,7 +126,7 @@ export default function AboutPage() {
     { label: "LinkedIn", href: "https://www.linkedin.com/in/amiraliu/", note: "Professional profile" },
     {
       label: "Hack The Box",
-      href: "https://profile.hackthebox.com/profile/019c6c5f-08c7-7145-a968-c11ebb264445",
+      href: "https://app.hackthebox.com/users/830466",
       note: "Hands-on labs and challenges",
     },
     { label: "TryHackMe", href: "https://tryhackme.com/p/amiraliu", note: "Learning paths and CTF practice" },

@@ -1,7 +1,14 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Twitter, Linkedin, Facebook } from "lucide-react";
+import { 
+  CalendarDays,
+  Clock3,
+  Twitter,
+  Linkedin,
+  Facebook,
+  Share2,
+} from "lucide-react";
 
 import { CustomMDX } from "@/components/mdx";
 import { BlogReadingProgress } from "@/components/blog/BlogReadingProgress";
@@ -76,6 +83,10 @@ function getRelatedPosts(currentPost: BlogPost) {
   const finalPool = withSharedTags.length > 0 ? withSharedTags : languagePool;
 
   return finalPool.slice(0, RELATED_POST_LIMIT).map((item) => item.post);
+}
+
+function formatReadingTime(readingTime: number) {
+  return `${readingTime} ${readingTime === 1 ? "min" : "mins"}`;
 }
 
 export async function generateStaticParams() {
@@ -244,11 +255,12 @@ export default async function Writeup({ params }: WriteupPageProps) {
   const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
     postUrl
   )}`;
+  const writeupTags = post.metadata.tags ?? [];
 
   return (
     <article
       data-blog-post="true"
-      className="mx-auto w-full max-w-6xl px-4 pb-24 pt-16 sm:px-6 lg:px-10"
+      className="relative mx-auto w-full max-w-6xl px-4 pb-24 pt-12 sm:px-6 lg:px-8"
     >
       <BlogReadingProgress />
 
@@ -267,46 +279,66 @@ export default async function Writeup({ params }: WriteupPageProps) {
         }}
       />
 
-      <header className="mb-12">
-        <h1 className="mb-6 text-3xl font-bold leading-[1.15] tracking-tight md:text-4xl">
-          {post.metadata.title}
-        </h1>
-
-        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-          <span>Amir Aliu</span>
-          <span>|</span>
-          <span>{formatDate(post.metadata.publishedAt)}</span>
-          <span>|</span>
-          <span>
-            {readingTime} {readingTime === 1 ? "min" : "mins"} read
-          </span>
+      <header className="mb-12 border border-border/70">
+        <div className="border-b border-border/70 bg-muted/40 px-4 py-3 text-xs uppercase tracking-[0.16em] text-muted-foreground">
+          Writeup Dossier
         </div>
+        <div className="space-y-6 px-5 py-6 sm:px-8 sm:py-8">
+          <h1 className="text-3xl font-bold leading-tight tracking-tight md:text-4xl">
+            {post.metadata.title}
+          </h1>
 
-        {hasLanguageSwitch && (
-          <div className="mt-5 flex items-center gap-2">
-            <span className="text-xs uppercase tracking-wide text-muted-foreground">Language</span>
-            <Link
-              href={`/writeups/${englishSlug}`}
-              className={`rounded-none border px-3 py-1 text-xs font-medium transition ${
-                currentLanguage === "en"
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-              }`}
-            >
-              EN
-            </Link>
-            <Link
-              href={`/writeups/${albanianSlug}`}
-              className={`rounded-none border px-3 py-1 text-xs font-medium transition ${
-                currentLanguage === "al"
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-              }`}
-            >
-              AL
-            </Link>
+          <div className="grid gap-2 sm:grid-cols-3">
+            <div className="rounded-none border border-border/70 bg-muted/10 px-3 py-2">
+              <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Published</p>
+              <p className="mt-1 inline-flex items-center gap-2 text-sm text-foreground">
+                <CalendarDays size={14} aria-hidden />
+                {formatDate(post.metadata.publishedAt)}
+              </p>
+            </div>
+
+            <div className="rounded-none border border-border/70 bg-muted/10 px-3 py-2">
+              <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Read Time</p>
+              <p className="mt-1 inline-flex items-center gap-2 text-sm text-foreground">
+                <Clock3 size={14} aria-hidden />
+                {formatReadingTime(readingTime)} read
+              </p>
+            </div>
+
+            <div className="rounded-none border border-border/70 bg-muted/10 px-3 py-2">
+              <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Author</p>
+              <p className="mt-1 text-sm text-foreground">Amir Aliu</p>
+            </div>
           </div>
-        )}
+
+          {hasLanguageSwitch && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                Language
+              </span>
+              <Link
+                href={`/writeups/${englishSlug}`}
+                className={`rounded-none border px-3 py-1 text-xs font-medium transition ${
+                  currentLanguage === "en"
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                }`}
+              >
+                EN
+              </Link>
+              <Link
+                href={`/writeups/${albanianSlug}`}
+                className={`rounded-none border px-3 py-1 text-xs font-medium transition ${
+                  currentLanguage === "al"
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                }`}
+              >
+                AL
+              </Link>
+            </div>
+          )}
+        </div>
       </header>
 
       <div className="mb-8 flex flex-wrap items-center gap-3">
@@ -320,11 +352,11 @@ export default async function Writeup({ params }: WriteupPageProps) {
             rounded-none border border-border
             px-3 py-1.5 text-xs
             transition-all duration-200
-            hover:bg-accent
+            hover:bg-accent hover:text-accent-foreground
           "
         >
           <Twitter size={14} />
-          Share
+          Share on X
         </a>
 
         <a
@@ -337,11 +369,11 @@ export default async function Writeup({ params }: WriteupPageProps) {
             rounded-none border border-border
             px-3 py-1.5 text-xs
             transition-all duration-200
-            hover:bg-accent
+            hover:bg-accent hover:text-accent-foreground
           "
         >
           <Linkedin size={14} />
-          Share
+          Share on LinkedIn
         </a>
 
         <a
@@ -354,12 +386,20 @@ export default async function Writeup({ params }: WriteupPageProps) {
             rounded-none border border-border
             px-3 py-1.5 text-xs
             transition-all duration-200
-            hover:bg-accent
+            hover:bg-accent hover:text-accent-foreground
           "
         >
           <Facebook size={14} />
-          Share
+          Share on Facebook
         </a>
+
+        {writeupTags.length > 0 && (
+          <div className="ml-auto inline-flex items-center gap-2 rounded-none border border-dashed border-border/80 px-3 py-1.5 text-xs text-muted-foreground">
+            <Share2 size={14} />
+            {writeupTags[0]}
+            {writeupTags.length > 1 ? ` +${writeupTags.length - 1}` : ""}
+          </div>
+        )}
       </div>
 
       {post.metadata.image && (
@@ -389,11 +429,16 @@ export default async function Writeup({ params }: WriteupPageProps) {
       <div className="grid items-start gap-10 xl:grid-cols-[minmax(0,1fr)_15rem]">
         <div
           data-blog-content="true"
-          className="prose prose-lg max-w-none min-w-0 prose-neutral dark:prose-invert"
+          className="prose prose-lg max-w-none min-w-0 rounded-none border border-border/70 bg-muted/10 p-7 prose-neutral dark:prose-invert"
         >
+          <div className="mb-6 border-l-4 border-foreground pl-3 text-sm font-medium tracking-wide text-muted-foreground">
+            Writeup notes
+          </div>
           <CustomMDX source={contentForRender} />
         </div>
-        <BlogTableOfContents headings={tableOfContents} />
+        <div className="xl:sticky xl:top-8">
+          <BlogTableOfContents headings={tableOfContents} />
+        </div>
       </div>
 
       {challengePosts.length > 0 && (
@@ -402,7 +447,9 @@ export default async function Writeup({ params }: WriteupPageProps) {
 
       {relatedPosts.length > 0 && (
         <section className="mt-12">
-          <h2 className="text-lg font-semibold tracking-tight">Related Writeups</h2>
+          <div className="mb-4 inline-flex items-center rounded-none border border-border/70 bg-muted/40 px-3 py-1.5 text-xs uppercase tracking-[0.16em] text-muted-foreground">
+            Related Writeups
+          </div>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {relatedPosts.map((relatedPost) => {
               const relatedSummary =
@@ -414,7 +461,7 @@ export default async function Writeup({ params }: WriteupPageProps) {
                 <Link
                   key={relatedPost.slug}
                   href={`/writeups/${relatedPost.slug}`}
-                  className="group rounded-none border border-border/70 bg-muted/20 p-4 transition hover:border-border hover:bg-muted/35"
+                  className="group rounded-none border border-border/70 bg-muted/15 p-4 transition hover:border-foreground/30 hover:bg-muted/35"
                 >
                   <p className="text-xs text-muted-foreground">
                     {formatDate(relatedPost.metadata.publishedAt)} | {relatedReadingTime}{" "}
@@ -424,7 +471,9 @@ export default async function Writeup({ params }: WriteupPageProps) {
                     {relatedPost.metadata.title}
                   </h3>
                   {relatedSummary ? (
-                    <p className="mt-2 line-clamp-3 text-xs text-muted-foreground">{relatedSummary}</p>
+                    <p className="mt-2 line-clamp-3 text-xs text-muted-foreground">
+                      {relatedSummary}
+                    </p>
                   ) : null}
                 </Link>
               );
@@ -433,24 +482,24 @@ export default async function Writeup({ params }: WriteupPageProps) {
         </section>
       )}
 
-      <aside className="mt-12 rounded-none border border-border/70 bg-muted/20 p-4 sm:p-5">
+      <aside className="mt-12 border border-border/70 bg-muted/10 p-5 sm:p-6">
         <p className="text-xs uppercase tracking-wide text-muted-foreground">Explore More</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link
             href="/projects"
-            className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+            className="rounded-none border border-border px-3 py-1.5 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
           >
             Related Projects
           </Link>
           <Link
             href="/certifications"
-            className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+            className="rounded-none border border-border px-3 py-1.5 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
           >
             Security Certifications
           </Link>
           <Link
             href="/writeups"
-            className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+            className="rounded-none border border-border px-3 py-1.5 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
           >
             Back to Writeups
           </Link>

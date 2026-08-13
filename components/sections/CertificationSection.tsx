@@ -283,7 +283,7 @@ function CertificationsSection() {
                               </div>
                             )}
 
-                            <div className="space-y-3">
+                          <div className="space-y-3">
                               <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground/70">
                                 Areas
                               </h4>
@@ -300,7 +300,9 @@ function CertificationsSection() {
                             </div>
 
                             <div className="flex flex-wrap items-center gap-4 pt-1">
-                              {certification.course && (
+                              {certification.course &&
+                                (certification.showCourse ??
+                                  certification.category === 'professional') && (
                                 <a
                                   href={certification.course}
                                   target="_blank"

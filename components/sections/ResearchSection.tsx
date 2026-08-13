@@ -52,19 +52,23 @@ function getVendorResponsePresentation(vendorResponse: string) {
   };
 }
 
+function getWriteupInfo(writeupHref?: string) {
+  return writeupHref
+    ? {
+        label: "Writeup available",
+        href: writeupHref,
+      }
+    : {
+        label: "Writeup not available",
+      };
+}
+
 export default function ResearchSection() {
   const orderedResearchCards = [...researchCards].sort(
     (a, b) =>
       getResearchDisplayOrder(a.href) - getResearchDisplayOrder(b.href)
   );
 
-  const numericCvssScores = cves
-    .map((cve) => Number.parseFloat(cve.cvss))
-    .filter(Number.isFinite);
-  const highestCvss =
-    numericCvssScores.length > 0
-      ? Math.max(...numericCvssScores).toFixed(1)
-      : "TBD";
   const reservedCount = cves.filter(
     (cve) => cve.status === "Reserved"
   ).length;
@@ -117,16 +121,15 @@ export default function ResearchSection() {
           Vulnerability disclosures
         </h2>
         <span className="text-xs text-muted-foreground">
-          Updated July 2026
+          Updated August 2026
         </span>
       </div>
 
-      <dl className="grid grid-cols-4 border border-border/70">
+      <dl className="grid grid-cols-3 border border-border/70">
         {[
           ["Findings", cves.length],
           ["Reserved", reservedCount],
           ["Disclosed", disclosedCount],
-          ["Max CVSS", highestCvss],
         ].map(([label, value], index) => (
           <div
             key={label}
@@ -154,44 +157,77 @@ export default function ResearchSection() {
                 </h3>
                 <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1">
                   {[
-                    ...new Map(
-                      group.items.map((item) => [
-                        `${item.vendorResponse}-${item.vendorResponseHref ?? ""}`,
-                        {
+                    ...group.items.reduce((acc, item) => {
+                      const key = `${item.vendorResponse}-${item.vendorResponseHref ?? ""}`;
+                      const existing = acc.get(key);
+
+                      if (!existing) {
+                        acc.set(key, {
                           label: item.vendorResponse,
                           href: item.vendorResponseHref,
-                        },
-                      ])
-                    ).values(),
+                          writeupHref: item.writeupHref,
+                        });
+                      } else if (!existing.writeupHref && item.writeupHref) {
+                        existing.writeupHref = item.writeupHref;
+                      }
+
+                      return acc;
+                    }, new Map<string, { label: string; href?: string; writeupHref?: string }>())
+                      .values(),
                   ].map((vendorResponse) => {
                     const { Icon, className } =
                       getVendorResponsePresentation(vendorResponse.label);
-                    const response = (
-                      <span
-                        className={`inline-flex items-center gap-1.5 text-xs ${className}`}
+                    const writeup = getWriteupInfo(vendorResponse.writeupHref);
+                    const writeupElement = writeup.href ? (
+                      <Link
+                        href={writeup.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
                       >
-                        <Icon className="size-3.5" aria-hidden />
-                        {vendorResponse.label}
+                        {writeup.label}
+                        <ArrowUpRight className="size-3" />
+                      </Link>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                        {writeup.label}
                       </span>
                     );
 
                     if (!vendorResponse.href) {
                       return (
-                        <span key={vendorResponse.label}>{response}</span>
+                        <span
+                          key={vendorResponse.label}
+                          className="inline-flex items-center gap-2"
+                        >
+                          <span
+                            className={`inline-flex items-center gap-1.5 text-xs ${className}`}
+                          >
+                            <Icon className="size-3.5" aria-hidden />
+                            {vendorResponse.label}
+                          </span>
+                          {writeupElement}
+                        </span>
                       );
                     }
 
                     return (
-                      <Link
+                      <span
                         key={`${vendorResponse.label}-${vendorResponse.href}`}
-                        href={vendorResponse.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`Open vendor reference for ${group.product}`}
-                        className="underline-offset-4 hover:underline"
+                        className="inline-flex items-center gap-2"
                       >
-                        {response}
-                      </Link>
+                        <Link
+                          href={vendorResponse.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Open vendor reference for ${group.product}`}
+                          className={`inline-flex items-center gap-1.5 text-xs ${className} underline-offset-4 transition-colors hover:text-foreground hover:underline`}
+                        >
+                          <Icon className="size-3.5" aria-hidden />
+                          {vendorResponse.label}
+                        </Link>
+                        {writeupElement}
+                      </span>
                     );
                   })}
                 </div>

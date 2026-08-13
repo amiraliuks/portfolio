@@ -15,6 +15,7 @@ export interface CveEntry {
   vendorResponse: VendorResponseStatus;
   vendorResponseHref?: string;
   href?: string;
+  writeupHref?: string;
 }
 
 export interface ResearchCard {
@@ -28,64 +29,121 @@ export interface ResearchCard {
 
 export const cves: CveEntry[] = [
   {
-    id: "CVE-2026-XXXX",
+    id: "CVE-2026-73326",
     product: "Camaleon CMS",
-    vulnerabilityType: "Broken Access Control in Plugin Administration Routes",
-    cvss: "6.3",
-    status: "Reserved",
+    vulnerabilityType:
+      "Missing authorization to plugin administration endpoints affecting cache, meta-tag, and contact-form settings",
+    cvss: "7.6",
+    status: "Published",
     vendorResponse: "Fixed and credited",
     vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
     href: "/blog/camaleon-cms-cve",
+    writeupHref: "/blog/camaleon-cms-cve",
   },
   {
-    id: "CVE-2026-XXXX",
+    id: "CVE-2026-67616",
     product: "Camaleon CMS",
-    vulnerabilityType: "Stored XSS via Draft Post Title",
+    vulnerabilityType:
+      "Authenticated low-privileged users can create draft posts by bypassing role checks on the drafts endpoint",
+    cvss: "4.3",
+    status: "Published",
+    vendorResponse: "Fixed and credited",
+    vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
+    href: "/blog/camaleon-cms-cve",
+    writeupHref: "/blog/camaleon-cms-cve",
+  },
+  {
+    id: "CVE-2026-66748",
+    product: "Camaleon CMS",
+    vulnerabilityType:
+      "Authenticated users can execute arbitrary Ruby code through select_eval custom field command input",
+    cvss: "8.8",
+    status: "Published",
+    vendorResponse: "Fixed and credited",
+    vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
+    href: "/blog/camaleon-cms-cve",
+    writeupHref: "/blog/camaleon-cms-cve",
+  },
+  {
+    id: "CVE-2026-73329",
+    product: "Camaleon CMS",
+    vulnerabilityType:
+      "Stored XSS by injecting HTML in draft titles that is rendered in the admin drafts listing",
     cvss: "8.7",
-    status: "Reserved",
+    status: "Published",
     vendorResponse: "Fixed and credited",
     vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
     href: "/blog/camaleon-cms-cve",
+    writeupHref: "/blog/camaleon-cms-cve",
   },
   {
-    id: "CVE-2026-XXXX",
+    id: "CVE-2026-73330",
     product: "Camaleon CMS",
-    vulnerabilityType: "Authenticated RCE via instance_eval in Select Eval Custom Fields",
-    cvss: "7.2",
-    status: "Reserved",
-    vendorResponse: "Fixed and credited",
-    vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
-    href: "/blog/camaleon-cms-cve",
-  },
-  {
-    id: "CVE-2026-XXXX",
-    product: "Camaleon CMS",
-    vulnerabilityType: "Stored XSS via Contact Form previous_html Rendering",
-    cvss: "8.7",
-    status: "Reserved",
-    vendorResponse: "Fixed and credited",
-    vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
-    href: "/blog/camaleon-cms-cve",
-  },
-  {
-    id: "CVE-2026-XXXX",
-    product: "Camaleon CMS",
-    vulnerabilityType: "Authenticated SQL Injection via Slug Translations",
-    cvss: "6.5",
-    status: "Reserved",
-    vendorResponse: "Fixed and credited",
-    vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
-    href: "/blog/camaleon-cms-cve",
-  },
-  {
-    id: "CVE-2026-XXXX",
-    product: "Camaleon CMS",
-    vulnerabilityType: "Authenticated SSTI leading to RCE via render inline in test_email",
+    vulnerabilityType:
+      "Server-side template injection through the settings test_email action (ERB evaluated in email context)",
     cvss: "6.6",
-    status: "Reserved",
+    status: "Published",
     vendorResponse: "Fixed and credited",
     vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
     href: "/blog/camaleon-cms-cve",
+    writeupHref: "/blog/camaleon-cms-cve",
+  },
+  {
+    id: "CVE-2026-73331",
+    product: "Camaleon CMS",
+    vulnerabilityType:
+      "Authenticated SQL injection via crafted slug values in post create/edit flows",
+    cvss: "7.1",
+    status: "Published",
+    vendorResponse: "Fixed and credited",
+    vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
+    href: "/blog/camaleon-cms-cve",
+    writeupHref: "/blog/camaleon-cms-cve",
+  },
+  {
+    id: "CVE-2026-73332",
+    product: "Camaleon CMS",
+    vulnerabilityType:
+      "Stored XSS via unsanitized cama_contact_form before_html content in contact-form editing",
+    cvss: "8.7",
+    status: "Published",
+    vendorResponse: "Fixed and credited",
+    vendorResponseHref: "https://github.com/owen2345/camaleon-cms/releases/tag/2.9.2",
+    href: "/blog/camaleon-cms-cve",
+    writeupHref: "/blog/camaleon-cms-cve",
+  },
+  {
+    id: "CVE-2026-70552",
+    product: "MaxSite CMS",
+    vulnerabilityType:
+      "Unauthenticated access to admin-gated AJAX dispatch endpoints via header/path bypass",
+    cvss: "9.8",
+    status: "Published",
+    vendorResponse: "Fixed and credited",
+    vendorResponseHref: "https://max-3000.com/page/maxsite-cms-109-6",
+    href: "https://nvd.nist.gov/vuln/detail/CVE-2026-70552",
+  },
+  {
+    id: "CVE-2026-70553",
+    product: "MaxSite CMS",
+    vulnerabilityType:
+      "Unauthenticated persistent remote code execution via crafted install request payload",
+    cvss: "9.8",
+    status: "Published",
+    vendorResponse: "Fixed and credited",
+    vendorResponseHref: "https://max-3000.com/page/maxsite-cms-109-6",
+    href: "https://nvd.nist.gov/vuln/detail/CVE-2026-70553",
+  },
+  {
+    id: "CVE-2026-70554",
+    product: "MaxSite CMS",
+    vulnerabilityType:
+      "Unauthenticated PHP object injection through a crafted maxsite_comuser cookie value",
+    cvss: "9.8",
+    status: "Published",
+    vendorResponse: "Fixed and credited",
+    vendorResponseHref: "https://max-3000.com/page/maxsite-cms-109-6",
+    href: "https://nvd.nist.gov/vuln/detail/CVE-2026-70554",
   },
   {
     id: "CVE-2026-51402",
@@ -95,6 +153,7 @@ export const cves: CveEntry[] = [
     status: "Reserved",
     vendorResponse: "No vendor response",
     href: "/blog/breaking-into-my-own-camera",
+    writeupHref: "/blog/breaking-into-my-own-camera",
   },
   {
     id: "CVE-2026-51403",
@@ -104,6 +163,7 @@ export const cves: CveEntry[] = [
     status: "Reserved",
     vendorResponse: "No vendor response",
     href: "/blog/breaking-into-my-own-camera",
+    writeupHref: "/blog/breaking-into-my-own-camera",
   },
   {
     id: "CVE-2026-51404",
@@ -113,6 +173,7 @@ export const cves: CveEntry[] = [
     status: "Reserved",
     vendorResponse: "No vendor response",
     href: "/blog/breaking-into-my-own-camera",
+    writeupHref: "/blog/breaking-into-my-own-camera",
   },
   {
     id: "CVE-2026-51405",
@@ -122,6 +183,7 @@ export const cves: CveEntry[] = [
     status: "Reserved",
     vendorResponse: "No vendor response",
     href: "/blog/breaking-into-my-own-camera",
+    writeupHref: "/blog/breaking-into-my-own-camera",
   },
   {
     id: "CVE-2026-51406",
@@ -131,6 +193,7 @@ export const cves: CveEntry[] = [
     status: "Reserved",
     vendorResponse: "No vendor response",
     href: "/blog/breaking-into-my-own-camera",
+    writeupHref: "/blog/breaking-into-my-own-camera",
   },
   {
     id: "CVE-2026-51407",
@@ -140,6 +203,7 @@ export const cves: CveEntry[] = [
     status: "Reserved",
     vendorResponse: "No vendor response",
     href: "/blog/breaking-into-my-own-camera",
+    writeupHref: "/blog/breaking-into-my-own-camera",
   },
 ];
 
