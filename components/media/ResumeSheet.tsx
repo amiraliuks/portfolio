@@ -31,7 +31,7 @@ export function ResumeSheet() {
       <SheetTrigger asChild>
         <button
           type="button"
-          className="group cursor-pointer flex items-center gap-3 px-4 py-2.5 rounded-none border border-border bg-muted/30 hover:bg-muted/60 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          className="group flex cursor-pointer items-center gap-3 rounded-md border border-border bg-muted/30 px-4 py-2.5 transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <code className="font-mono text-sm text-foreground">Resume</code>
           <div className="pl-3 border-l border-border/50 ml-1">
@@ -46,7 +46,7 @@ export function ResumeSheet() {
           translate-x-[-50%] translate-y-[-50%]
           w-full max-w-4xl
           h-[80vh]
-          rounded-none
+          rounded-lg
           border
           shadow-2xl
           bg-background
@@ -78,7 +78,7 @@ export function ResumeSheet() {
                   location: "resume_sheet",
                 })
               }
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-muted hover:bg-muted/70 text-sm text-foreground transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-md border border-border/70 bg-muted px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-muted/70"
             >
               <ExternalLink className="h-4 w-4" />
               Open Resume in New Tab
@@ -93,7 +93,7 @@ export function ResumeSheet() {
                   location: "resume_sheet",
                 })
               }
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-muted hover:bg-muted/70 text-sm text-foreground transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-md border border-border/70 bg-muted px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-muted/70"
             >
               <Download className="h-4 w-4" />
               Download Resume

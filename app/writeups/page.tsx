@@ -74,7 +74,7 @@ export default function Page() {
       <div className="container mx-auto p-4 max-w-4xl">
         <h1 className="text-4xl font-bold mb-6">Writeups</h1>
         <p className="text-muted-foreground mb-6">
-          My writeups for CTFs I participate in solo or with the <a href="https://ksal.netlify.app/" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">
+          Writeups for CTFs that I participate in solo or with the <a href="https://ksal.team/" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">
             KSAL Cyber Team
           </a>.
         </p>

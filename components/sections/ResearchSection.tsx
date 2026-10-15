@@ -125,7 +125,7 @@ export default function ResearchSection() {
         </span>
       </div>
 
-      <dl className="grid grid-cols-3 border border-border/70">
+      <dl className="grid grid-cols-3 overflow-hidden rounded-lg border border-border/70">
         {[
           ["Findings", cves.length],
           ["Reserved", reservedCount],
@@ -149,7 +149,7 @@ export default function ResearchSection() {
 
       <div className="space-y-5">
         {groupedCves.map((group) => (
-          <article key={group.product} className="border border-border/70">
+          <article key={group.product} className="overflow-hidden rounded-lg border border-border/70">
             <header className="flex flex-col gap-2 border-b border-border/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <h3 className="text-sm font-medium text-foreground">
@@ -265,7 +265,7 @@ export default function ResearchSection() {
 
                   <Badge
                     variant="outline"
-                    className={`justify-self-end rounded-none px-2 py-0.5 text-[10px] ${getStatusClassName(cve.status)}`}
+                    className={`justify-self-end rounded-md px-2 py-0.5 text-[10px] ${getStatusClassName(cve.status)}`}
                   >
                     {cve.status}
                   </Badge>
@@ -285,10 +285,7 @@ export default function ResearchSection() {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {orderedResearchCards.map((item) => (
-            <Card
-              key={item.id}
-              className="group h-full gap-0 overflow-hidden rounded-none border-border/70 py-0 shadow-none transition-colors hover:bg-muted/30"
-            >
+            <Card key={item.id} className="group h-full gap-0 overflow-hidden rounded-lg border-border/70 py-0 shadow-none transition-colors hover:bg-muted/30">
               <CardHeader className="space-y-2 px-4 pt-4 pb-0 sm:px-5">
                 <time className="text-[10px] text-muted-foreground">
                   {formatDate(item.date)}
@@ -309,7 +306,7 @@ export default function ResearchSection() {
                     <Badge
                       key={tag}
                       variant="outline"
-                      className="rounded-none border-border bg-background px-2 py-0.5 text-[9px] text-muted-foreground"
+                      className="rounded-md border-border bg-background px-2 py-0.5 text-[9px] text-muted-foreground"
                     >
                       {tag}
                     </Badge>

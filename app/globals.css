@@ -380,8 +380,7 @@
   }
 
   .prose hr {
-    @apply relative my-12 h-px border-0 bg-gradient-to-r from-transparent via-border to-transparent;
-    overflow: visible;
+    @apply my-10 h-px border-0 bg-border;
   }
 
   .prose hr::after {

@@ -123,7 +123,7 @@ function CertificationsSection() {
 
   return (
     <section className="mx-auto max-w-3xl">
-      <div className="mb-8 grid grid-cols-3 border border-border/70 text-center">
+      <div className="mb-8 grid grid-cols-3 overflow-hidden rounded-md border border-border/70 text-center">
         <div className="border-r border-border/70 px-3 py-3">
           <div className="font-mono text-lg text-foreground">{counts.all}</div>
           <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Total</div>
@@ -145,7 +145,7 @@ function CertificationsSection() {
             type="button"
             onClick={() => setActiveFilter(filter.value)}
             aria-pressed={activeFilter === filter.value}
-            className={`border px-4 py-1.5 text-sm transition ${
+            className={`rounded-md border px-4 py-1.5 text-sm transition ${
               activeFilter === filter.value
                 ? 'border-foreground bg-foreground text-background'
                 : 'border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground'
@@ -175,7 +175,7 @@ function CertificationsSection() {
                   >
                     <span className="absolute -left-[25px] top-6 h-2 w-2 border border-border bg-background" />
 
-                    <div className="flex items-start justify-between gap-4 px-2 py-5 text-left transition-colors hover:bg-muted/5 sm:-mx-2">
+                    <div className="flex items-start justify-between gap-4 rounded-md px-2 py-5 text-left transition-colors hover:bg-muted/5 sm:-mx-2">
                       <button
                         type="button"
                         onClick={() => toggleExpand(certification.id)}
@@ -224,7 +224,7 @@ function CertificationsSection() {
                         <button
                           type="button"
                           onClick={() => toggleExpand(certification.id)}
-                          className="p-1 transition-colors hover:bg-muted"
+                          className="rounded-md p-1 transition-colors hover:bg-muted"
                           aria-label={
                             isExpanded
                               ? 'Collapse certification details'
@@ -291,7 +291,7 @@ function CertificationsSection() {
                                 {certification.badge.map((badge) => (
                                   <span
                                     key={badge}
-                                    className="bg-muted/50 px-2 py-1 font-mono text-xs text-muted-foreground"
+                                    className="rounded-sm bg-muted/50 px-2 py-1 font-mono text-xs text-muted-foreground"
                                   >
                                     {badge}
                                   </span>
@@ -388,7 +388,7 @@ function CertificationsSection() {
       </div>
 
       {filteredCerts.length === 0 && (
-        <div className="mt-6 border border-border bg-muted/25 p-5 text-center text-sm text-muted-foreground">
+        <div className="mt-6 rounded-lg border border-border bg-muted/25 p-5 text-center text-sm text-muted-foreground">
           No certifications matched this filter.
         </div>
       )}

@@ -305,7 +305,7 @@ export default async function Blog({ params }: BlogPageProps) {
           aria-label="Share this post on X"
           className="
             flex items-center gap-2
-            rounded-none border border-border
+            rounded-md border border-border
             px-3 py-1.5 text-xs
             transition-all duration-200
             hover:bg-accent
@@ -322,7 +322,7 @@ export default async function Blog({ params }: BlogPageProps) {
           aria-label="Share this post on LinkedIn"
           className="
             flex items-center gap-2
-            rounded-none border border-border
+            rounded-md border border-border
             px-3 py-1.5 text-xs
             transition-all duration-200
             hover:bg-accent
@@ -339,7 +339,7 @@ export default async function Blog({ params }: BlogPageProps) {
           aria-label="Share this post on Facebook"
           className="
             flex items-center gap-2
-            rounded-none border border-border
+            rounded-md border border-border
             px-3 py-1.5 text-xs
             transition-all duration-200
             hover:bg-accent
@@ -352,7 +352,7 @@ export default async function Blog({ params }: BlogPageProps) {
 
       {post.metadata.image && (
         <div
-          className={`mb-14 overflow-hidden rounded-none border border-border/60 ${
+          className={`mb-14 overflow-hidden rounded-md border border-border/60 ${
             heroFit === "cover" ? "bg-muted/30 p-0" : "bg-muted/20 p-2 sm:p-3"
           }`}
         >
@@ -398,7 +398,7 @@ export default async function Blog({ params }: BlogPageProps) {
                 <Link
                   key={relatedPost.slug}
                   href={`/blog/${relatedPost.slug}`}
-                  className="group rounded-none border border-border/70 bg-muted/20 p-4 transition hover:border-border hover:bg-muted/35"
+                  className="group rounded-md border border-border/70 bg-muted/20 p-4 transition hover:border-border hover:bg-muted/35"
                 >
                   <p className="text-xs text-muted-foreground">
                     {formatDate(relatedPost.metadata.publishedAt)} | {relatedReadingTime}{" "}
@@ -417,24 +417,24 @@ export default async function Blog({ params }: BlogPageProps) {
         </section>
       )}
 
-      <aside className="mt-12 rounded-none border border-border/70 bg-muted/20 p-4 sm:p-5">
+      <aside className="mt-12 rounded-md border border-border/70 bg-muted/20 p-4 sm:p-5">
         <p className="text-xs uppercase tracking-wide text-muted-foreground">Explore More</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link
             href="/projects"
-            className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+            className="rounded-md border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
           >
             Related Projects
           </Link>
           <Link
             href="/certifications"
-            className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+            className="rounded-md border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
           >
             Security Certifications
           </Link>
           <Link
             href="/blog"
-            className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+            className="rounded-md border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
           >
             Back to Blog
           </Link>

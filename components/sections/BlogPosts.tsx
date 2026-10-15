@@ -198,7 +198,7 @@ export function BlogPosts({
             setVisibleCount(PAGE_SIZE);
           }}
           placeholder="Search by title, summary, or tag..."
-          className="h-11 w-full rounded-none border border-border bg-background pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30"
+          className="h-11 w-full rounded-md border border-border bg-background pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30"
         />
       </div>
 
@@ -212,11 +212,11 @@ export function BlogPosts({
               setVisibleCount(PAGE_SIZE);
             }}
             aria-pressed={activeTag === null}
-            className={`px-4 py-1.5 text-sm rounded-none border transition
-              ${activeTag === null
-                ? "border-foreground bg-foreground text-background"
-                : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-              }`}
+            className={`px-4 py-1.5 text-sm rounded-md border transition
+            ${activeTag === null
+              ? "border-foreground bg-foreground text-background"
+              : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            }`}
           >
             All
           </button>
@@ -270,7 +270,7 @@ export function BlogPosts({
                 <Link
                   key={post.slug}
                   href={`${basePath}/${post.slug}`}
-                  className="group overflow-hidden rounded-none border border-border bg-card/70 transition duration-300 hover:-translate-y-0.5 hover:border-border hover:bg-accent/25"
+                  className="group overflow-hidden rounded-lg border border-border bg-card/70 transition duration-300 hover:-translate-y-0.5 hover:border-border hover:bg-accent/25"
                   onClick={() =>
                     trackEvent("blog_post_open", {
                       source: "blog_featured",
@@ -328,7 +328,7 @@ export function BlogPosts({
             <Link
               key={post.slug}
               href={`${basePath}/${post.slug}`}
-              className="group block rounded-none border border-transparent px-1 py-6 transition hover:border-border hover:bg-accent/25 sm:px-3"
+              className="group block rounded-md border border-transparent px-1 py-6 transition hover:border-border hover:bg-accent/25 sm:px-3"
               onClick={() =>
                 trackEvent("blog_post_open", {
                   source: "blog_list",

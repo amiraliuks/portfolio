@@ -60,7 +60,7 @@ export default function ProjectsSection() {
           type="button"
           onClick={() => setActiveFilter("all")}
           aria-pressed={activeFilter === "all"}
-          className={`shrink-0 rounded-none border px-2.5 py-1 text-xs transition ${
+          className={`shrink-0 rounded-xl border px-2.5 py-1 text-xs transition ${
             activeFilter === "all"
               ? "border-foreground bg-foreground text-background"
               : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -75,7 +75,7 @@ export default function ProjectsSection() {
             type="button"
             onClick={() => setActiveFilter(tag)}
             aria-pressed={activeFilter === tag}
-            className={`shrink-0 rounded-none border px-2.5 py-1 text-xs transition ${
+            className={`shrink-0 rounded-xl border px-2.5 py-1 text-xs transition ${
               activeFilter === tag
                 ? "border-foreground bg-foreground text-background"
                 : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -95,7 +95,7 @@ export default function ProjectsSection() {
             relative
             h-full
             overflow-hidden
-            rounded-none
+            rounded-xl
             border border-neutral-200/80
             bg-linear-to-b from-neutral-50 to-neutral-100/60
             py-0
@@ -155,13 +155,13 @@ export default function ProjectsSection() {
             )}
 
             <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/60 via-black/15 to-transparent" />
-            <div className="absolute right-3 top-3 rounded-none border border-white/30 bg-black/35 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-white/90 backdrop-blur-sm">
+            <div className="absolute right-3 top-3 rounded-xl border border-white/30 bg-black/35 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-white/90 backdrop-blur-sm">
               Featured
             </div>
           </Link>
 
           <CardHeader className="space-y-2 px-4 pt-3 pb-0 sm:px-5">
-            <time className="inline-flex w-fit rounded-none border border-neutral-200 bg-white/80 px-2 py-0.5 font-sans text-[10px] text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900/70 dark:text-neutral-300">
+            <time className="inline-flex w-fit rounded-xl border border-neutral-200 bg-white/80 px-2 py-0.5 font-sans text-[10px] text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900/70 dark:text-neutral-300">
               {formatProjectDate(project.createdAt)}
             </time>
 
@@ -184,7 +184,7 @@ export default function ProjectsSection() {
                   <Badge
                     key={tag}
                     variant="outline"
-                    className={`rounded-none px-2 py-0.5 text-[9px] font-medium ${
+                    className={`rounded-md px-2 py-0.5 text-[9px] font-medium ${
                       isCategory
                         ? "border-neutral-400 bg-neutral-900 text-white dark:border-neutral-500 dark:bg-neutral-100 dark:text-neutral-950"
                         : "border-neutral-200 bg-white/70 text-neutral-700 dark:border-neutral-700 dark:bg-neutral-900/65 dark:text-neutral-200"
@@ -197,7 +197,7 @@ export default function ProjectsSection() {
                 {hiddenTagCount > 0 && (
                   <Badge
                     variant="outline"
-                    className="rounded-none border-neutral-200 bg-white/70 px-2 py-0.5 text-[9px] font-medium text-neutral-500 dark:border-neutral-700 dark:bg-neutral-900/65 dark:text-neutral-400"
+                    className="rounded-xl border-neutral-200 bg-white/70 px-2 py-0.5 text-[9px] font-medium text-neutral-500 dark:border-neutral-700 dark:bg-neutral-900/65 dark:text-neutral-400"
                   >
                     +{hiddenTagCount}
                   </Badge>
@@ -212,7 +212,7 @@ export default function ProjectsSection() {
                 <Badge
                   variant="outline"
                   className="
-                    rounded-none
+                    rounded-xl
                     border-neutral-300
                     bg-white
                     px-2.5 py-1
@@ -241,7 +241,7 @@ export default function ProjectsSection() {
                       variant="outline"
                       className="
                         flex gap-1.5
-                        rounded-none
+                        rounded-xl
                         border-neutral-300
                         bg-white/80
                         px-2.5 py-1
@@ -276,7 +276,7 @@ export default function ProjectsSection() {
                       variant="outline"
                       className="
                         flex gap-1.5
-                        rounded-none
+                        rounded-xl
                         border-neutral-300
                         bg-white/80
                         px-2.5 py-1

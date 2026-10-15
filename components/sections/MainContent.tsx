@@ -75,7 +75,10 @@ export default function MainContent({ metrics, featuredPosts }: MainContentProps
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <div className="flex flex-col">
-        <section aria-labelledby="home-title" className="grow px-4 max-w-3xl mx-auto py-4">
+        <section
+          aria-labelledby="home-title"
+          className="mx-auto w-full max-w-3xl grow px-4 py-8"
+        >
           <h1 id="home-title" className="text-4xl font-bold mb-4">Amir Aliu</h1>
 
           <div className="text-xl sm:text-2xl text-muted-foreground font-medium h-8 flex items-center mb-8">
@@ -84,7 +87,7 @@ export default function MainContent({ metrics, featuredPosts }: MainContentProps
               options={{
                 strings: [
                   "Full Stack Developer",
-                  "Cybersecurity Student",
+                  "Cybersecurity Practitioner",
                   "Reverse Engineering Student",
                   "Vulnerability Researcher",
                   "Privacy Advocate",
@@ -181,8 +184,10 @@ export default function MainContent({ metrics, featuredPosts }: MainContentProps
                 {metrics.map((metric) => {
                   const content = (
                     <>
-                      <p className="text-lg font-semibold leading-tight text-foreground">{metric.value}</p>
-                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                      <p className="text-xl font-semibold leading-tight text-foreground">
+                        {metric.value}
+                      </p>
+                      <p className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">
                         {metric.label}
                       </p>
                     </>
@@ -193,7 +198,7 @@ export default function MainContent({ metrics, featuredPosts }: MainContentProps
                       <Link
                         key={metric.label}
                         href={metric.href}
-                        className="rounded-none border border-border/70 bg-muted/20 px-3 py-2 transition hover:bg-accent/30"
+                        className="rounded-md border border-border/70 bg-muted/20 px-3 py-3 transition-colors hover:bg-accent/30"
                         onClick={() => handleInternalClick(metric.href as string)}
                       >
                         {content}
@@ -204,7 +209,7 @@ export default function MainContent({ metrics, featuredPosts }: MainContentProps
                   return (
                     <div
                       key={metric.label}
-                      className="rounded-none border border-border/70 bg-muted/20 px-3 py-2"
+                      className="rounded-md border border-border/70 bg-muted/20 px-3 py-3"
                     >
                       {content}
                     </div>
@@ -233,7 +238,7 @@ export default function MainContent({ metrics, featuredPosts }: MainContentProps
                   <Link
                     key={post.slug}
                     href={`/blog/${post.slug}`}
-                    className="rounded-none border border-border/70 bg-muted/15 p-3 transition hover:bg-accent/30"
+                    className="rounded-md border border-border/70 bg-muted/15 p-4 transition-colors hover:bg-accent/30"
                     onClick={() => {
                       handleInternalClick(`/blog/${post.slug}`);
                       trackEvent("blog_post_open", { source: "home_featured", slug: post.slug });
@@ -249,7 +254,7 @@ export default function MainContent({ metrics, featuredPosts }: MainContentProps
                         {post.tags.map((tag) => (
                           <span
                             key={`${post.slug}-${tag}`}
-                            className="rounded-none border border-border/70 px-2 py-0.5 text-[10px] text-muted-foreground"
+                            className="rounded-sm border border-border/70 px-2 py-0.5 text-[10px] text-muted-foreground"
                           >
                             {tag}
                           </span>

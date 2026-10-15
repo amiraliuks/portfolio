@@ -219,13 +219,13 @@ export function BlogTableOfContents({ headings }: BlogTableOfContentsProps) {
           <SheetTrigger asChild>
             <Button
               variant="outline"
-              className="gap-2 rounded-none border-border bg-background/90 backdrop-blur"
+              className="gap-2 rounded-md border-border bg-background/90 backdrop-blur"
             >
               <ListTree className="h-4 w-4" />
               On This Page
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="max-h-[80vh] overflow-hidden rounded-none">
+          <SheetContent side="bottom" className="max-h-[80vh] overflow-hidden rounded-t-xl">
             <SheetHeader className="px-0 pb-2">
               <SheetTitle className="text-sm uppercase tracking-wide text-muted-foreground">
                 On This Page
@@ -240,7 +240,7 @@ export function BlogTableOfContents({ headings }: BlogTableOfContentsProps) {
       </div>
 
       <aside className="hidden self-start xl:sticky xl:top-24 xl:block">
-        <div className="max-h-[calc(100vh-7rem)] overflow-y-auto rounded-none border border-border bg-card/40 p-4">
+        <div className="max-h-[calc(100vh-7rem)] overflow-y-auto rounded-lg border border-border bg-card/40 p-4">
           {renderReadingProgress}
 
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">

@@ -76,15 +76,15 @@ export default function Page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
-        <div className="mb-12 space-y-2">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+      <div className="mx-auto max-w-3xl px-4 py-8 sm:py-10">
+        <header className="mb-8">
+          <h1 className="text-4xl font-semibold tracking-tight text-foreground">
             Certifications
           </h1>
-          <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-lg">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             A compact timeline of cybersecurity, CTF, and professional certifications. The page highlights recent work first, then groups the full archive by year.
           </p>
-        </div>
+        </header>
 
         <CertificationsSection />
       </div>

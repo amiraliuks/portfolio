@@ -279,7 +279,7 @@ export default async function Writeup({ params }: WriteupPageProps) {
         }}
       />
 
-      <header className="mb-12 border border-border/70">
+      <header className="mb-12 overflow-hidden rounded-xl border border-border/70">
         <div className="border-b border-border/70 bg-muted/40 px-4 py-3 text-xs uppercase tracking-[0.16em] text-muted-foreground">
           Writeup Dossier
         </div>
@@ -289,7 +289,7 @@ export default async function Writeup({ params }: WriteupPageProps) {
           </h1>
 
           <div className="grid gap-2 sm:grid-cols-3">
-            <div className="rounded-none border border-border/70 bg-muted/10 px-3 py-2">
+            <div className="rounded-md border border-border/70 bg-muted/10 px-3 py-2">
               <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Published</p>
               <p className="mt-1 inline-flex items-center gap-2 text-sm text-foreground">
                 <CalendarDays size={14} aria-hidden />
@@ -297,7 +297,7 @@ export default async function Writeup({ params }: WriteupPageProps) {
               </p>
             </div>
 
-            <div className="rounded-none border border-border/70 bg-muted/10 px-3 py-2">
+            <div className="rounded-md border border-border/70 bg-muted/10 px-3 py-2">
               <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Read Time</p>
               <p className="mt-1 inline-flex items-center gap-2 text-sm text-foreground">
                 <Clock3 size={14} aria-hidden />
@@ -305,7 +305,7 @@ export default async function Writeup({ params }: WriteupPageProps) {
               </p>
             </div>
 
-            <div className="rounded-none border border-border/70 bg-muted/10 px-3 py-2">
+            <div className="rounded-md border border-border/70 bg-muted/10 px-3 py-2">
               <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Author</p>
               <p className="mt-1 text-sm text-foreground">Amir Aliu</p>
             </div>

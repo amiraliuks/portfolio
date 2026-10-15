@@ -91,13 +91,13 @@ export default function Page() {
           <div className="flex flex-wrap gap-2 pt-1">
             <Link
               href="/blog"
-              className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+              className="rounded-md border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
             >
               Read Blog Writeups
             </Link>
             <Link
               href="/certifications"
-              className="rounded-none border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+              className="rounded-md border border-border px-3 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
             >
               View Certifications
             </Link>

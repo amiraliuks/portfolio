@@ -80,29 +80,6 @@ export default function AboutPage() {
     { label: "Published Posts", value: `${posts.length}` },
   ];
 
-  const journey = [
-    {
-      period: "2013",
-      title: "Started in hands-on support",
-      summary: "Began with technical support and real-world troubleshooting in school environments.",
-    },
-    {
-      period: "2018",
-      title: "Moved into freelance development",
-      summary: "Built and maintained websites for communities and SMB clients.",
-    },
-    {
-      period: "2026",
-      title: "Expanded into security communities",
-      summary: "Contributed actively to KSAL Cyber Team, DEFCON Prishtina, and FLOSSK.",
-    },
-    {
-      period: "2026",
-      title: "Product and research focus",
-      summary: "Building tools like writeupify while deepening vulnerability research and CTF work.",
-    },
-  ];
-
   const focusAreas = [
     {
       title: "Vulnerability Research",
@@ -181,7 +158,7 @@ export default function AboutPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
       />
 
-      <section className="rounded-none border border-border/70 bg-muted/20 p-6 sm:p-8">
+      <section className="rounded-lg border border-border/70 bg-muted/20 p-6 sm:p-8">
         <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">About</p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Amir Aliu</h1>
         <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -201,7 +178,7 @@ export default function AboutPage() {
           {highlights.map((item) => (
             <article
               key={item.label}
-              className="rounded-none border border-border/70 bg-muted/15 px-4 py-3"
+              className="rounded-md border border-border/70 bg-muted/15 px-4 py-3"
             >
               <p className="text-xl font-semibold leading-none text-foreground">{item.value}</p>
               <p className="mt-2 text-[11px] uppercase tracking-wide text-muted-foreground">
@@ -213,28 +190,12 @@ export default function AboutPage() {
       </section>
 
       <section className="mt-10">
-        <h2 className="text-lg font-semibold tracking-tight">Journey</h2>
-        <div className="mt-4 space-y-4">
-          {journey.map((milestone) => (
-            <article
-              key={`${milestone.period}-${milestone.title}`}
-              className="rounded-none border border-border/70 bg-muted/10 p-4"
-            >
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">{milestone.period}</p>
-              <h3 className="mt-1 text-sm font-semibold text-foreground">{milestone.title}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{milestone.summary}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-10">
         <h2 className="text-lg font-semibold tracking-tight">Current Focus</h2>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           {focusAreas.map((area) => (
             <article
               key={area.title}
-              className="rounded-none border border-border/70 bg-muted/15 p-4"
+              className="rounded-md border border-border/70 bg-muted/15 p-4"
             >
               <h3 className="text-sm font-semibold text-foreground">{area.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{area.description}</p>
@@ -243,7 +204,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="mt-10 rounded-none border border-border/70 bg-muted/10 p-4">
+      <section className="mt-10 rounded-md border border-border/70 bg-muted/10 p-4">
         <h2 className="text-lg font-semibold tracking-tight">Current Interests</h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
           The areas I am actively sharpening through projects, research, writeups, and community work.
@@ -252,7 +213,7 @@ export default function AboutPage() {
           {currentInterests.map((interest) => (
             <span
               key={interest}
-              className="rounded-none border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground"
+              className="rounded-sm border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground"
             >
               {interest}
             </span>
@@ -265,18 +226,36 @@ export default function AboutPage() {
         <p className="mt-2 text-sm text-muted-foreground sm:text-base">
           These reflect how I use each tool in real projects, not generic definitions.
         </p>
-        <p className="mt-4 text-sm text-muted-foreground sm:text-base">Operating Systems</p>
-        <TechStack techStack={operatingSystems} />
-        <p className="mt-6 text-sm text-muted-foreground sm:text-base">Web and Software Development</p>
-        <TechStack techStack={webdev} />
-        <p className="mt-6 text-sm text-muted-foreground sm:text-base">Game Development</p>
-        <TechStack techStack={gamedev} />
-        <p className="mt-6 text-sm text-muted-foreground sm:text-base">Tools and Platforms</p>
-        <TechStack techStack={tools} />
-        <p className="mt-6 text-sm text-muted-foreground sm:text-base">Database and Storage</p>
-        <TechStack techStack={database} />
-        <p className="mt-6 text-sm text-muted-foreground sm:text-base">DevOps and Cloud</p>
-        <TechStack techStack={devops} />
+
+        <p className="mt-4 text-lg font-semibold tracking-tight-foreground sm:text-base">Operating Systems</p>
+        <div className="mt-3">
+          <TechStack techStack={operatingSystems} />
+        </div>
+
+        <p className="mt-6 text-lg font-semibold tracking-tight-foreground sm:text-base">Web and Software Development</p>
+        <div className="mt-3">
+          <TechStack techStack={webdev} />
+        </div>
+
+        <p className="mt-6 text-lg font-semibold tracking-tight-foreground sm:text-base">Game Development</p>
+        <div className="mt-3">
+          <TechStack techStack={gamedev} />
+        </div>
+
+        <p className="mt-6 text-lg font-semibold tracking-tight-foreground sm:text-base">Tools and Platforms</p>
+        <div className="mt-3">
+          <TechStack techStack={tools} />
+        </div>
+
+        <p className="mt-6 text-lg font-semibold tracking-tight-foreground sm:text-base">Database and Storage</p>
+        <div className="mt-3">
+          <TechStack techStack={database} />
+        </div>
+        
+        <p className="mt-6 text-lg font-semibold tracking-tight-foreground sm:text-base">DevOps and Cloud</p>
+        <div className="mt-3">
+          <TechStack techStack={devops} />
+        </div>
       </section>
 
       <section className="mt-10">
@@ -288,7 +267,7 @@ export default function AboutPage() {
               href={link.href}
               target={link.href.startsWith("http") ? "_blank" : undefined}
               rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-              className="group rounded-none border border-border/70 bg-muted/15 p-4 transition hover:bg-muted/30"
+              className="group rounded-md border border-border/70 bg-muted/15 p-4 transition-colors hover:bg-muted/30"
             >
               <p className="flex items-center gap-2 text-sm font-medium text-foreground">
                 {link.label}
